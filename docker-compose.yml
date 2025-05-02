@@ -1,0 +1,15 @@
+version: "3.9"
+name: "community-kitchen"
+services:
+  postgres:
+    container_name: community-kitchen-postgres
+    image: postgres:17.4-alpine
+    ports:
+      - "5433:5433"
+    volumes:
+      - ./.data/postgresql/data:/var/lib/postgresql
+    environment:
+      POSTGRES_DB: community-kitchen
+      POSTGRES_USER: community-kitchen
+      POSTGRES_PASSWORD: 1234567
+    command: -p 5433
