@@ -15,32 +15,25 @@ export class NutritionFacts extends Model{
     @Column
     declare foodId: number;
 
-    @Column(DataType.DECIMAL)
-    @NotNull
+    @Column({type: DataType.DECIMAL, allowNull: false})
     declare calories: number;
 
-    @Column(DataType.DECIMAL)
-    @NotNull
+    @Column({type: DataType.DECIMAL, allowNull: false})
     declare carbohydrates: number;
 
-    @Column(DataType.DECIMAL)
-    @NotNull
+    @Column({type: DataType.DECIMAL, allowNull: false})
     declare proteins: number;
 
-    @Column(DataType.DECIMAL)
-    @NotNull
+    @Column({type: DataType.DECIMAL, allowNull: false})
     declare facts: number;
 
-    @Column(DataType.DECIMAL)
-    @NotNull
+    @Column({type: DataType.DECIMAL, allowNull: false})
     declare fiber: number;
 
-    @Column(DataType.DECIMAL)
-    @NotNull
+    @Column({type: DataType.DECIMAL, allowNull: false})
     declare sugar: number;
 
-    @Column(DataType.DECIMAL)
-    @NotNull
+    @Column({type: DataType.DECIMAL, allowNull: false})
     declare sodium: number;
    
 }

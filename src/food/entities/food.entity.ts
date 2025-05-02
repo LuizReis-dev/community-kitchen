@@ -1,4 +1,4 @@
-import { AutoIncrement, Column, CreatedAt, DataType, DeletedAt, HasOne, PrimaryKey, Table, Model, NotNull } from "sequelize-typescript";
+import { AutoIncrement, Column, CreatedAt, DataType, DeletedAt, HasOne, PrimaryKey, Table, Model, NotNull, AllowNull } from "sequelize-typescript";
 import { NutritionFacts } from "./nutrition-facts.entity";
 
 @Table({
@@ -16,8 +16,7 @@ export class Food extends Model {
     @HasOne(() => NutritionFacts)
     declare nutritionFacts: NutritionFacts;
 
-    @Column(DataType.STRING)
-    @NotNull
+    @Column({type: DataType.STRING, allowNull: false})
     declare name: string;
     
     @CreatedAt
