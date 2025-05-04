@@ -1,26 +1,38 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { CreateFoodDto } from "./dto/create-food.dto";
 import { Food } from "./entities/food.entity";
 import { NutritionFacts } from "./entities/nutrition-facts.entity";
 import { FoodDto } from "./dto/food.dto";
 import { UpdateFoodDto } from "./dto/update-food.dto";
+import { Sequelize } from "sequelize-typescript";
 
 @Injectable()
 export class FoodRepository {
-
+    constructor(
+        @Inject('SEQUELIZE') private sequelize: Sequelize,
+    ) {}
     async create(createFoodDto: CreateFoodDto): Promise<FoodDto> {
-        const food = await Food.create({
-            name: createFoodDto.name
-        });
+        const transaction = await this.sequelize.transaction();
+        try {
 
-        const nutritionFacts = await NutritionFacts.create({
-            ...createFoodDto.nutritionFacts,
-            foodId: food.id
-        });
+            const food = await Food.create({
+                name: createFoodDto.name
+            }, { transaction });
 
-        food.nutritionFacts = nutritionFacts;
+            const nutritionFacts = await NutritionFacts.create({
+                ...createFoodDto.nutritionFacts,
+                foodId: food.id
+            }, { transaction });
 
-        return FoodDto.fromEntity(food);
+            await transaction.commit();
+            food.nutritionFacts = nutritionFacts;
+
+            return FoodDto.fromEntity(food);
+        } catch (error) {
+            await transaction.rollback();
+            throw new BadRequestException('Erro ao inserir o alimento!');
+
+        }
     }
 
     async findOne(id: number): Promise<FoodDto> {
@@ -56,14 +68,22 @@ export class FoodRepository {
 
         if(!food) throw new NotFoundException("Alimento não encontrado!");
 
-        await food.update({
-            name : updateFoodDto.name
-        });
-
-        await food.nutritionFacts.update({
-            ...updateFoodDto.nutritionFacts
-        });
-        
-        return FoodDto.fromEntity(food);
+        const transaction = await this.sequelize.transaction();
+        try {
+            await food.update({
+                name : updateFoodDto.name
+            }, { transaction });
+    
+            await food.nutritionFacts.update({
+                ...updateFoodDto.nutritionFacts
+            }, { transaction });
+            
+            await transaction.commit();
+            return FoodDto.fromEntity(food);
+        } catch(error) {
+            await transaction.rollback();
+            throw new BadRequestException('Erro ao atualizar o alimento!');
+        }
     }
+        
 }
