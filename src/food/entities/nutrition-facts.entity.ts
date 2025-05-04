@@ -25,7 +25,7 @@ export class NutritionFacts extends Model{
     declare proteins: number;
 
     @Column({type: DataType.DECIMAL, allowNull: false})
-    declare facts: number;
+    declare fats: number;
 
     @Column({type: DataType.DECIMAL, allowNull: false})
     declare fiber: number;

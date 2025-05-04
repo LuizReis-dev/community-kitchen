@@ -3,32 +3,32 @@ import { FoodService } from './food.service';
 import { CreateFoodDto } from './dto/create-food.dto';
 import { UpdateFoodDto } from './dto/update-food.dto';
 
-@Controller('food')
+@Controller('foods')
 export class FoodController {
   constructor(private readonly foodService: FoodService) {}
 
   @Post()
-  create(@Body() createFoodDto: CreateFoodDto) {
+  async create(@Body() createFoodDto: CreateFoodDto) {
     return this.foodService.create(createFoodDto);
   }
 
   @Get()
-  findAll() {
+  async findAll() {
     return this.foodService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     return this.foodService.findOne(+id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateFoodDto: UpdateFoodDto) {
+  async update(@Param('id') id: string, @Body() updateFoodDto: UpdateFoodDto) {
     return this.foodService.update(+id, updateFoodDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.foodService.remove(+id);
   }
 }

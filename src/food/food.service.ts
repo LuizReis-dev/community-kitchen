@@ -1,11 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateFoodDto } from './dto/create-food.dto';
 import { UpdateFoodDto } from './dto/update-food.dto';
+import { FoodRepository } from './food.repository';
 
 @Injectable()
 export class FoodService {
-  create(createFoodDto: CreateFoodDto) {
-    return 'This action adds a new food';
+  constructor(private readonly foodRepository: FoodRepository) {}
+
+  async create(createFoodDto: CreateFoodDto) {
+    if (!CreateFoodDto.isValid(createFoodDto)) {
+      throw new BadRequestException("Todos os campos devem estar preenchidos!");
+    }
+    return this.foodRepository.create(createFoodDto);
   }
 
   findAll() {
