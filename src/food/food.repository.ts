@@ -39,4 +39,12 @@ export class FoodRepository {
 
         return foods.map(FoodDto.fromEntity);
     }
+
+    async remove(id: number): Promise<void>  {
+        const food = await Food.findByPk(id);
+
+        if(!food) throw new NotFoundException("Alimento não encontrado!");
+
+        await food.destroy();
+    }
 }

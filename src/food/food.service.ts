@@ -27,7 +27,7 @@ export class FoodService {
     return `This action updates a #${id} food`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} food`;
+  async remove(id: number): Promise<void>  {
+    return this.foodRepository.remove(id);
   }
 }
