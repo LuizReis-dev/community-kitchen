@@ -23,8 +23,12 @@ export class FoodService {
     return this.foodRepository.findOne(id);
   }
 
-  update(id: number, updateFoodDto: UpdateFoodDto) {
-    return `This action updates a #${id} food`;
+  async update(id: number, updateFoodDto: UpdateFoodDto): Promise<FoodDto> {
+    if (!UpdateFoodDto.isValid(updateFoodDto)) {
+      throw new BadRequestException("Todos os campos devem estar preenchidos!");
+    }  
+    
+    return this.foodRepository.update(id, updateFoodDto);
   }
 
   async remove(id: number): Promise<void>  {

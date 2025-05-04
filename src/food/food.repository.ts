@@ -3,6 +3,7 @@ import { CreateFoodDto } from "./dto/create-food.dto";
 import { Food } from "./entities/food.entity";
 import { NutritionFacts } from "./entities/nutrition-facts.entity";
 import { FoodDto } from "./dto/food.dto";
+import { UpdateFoodDto } from "./dto/update-food.dto";
 
 @Injectable()
 export class FoodRepository {
@@ -46,5 +47,23 @@ export class FoodRepository {
         if(!food) throw new NotFoundException("Alimento não encontrado!");
 
         await food.destroy();
+    }
+
+    async update(id: number, updateFoodDto: UpdateFoodDto): Promise<FoodDto> {
+        const food = await Food.findByPk(id, {
+            include: ["nutritionFacts"]
+        });
+
+        if(!food) throw new NotFoundException("Alimento não encontrado!");
+
+        await food.update({
+            name : updateFoodDto.name
+        });
+
+        await food.nutritionFacts.update({
+            ...updateFoodDto.nutritionFacts
+        });
+        
+        return FoodDto.fromEntity(food);
     }
 }
