@@ -31,4 +31,12 @@ export class FoodRepository {
 
         return FoodDto.fromEntity(food);
     }
+
+    async findAll(): Promise<FoodDto[]> {
+        const foods = await Food.findAll({
+            include: ["nutritionFacts"]
+        });
+
+        return foods.map(FoodDto.fromEntity);
+    }
 }

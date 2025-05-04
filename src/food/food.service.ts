@@ -15,8 +15,8 @@ export class FoodService {
     return this.foodRepository.create(createFoodDto);
   }
 
-  findAll() {
-    return `This action returns all food`;
+  async findAll(): Promise<FoodDto[]> {
+    return this.foodRepository.findAll();
   }
 
   async findOne(id: number): Promise<FoodDto> {
