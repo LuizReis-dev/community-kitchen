@@ -2,12 +2,13 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateFoodDto } from './dto/create-food.dto';
 import { UpdateFoodDto } from './dto/update-food.dto';
 import { FoodRepository } from './food.repository';
+import { FoodDto } from './dto/food.dto';
 
 @Injectable()
 export class FoodService {
   constructor(private readonly foodRepository: FoodRepository) {}
 
-  async create(createFoodDto: CreateFoodDto) {
+  async create(createFoodDto: CreateFoodDto): Promise<FoodDto> {
     if (!CreateFoodDto.isValid(createFoodDto)) {
       throw new BadRequestException("Todos os campos devem estar preenchidos!");
     }
@@ -18,8 +19,8 @@ export class FoodService {
     return `This action returns all food`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} food`;
+  async findOne(id: number): Promise<FoodDto> {
+    return this.foodRepository.findOne(id);
   }
 
   update(id: number, updateFoodDto: UpdateFoodDto) {

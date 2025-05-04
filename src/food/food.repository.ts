@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { CreateFoodDto } from "./dto/create-food.dto";
 import { Food } from "./entities/food.entity";
 import { NutritionFacts } from "./entities/nutrition-facts.entity";
@@ -18,6 +18,16 @@ export class FoodRepository {
         });
 
         food.nutritionFacts = nutritionFacts;
+
+        return FoodDto.fromEntity(food);
+    }
+
+    async findOne(id: number): Promise<FoodDto> {
+        const food = await Food.findByPk(id, {
+            include: ["nutritionFacts"]
+        });
+
+        if(!food) throw new NotFoundException("Alimento não encontrado!");
 
         return FoodDto.fromEntity(food);
     }
