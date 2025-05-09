@@ -1,5 +1,7 @@
-import { AutoIncrement, Column, CreatedAt, DataType, DeletedAt, HasOne, PrimaryKey, Table, Model, NotNull, AllowNull } from "sequelize-typescript";
+import { AutoIncrement, Column, CreatedAt, DataType, DeletedAt, HasOne, PrimaryKey, Table, Model, NotNull, AllowNull, BelongsToMany, UpdatedAt } from "sequelize-typescript";
 import { NutritionFacts } from "./nutrition-facts.entity";
+import { Dish } from "src/dish/entities/dish.entity";
+import { DishFood } from "src/dish/entities/dish-food.entity";
 
 @Table({
     tableName: "tb_foods",
@@ -20,8 +22,23 @@ export class Food extends Model {
     declare name: string;
     
     @CreatedAt
+    @Column({
+        field: "created_at"
+    })
     declare createdAt: Date;
     
     @DeletedAt
+    @Column({
+        field: "deleted_at"
+    })
     declare deletedAt: Date;
+    
+    @UpdatedAt
+    @Column({
+        field: "updated_at"
+    })
+    declare updateAt: Date
+
+    @BelongsToMany(() => Dish, () => DishFood)
+    declare dishes?: Dish[];
 }

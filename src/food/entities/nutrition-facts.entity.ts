@@ -1,4 +1,4 @@
-import { AutoIncrement, BelongsTo, Column, DataType, ForeignKey, NotNull, PrimaryKey, Table, Model } from "sequelize-typescript";
+import { AutoIncrement, BelongsTo, Column, DataType, ForeignKey, NotNull, PrimaryKey, Table, Model, CreatedAt, UpdatedAt, DeletedAt } from "sequelize-typescript";
 import { Food } from "./food.entity";
 
 @Table({
@@ -12,7 +12,7 @@ export class NutritionFacts extends Model{
     declare id: number;
 
     @ForeignKey(() => Food)
-    @Column
+    @Column({field: "food_id"})
     declare foodId: number;
 
     @Column({type: DataType.DECIMAL, allowNull: false})
@@ -35,5 +35,23 @@ export class NutritionFacts extends Model{
 
     @Column({type: DataType.DECIMAL, allowNull: false})
     declare sodium: number;
+    
+    @CreatedAt
+    @Column({
+        field: "created_at"
+    })
+    declare createdAt: Date;
+        
+    @DeletedAt
+    @Column({
+        field: "deleted_at"
+    })
+    declare deletedAt: Date;
+        
+    @UpdatedAt
+    @Column({
+        field: "updated_at"
+    })
+    declare updateAt: Date
    
 }
