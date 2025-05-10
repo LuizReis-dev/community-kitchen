@@ -1,13 +1,25 @@
+import { ApiProperty } from '@nestjs/swagger'
 import { Dish } from '../entities/dish.entity'
-import { Food } from 'src/food/entities/food.entity'
+import { FoodDto } from 'src/food/dto/food.dto'
 
 export class DishDto {
+  @ApiProperty()
   id: number
+
+  @ApiProperty()
   name: string
+
+  @ApiProperty()
   description?: string
+
+  @ApiProperty()
   createdAt: Date
+
+  @ApiProperty()
   updatedAt: Date
-  foods: { id: number; name: string }[]
+
+  @ApiProperty()
+  foods: FoodDto[]
 
   constructor(
     id: number,
@@ -15,7 +27,7 @@ export class DishDto {
     description: string | undefined,
     createdAt: Date,
     updatedAt: Date,
-    foods: { id: number; name: string }[]
+    foods: FoodDto[]
   ) {
     this.id = id
     this.name = name
@@ -27,9 +39,10 @@ export class DishDto {
 
   static fromEntity(dish: Dish): DishDto {
     const foods = dish.foods
-      ? dish.foods.map((food: Food) => ({
+      ? dish.foods.map((food: FoodDto) => ({
           id: food.id,
           name: food.name,
+          nutritionFacts: food.nutritionFacts,
         }))
       : []
 

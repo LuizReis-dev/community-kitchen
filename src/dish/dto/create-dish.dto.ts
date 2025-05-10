@@ -1,6 +1,13 @@
+import { ApiProperty } from '@nestjs/swagger'
+
 export class CreateDishDto {
+  @ApiProperty()
   name: string
+
+  @ApiProperty({ required: false })
   description?: string
+
+  @ApiProperty()
   foodIds: number[]
 
   static isValid(obj: CreateDishDto): boolean {

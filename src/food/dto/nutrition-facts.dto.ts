@@ -1,12 +1,26 @@
+import { ApiProperty } from '@nestjs/swagger'
 import { NutritionFacts } from '../entities/nutrition-facts.entity'
 
 export class NutritionFactsDto {
+  @ApiProperty()
   calories: number
+
+  @ApiProperty()
   carbohydrates: number
+
+  @ApiProperty()
   proteins: number
+
+  @ApiProperty()
   fats: number
+
+  @ApiProperty()
   fiber: number
+
+  @ApiProperty()
   sugar: number
+
+  @ApiProperty()
   sodium: number
 
   constructor(

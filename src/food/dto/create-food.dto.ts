@@ -1,7 +1,11 @@
+import { ApiProperty } from '@nestjs/swagger'
 import { NutritionFactsDto } from './nutrition-facts.dto'
 
 export class CreateFoodDto {
+  @ApiProperty()
   name: string
+
+  @ApiProperty()
   nutritionFacts: NutritionFactsDto
 
   static isValid(obj: CreateFoodDto): boolean {

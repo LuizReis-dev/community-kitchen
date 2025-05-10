@@ -1,10 +1,15 @@
+import { ApiProperty } from '@nestjs/swagger'
 import { Food } from '../entities/food.entity'
-import { NutritionFacts } from '../entities/nutrition-facts.entity'
 import { NutritionFactsDto } from './nutrition-facts.dto'
 
 export class FoodDto {
+  @ApiProperty()
   id: number
+
+  @ApiProperty()
   name: string
+
+  @ApiProperty()
   nutritionFacts: NutritionFactsDto
 
   constructor(id: number, name: string, nutritionFacts: NutritionFactsDto) {
