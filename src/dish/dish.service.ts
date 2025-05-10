@@ -4,6 +4,7 @@ import { DishRepository } from './dish.repository';
 import { Food } from '../food/entities/food.entity';
 import { Op } from 'sequelize';
 import { UpdateDishDto } from './dto/update-dish.dto';
+import { DishDto } from './dto/dish.dto';
 
 @Injectable()
 export class DishService {
@@ -31,8 +32,8 @@ export class DishService {
     return `This action returns all dishes`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} dish`;
+  findOne(id: number): Promise<DishDto> {
+    return this.dishRepository.findOne(id)
   }
 
   update(id: number, updateDishDto: UpdateDishDto) {

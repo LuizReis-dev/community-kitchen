@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateDishDto } from './dto/create-dish.dto';
 import { Dish } from './entities/dish.entity';
 import { DishDto } from './dto/dish.dto';
@@ -7,6 +7,7 @@ import { Op } from 'sequelize';
 
 @Injectable()
 export class DishRepository {
+
   async create(createDishDto: CreateDishDto): Promise<DishDto> {
     const foods = await Food.findAll({
       where: {
@@ -23,6 +24,18 @@ export class DishRepository {
     await dish.$set('foods', foods);
 
     dish.foods = foods;
+
+    return DishDto.fromEntity(dish);
+  }
+
+  async findOne(id: number): Promise<DishDto> {
+    const dish = await Dish.findByPk(id, {
+        include: [Food]
+    });
+
+    if (!dish) {
+    throw new NotFoundException(`Prato nao encontrado.`);
+  }
 
     return DishDto.fromEntity(dish);
   }
