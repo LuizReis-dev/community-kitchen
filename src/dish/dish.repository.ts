@@ -41,9 +41,16 @@ export class DishRepository {
     });
 
     if (!dish) {
-    throw new NotFoundException(`Prato nao encontrado.`);
+    throw new NotFoundException("Prato nao encontrado.");
   }
 
     return DishDto.fromEntity(dish);
+  }
+
+  async remove(id: number): Promise<void>{
+    const dish = await Dish.findByPk(id);
+
+    if(!dish) throw new NotFoundException("Prato nao encontrado.")
+    await dish.destroy();
   }
 }

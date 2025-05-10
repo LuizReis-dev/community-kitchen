@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { CreateDishDto } from './dto/create-dish.dto';
 import { DishRepository } from './dish.repository';
 import { Food } from '../food/entities/food.entity';
@@ -28,11 +28,11 @@ export class DishService {
     return this.dishRepository.create(createDishDto);
   }
 
-  findAll(): Promise<DishDto[]> {
+  async findAll(): Promise<DishDto[]> {
     return this.dishRepository.findAll();
   }
 
-  findOne(id: number): Promise<DishDto> {
+  async findOne(id: number): Promise<DishDto> {
     return this.dishRepository.findOne(id);
   }
 
@@ -40,7 +40,12 @@ export class DishService {
     return `This action updates a #${id} dish`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} dish`;
+  async remove(id: number): Promise<void> {
+  const dish = await this.dishRepository.findOne(id);
+  
+  if (!dish) {
+    throw new NotFoundException("Prato não encontrado.");
   }
+  await this.dishRepository.remove(id);
+}
 }
