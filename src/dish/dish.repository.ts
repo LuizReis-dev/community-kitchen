@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateDishDto } from './dto/create-dish.dto';
 import { Dish } from './entities/dish.entity';
 import { DishDto } from './dto/dish.dto';
@@ -76,6 +76,32 @@ export class DishRepository {
     }
     return DishDto.fromEntity(updatedDish);
   }
+
+  async patch(id: number, updateDishDto: UpdateDishDto): Promise<DishDto> {
+    const dish = await Dish.findByPk(id, {
+        include: [Food]
+    });
+
+    if (!dish) throw new NotFoundException("Prato não encontrado!");
+    if (updateDishDto.name !== undefined) {
+        dish.name = updateDishDto.name;
+    }
+
+    if (updateDishDto.description !== undefined) {
+        dish.description = updateDishDto.description;
+    }
+    await dish.save();
+
+    const updatedDish = await Dish.findByPk(id, {
+        include: [Food]
+    });
+
+    if (!updatedDish) {
+        throw new NotFoundException("Erro ao atualizar: prato não encontrado.");
+    }
+    return DishDto.fromEntity(updatedDish);
+}
+
 
   async remove(id: number): Promise<void>{
     const dish = await Dish.findByPk(id);

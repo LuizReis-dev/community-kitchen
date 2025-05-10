@@ -27,6 +27,11 @@ export class DishController {
     return this.dishService.update(+id, updateDishDto);
   }
 
+  @Patch(':id')
+  async patch(@Param('id') id: string, @Body() patchUpdateDishDto: UpdateDishDto){
+    return this.dishService.patch(+id, patchUpdateDishDto);
+  }
+
   @Delete(':id')
   async remove(@Param('id') id: string) {
     return this.dishService.remove(+id);

@@ -36,11 +36,18 @@ export class DishService {
     return this.dishRepository.findOne(id);
   }
 
-  update(id: number, updateDishDto: UpdateDishDto) {
+  async update(id: number, updateDishDto: UpdateDishDto) {
     if(!UpdateDishDto.isValid(updateDishDto)){
         throw new BadRequestException("Todos os campos devem estar preenchidos!")
     }
-    return this.dishRepository.update(id, updateDishDto)
+    return this.dishRepository.update(id, updateDishDto);
+  }
+
+  async patch(id: number, updateDishDto: UpdateDishDto){
+    if (updateDishDto.foodIds !== undefined) {
+        throw new BadRequestException("Não é permitido alterar os ingredientes do prato.");
+    }
+    return this.dishRepository.patch(id, updateDishDto);
   }
 
   async remove(id: number): Promise<void> {
