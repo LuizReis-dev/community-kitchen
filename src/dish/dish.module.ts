@@ -1,9 +1,12 @@
 import { Module } from '@nestjs/common';
-import { DishesService } from './dish.service';
-import { DishesController } from './dish.controller';
+import { DishService } from './dish.service';
+import { DishController } from './dish.controller';
+import { DatabaseModule } from 'src/database/database.module';
+import { DishRepository } from './dish.repository';
 
 @Module({
-  controllers: [DishesController],
-  providers: [DishesService],
+  imports: [DatabaseModule],
+  controllers: [DishController],
+  providers: [DishService, DishRepository],
 })
 export class DishModule {}

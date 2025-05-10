@@ -48,7 +48,7 @@ export class Dish extends Model{
     @Column({
         field: "updated_at"
     })
-    declare updateAt: Date
+    declare updatedAt: Date
 
     @BelongsToMany(() => Food, () => DishFood)
     declare foods?: Food[];
