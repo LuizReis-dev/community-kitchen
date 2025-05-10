@@ -1,12 +1,13 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { FoodModule } from './food/food.module';
-import { DatabaseModule } from './database/database.module';
-import { DishModule } from './dish/dish.module';
+import { Module } from '@nestjs/common'
+import { AppController } from './app.controller'
+import { AppService } from './app.service'
+import { FoodModule } from './food/food.module'
+import { DatabaseModule } from './database/database.module'
+import { DishModule } from './dish/dish.module'
+import { MenuModule } from './menu/menu.module'
 
 @Module({
-  imports: [FoodModule, DatabaseModule, DishModule],
+  imports: [FoodModule, DatabaseModule, DishModule, MenuModule],
   controllers: [AppController],
   providers: [AppService],
 })
