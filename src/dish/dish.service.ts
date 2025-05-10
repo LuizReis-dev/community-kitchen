@@ -37,7 +37,10 @@ export class DishService {
   }
 
   update(id: number, updateDishDto: UpdateDishDto) {
-    return `This action updates a #${id} dish`;
+    if(!UpdateDishDto.isValid(updateDishDto)){
+        throw new BadRequestException("Todos os campos devem estar preenchidos!")
+    }
+    return this.dishRepository.update(id, updateDishDto)
   }
 
   async remove(id: number): Promise<void> {

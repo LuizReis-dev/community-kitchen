@@ -4,6 +4,7 @@ import { Dish } from './entities/dish.entity';
 import { DishDto } from './dto/dish.dto';
 import { Food } from '../food/entities/food.entity';
 import { Op } from 'sequelize';
+import { UpdateDishDto } from './dto/update-dish.dto';
 
 @Injectable()
 export class DishRepository {
@@ -45,6 +46,35 @@ export class DishRepository {
   }
 
     return DishDto.fromEntity(dish);
+  }
+
+  async update(id: number, updateDishDto: UpdateDishDto): Promise<DishDto> {
+    const dish = await Dish.findByPk(id, {
+            include: [Food]
+        });
+
+        if(!dish) throw new NotFoundException("Prato não encontrado!");
+
+        await dish.update({
+            name : updateDishDto.name,
+            description : updateDishDto.description
+        });
+
+        if (updateDishDto.foodIds !== undefined) {
+
+          await (dish as any).$set('foods', []);
+          const newFoods = await Food.findAll({ where: { id: updateDishDto.foodIds } });
+          await (dish as any).$add('foods', newFoods);
+    }
+    
+    const updatedDish = await Dish.findByPk(id, {
+        include: [Food]
+    });
+
+    if (!updatedDish) {
+    throw new NotFoundException("Erro ao atualizar: prato não encontrado.");
+    }
+    return DishDto.fromEntity(updatedDish);
   }
 
   async remove(id: number): Promise<void>{

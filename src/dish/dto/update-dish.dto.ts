@@ -14,5 +14,5 @@ export class UpdateDishDto extends PartialType(CreateDishDto) {
             if (obj.foodIds.length > 0 && !obj.foodIds.every(id => typeof id === 'number' && Number.isInteger(id))) return false;
         }
         return true;
-    }
+        }
 }
