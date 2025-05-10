@@ -1,4 +1,6 @@
 import { Sequelize } from "sequelize-typescript";
+import { DishFood } from "src/dish/entities/dish-food.entity";
+import { Dish } from "src/dish/entities/dish.entity";
 import { Food } from "src/food/entities/food.entity";
 import { NutritionFacts } from "src/food/entities/nutrition-facts.entity";
 const dotenv = require("dotenv");
@@ -17,7 +19,7 @@ export const databaseProviders = [
                 password: process.env.DB_PASSWORD || "1234",
                 database: process.env.DB_NAME || "postgres",
             });
-            sequelize.addModels([Food, NutritionFacts]);
+            sequelize.addModels([Food, NutritionFacts, Dish, DishFood]);
             await sequelize.sync();
             return sequelize;
         },
