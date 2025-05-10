@@ -40,6 +40,7 @@ export default tseslint.config(
         {
           endOfLine: 'auto',
           semi: false,
+          useTabs: true,
         },
 
       ],

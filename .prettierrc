@@ -6,7 +6,7 @@
   "arrowParens": "avoid",
   "endOfLine": "lf",
   "printWidth": 100,
-  "useTabs": false,
+  "useTabs": true,
   "tabWidth": 2,
   "bracketSpacing": true,
   "bracketSameLine": false
