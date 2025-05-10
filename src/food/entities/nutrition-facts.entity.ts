@@ -1,10 +1,8 @@
 import {
   AutoIncrement,
-  BelongsTo,
   Column,
   DataType,
   ForeignKey,
-  NotNull,
   PrimaryKey,
   Table,
   Model,

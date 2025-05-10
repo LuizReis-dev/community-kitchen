@@ -13,6 +13,8 @@ import {
 
 import { DishFood } from './dish-food.entity'
 import { Food } from 'src/food/entities/food.entity'
+import { DishMenu } from 'src/menu/entities/dish-menu'
+import { Menu } from 'src/menu/entities/menu.entity'
 
 @Table({
   tableName: 'tb_dishes',
@@ -51,4 +53,7 @@ export class Dish extends Model {
 
   @BelongsToMany(() => Food, () => DishFood)
   declare foods?: Food[]
+
+  @BelongsToMany(() => Menu, () => DishMenu)
+  declare menus?: Menu[]
 }
