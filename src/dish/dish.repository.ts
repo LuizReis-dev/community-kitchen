@@ -28,6 +28,13 @@ export class DishRepository {
     return DishDto.fromEntity(dish);
   }
 
+  async findAll(): Promise<DishDto[]>{
+    const dishes = await Dish.findAll({
+      include: [Food]
+    });
+    return dishes.map(DishDto.fromEntity);
+  }
+
   async findOne(id: number): Promise<DishDto> {
     const dish = await Dish.findByPk(id, {
         include: [Food]

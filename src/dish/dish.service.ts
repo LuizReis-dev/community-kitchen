@@ -28,12 +28,12 @@ export class DishService {
     return this.dishRepository.create(createDishDto);
   }
 
-  findAll() {
-    return `This action returns all dishes`;
+  findAll(): Promise<DishDto[]> {
+    return this.dishRepository.findAll();
   }
 
   findOne(id: number): Promise<DishDto> {
-    return this.dishRepository.findOne(id)
+    return this.dishRepository.findOne(id);
   }
 
   update(id: number, updateDishDto: UpdateDishDto) {
