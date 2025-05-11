@@ -69,4 +69,32 @@ export class MenuRequirementRepository {
 
     return menuRequirement.map(MenuRequirementDto.fromEntity);
   }
+
+  async update(
+    id: number,
+    updateMenuRequirement: UpdateMenuRequirementDto,
+  ): Promise<MenuRequirementDto> {
+    const menuRequirement = await MenuRequirement.findByPk(id);
+
+    if (!menuRequirement)
+      throw new NotFoundException(
+        'Especificações do menu não foram encontradas!',
+      );
+
+    const transaction = await this.sequelize.transaction();
+    try {
+      await menuRequirement.update(
+        { ...updateMenuRequirement },
+        { transaction },
+      );
+
+      await transaction.commit();
+      return MenuRequirementDto.fromEntity(menuRequirement);
+    } catch (error) {
+      await transaction.rollback();
+      throw new BadRequestException(
+        'Erro ao atualizar as especificações do menu!',
+      );
+    }
+  }
 }
