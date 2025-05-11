@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateMenuRequirementDto } from './dto/create-menu-requirement.dto';
 import { UpdateMenuRequirementDto } from './dto/update-menu-requirement.dto';
 import { MenuRequirementRepository } from './menu-requirement.repository';
+import { validateSync } from 'class-validator';
 
 @Injectable()
 export class MenuRequirementService {
@@ -10,7 +11,7 @@ export class MenuRequirementService {
   ) {}
 
   async create(createMenuRequirementDto: CreateMenuRequirementDto) {
-    return 'This action adds a new menuRequirement';
+    return this.menuRequirementRepository.create(createMenuRequirementDto);
   }
 
   async findAll() {
