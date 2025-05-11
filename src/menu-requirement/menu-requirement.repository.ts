@@ -47,4 +47,15 @@ export class MenuRequirementRepository {
       },
     );
   }
+
+  async findOne(id: number): Promise<MenuRequirementDto> {
+    const menuRequirement = await MenuRequirement.findByPk(id);
+
+    if (!menuRequirement)
+      throw new NotFoundException(
+        'Especificações do menu não foram encontradas!',
+      );
+
+    return MenuRequirementDto.fromEntity(menuRequirement);
+  }
 }

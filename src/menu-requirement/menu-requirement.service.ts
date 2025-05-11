@@ -19,7 +19,7 @@ export class MenuRequirementService {
   }
 
   async findOne(id: number) {
-    return `This action returns a #${id} menuRequirement`;
+    return this.menuRequirementRepository.findOne(id);
   }
 
   async update(id: number, updateMenuRequirementDto: UpdateMenuRequirementDto) {
