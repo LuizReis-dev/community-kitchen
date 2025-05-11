@@ -43,6 +43,11 @@ export class MenuRequirementService {
   }
 
   async remove(id: number): Promise<void> {
-    `This action removes a #${id} menuRequirement`;
+    if ((await this.menuRequirementRepository.findOne(id)).isActive == true) {
+      throw new BadRequestException(
+        'Não é possivel remover essa especificação, pois ela está em uso!',
+      );
+    }
+    return this.menuRequirementRepository.remove(id);
   }
 }

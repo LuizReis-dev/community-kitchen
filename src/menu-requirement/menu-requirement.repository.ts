@@ -97,4 +97,14 @@ export class MenuRequirementRepository {
       );
     }
   }
+
+  async remove(id: number): Promise<void> {
+    const menuRequirement = await MenuRequirement.findByPk(id);
+    if (!menuRequirement)
+      throw new NotFoundException(
+        'As especifiações do menu não foram encontrado!',
+      );
+
+    await menuRequirement.destroy();
+  }
 }
