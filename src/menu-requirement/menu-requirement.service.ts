@@ -15,7 +15,7 @@ export class MenuRequirementService {
   }
 
   async findAll() {
-    return `This action returns all menuRequirements`;
+    return this.menuRequirementRepository.findAll();
   }
 
   async findOne(id: number) {

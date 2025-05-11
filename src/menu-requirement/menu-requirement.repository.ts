@@ -58,4 +58,15 @@ export class MenuRequirementRepository {
 
     return MenuRequirementDto.fromEntity(menuRequirement);
   }
+
+  async findAll(): Promise<MenuRequirementDto[]> {
+    const menuRequirement = await MenuRequirement.findAll();
+
+    if (!menuRequirement)
+      throw new NotFoundException(
+        'Especificações do menu não foram encontradas!',
+      );
+
+    return menuRequirement.map(MenuRequirementDto.fromEntity);
+  }
 }
