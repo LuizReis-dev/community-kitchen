@@ -1,26 +1,31 @@
 import { Injectable } from '@nestjs/common';
 import { CreateMenuRequirementDto } from './dto/create-menu-requirement.dto';
 import { UpdateMenuRequirementDto } from './dto/update-menu-requirement.dto';
+import { MenuRequirementRepository } from './menu-requirement.repository';
 
 @Injectable()
 export class MenuRequirementService {
-  create(createMenuRequirementDto: CreateMenuRequirementDto) {
+  constructor(
+    private readonly menuRequirementRepository: MenuRequirementRepository,
+  ) {}
+
+  async create(createMenuRequirementDto: CreateMenuRequirementDto) {
     return 'This action adds a new menuRequirement';
   }
 
-  findAll() {
-    return `This action returns all menuRequirement`;
+  async findAll() {
+    return `This action returns all menuRequirements`;
   }
 
-  findOne(id: number) {
+  async findOne(id: number) {
     return `This action returns a #${id} menuRequirement`;
   }
 
-  update(id: number, updateMenuRequirementDto: UpdateMenuRequirementDto) {
+  async update(id: number, updateMenuRequirementDto: UpdateMenuRequirementDto) {
     return `This action updates a #${id} menuRequirement`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} menuRequirement`;
+  async remove(id: number): Promise<void> {
+    `This action removes a #${id} menuRequirement`;
   }
 }

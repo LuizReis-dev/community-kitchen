@@ -1,11 +1,21 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { MenuRequirementService } from './menu-requirement.service';
 import { CreateMenuRequirementDto } from './dto/create-menu-requirement.dto';
 import { UpdateMenuRequirementDto } from './dto/update-menu-requirement.dto';
 
-@Controller('menu-requirement')
+@Controller('menu-requirements')
 export class MenuRequirementController {
-  constructor(private readonly menuRequirementService: MenuRequirementService) {}
+  constructor(
+    private readonly menuRequirementService: MenuRequirementService,
+  ) {}
 
   @Post()
   create(@Body() createMenuRequirementDto: CreateMenuRequirementDto) {
@@ -23,7 +33,10 @@ export class MenuRequirementController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMenuRequirementDto: UpdateMenuRequirementDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateMenuRequirementDto: UpdateMenuRequirementDto,
+  ) {
     return this.menuRequirementService.update(+id, updateMenuRequirementDto);
   }
 

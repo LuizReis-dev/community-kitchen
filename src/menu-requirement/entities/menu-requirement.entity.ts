@@ -12,7 +12,7 @@ import {
 } from 'sequelize-typescript';
 
 @Table({
-  tableName: 'tb_menu-requirements',
+  tableName: 'tb_menu_requirements',
   modelName: 'MenuRequirement',
   timestamps: true,
 })
@@ -49,6 +49,15 @@ export class MenuRequirement extends Model {
   @NotNull
   @Column({ type: DataType.DECIMAL, allowNull: false })
   declare sodium: number;
+
+  @NotNull
+  @Column({
+    type: DataType.BOOLEAN,
+    field: 'is_active',
+    allowNull: false,
+    defaultValue: true,
+  })
+  declare isActive: boolean;
 
   @CreatedAt
   @Column({
