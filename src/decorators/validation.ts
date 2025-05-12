@@ -8,23 +8,14 @@ import {
 	registerDecorator,
 } from 'class-validator'
 
-type SupportedTypes = 'string' | 'number' | 'boolean' | { array: 'string' | 'number' }
+type SupportedTypes = 'string' | 'number' | 'boolean' | 'string[]' | 'number[]'
 
 export function IsRequiredDate() {
 	return applyDecorators(
 		IsNotEmpty({ message: 'The data can not be empty' }),
-		IsISO8601({}, { message: 'Invalid data fomat. Use the following ISO8601 format (YYYY-MM-DD)' }),
-		Type(() => Date)
+		IsISO8601({}, { message: 'Invalid data format. Use the following ISO8601 format (YYYY-MM-DD)' })
 	)
 }
-
-// export function IsRequiredArrayOf(genericType: any) {
-// 	return applyDecorators(
-// 		IsNotEmpty(isNotEmptyMessage),
-// 		IsArray(isArrayMessage),
-// 		IsInstance(genericType, { message: `The data must be a ${genericType}` })
-// 	)
-// }
 
 export function IsRequiredTypeOf(type: SupportedTypes, validationOptions?: ValidationOptions) {
 	return function (object: object, propertyName: string) {
@@ -44,17 +35,17 @@ export function IsRequiredTypeOf(type: SupportedTypes, validationOptions?: Valid
 							return typeof value === 'number' && !isNaN(value)
 						case 'boolean':
 							return typeof value === 'boolean'
-						case { array: 'string' }:
+						case 'string[]':
 							return (
 								Array.isArray(value) &&
 								value.length > 0 &&
-								value.every(item => typeof item === expectedType.array)
+								value.every(item => typeof item === 'string')
 							)
-						case { array: 'number' }:
+						case 'number[]':
 							return (
 								Array.isArray(value) &&
 								value.length > 0 &&
-								value.every(item => typeof item === expectedType.array)
+								value.every(item => typeof item === 'number')
 							)
 						default:
 							return false
@@ -63,11 +54,7 @@ export function IsRequiredTypeOf(type: SupportedTypes, validationOptions?: Valid
 				defaultMessage(args: ValidationArguments) {
 					const [expectedType]: [SupportedTypes] = args.constraints as [SupportedTypes]
 
-					if (typeof expectedType === 'string') {
-						return `${args.property} must be a ${expectedType}`
-					}
-
-					return `${args.property} must be a array of ${expectedType.array}`
+					return `${args.property} must be a ${expectedType} and can not be empty`
 				},
 			},
 		})
