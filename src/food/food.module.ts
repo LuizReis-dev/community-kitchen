@@ -5,8 +5,8 @@ import { FoodRepository } from './food.repository'
 import { DatabaseModule } from 'src/database/database.module'
 
 @Module({
-  imports: [DatabaseModule],
-  controllers: [FoodController],
-  providers: [FoodService, FoodRepository],
+	imports: [DatabaseModule],
+	controllers: [FoodController],
+	providers: [FoodService, FoodRepository],
 })
 export class FoodModule {}

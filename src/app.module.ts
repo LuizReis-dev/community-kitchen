@@ -5,11 +5,11 @@ import { FoodModule } from './food/food.module'
 import { DatabaseModule } from './database/database.module'
 import { DishModule } from './dish/dish.module'
 import { MenuModule } from './menu/menu.module'
-import { MenuRequirementModule } from './menu-requirement/menu-requirement.module';
+import { MenuRequirementModule } from './menu-requirement/menu-requirement.module'
 
 @Module({
-  imports: [FoodModule, DatabaseModule, DishModule, MenuModule, MenuRequirementModule],
-  controllers: [AppController],
-  providers: [AppService],
+	imports: [FoodModule, DatabaseModule, DishModule, MenuModule, MenuRequirementModule],
+	controllers: [AppController],
+	providers: [AppService],
 })
 export class AppModule {}

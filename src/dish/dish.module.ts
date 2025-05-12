@@ -5,8 +5,8 @@ import { DatabaseModule } from 'src/database/database.module'
 import { DishRepository } from './dish.repository'
 
 @Module({
-  imports: [DatabaseModule],
-  controllers: [DishController],
-  providers: [DishService, DishRepository],
+	imports: [DatabaseModule],
+	controllers: [DishController],
+	providers: [DishService, DishRepository],
 })
 export class DishModule {}
