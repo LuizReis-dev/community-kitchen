@@ -4,33 +4,37 @@ import {
 	CreatedAt,
 	DataType,
 	DeletedAt,
-	HasOne,
 	PrimaryKey,
 	Table,
 	Model,
-	BelongsToMany,
 	UpdatedAt,
+	BelongsToMany,
 } from 'sequelize-typescript'
-import { NutritionFacts } from './nutrition-facts.entity'
 import { Dish } from 'src/dish/entities/dish.entity'
-import { DishFood } from 'src/dish/entities/dish-food.entity'
+import { DishMenu } from './dish-menu'
 
 @Table({
-	tableName: 'tb_foods',
-	modelName: 'Food',
+	tableName: 'tb_menu',
+	modelName: 'Menu',
 	timestamps: true,
 })
-export class Food extends Model {
+export class Menu extends Model {
 	@PrimaryKey
 	@AutoIncrement
 	@Column(DataType.INTEGER)
 	declare id: number
 
-	@HasOne(() => NutritionFacts)
-	declare nutritionFacts: NutritionFacts
+	@Column({ type: DataType.DATE, allowNull: false })
+	declare availabilityDate: Date
+
+	@Column({ type: DataType.INTEGER, allowNull: false })
+	declare availabilityHour: number
 
 	@Column({ type: DataType.STRING, allowNull: false })
-	declare name: string
+	declare createdBy: string
+
+	@BelongsToMany(() => Dish, () => DishMenu)
+	declare dishes: Dish[]
 
 	@CreatedAt
 	@Column({
@@ -49,7 +53,4 @@ export class Food extends Model {
 		field: 'updated_at',
 	})
 	declare updateAt: Date
-
-	@BelongsToMany(() => Dish, () => DishFood)
-	declare dishes?: Dish[]
 }

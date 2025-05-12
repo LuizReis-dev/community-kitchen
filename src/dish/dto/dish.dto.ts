@@ -1,38 +1,51 @@
-import { Dish } from '../entities/dish.entity';
-import { Food } from 'src/food/entities/food.entity';
+import { ApiProperty } from '@nestjs/swagger'
+import { Dish } from '../entities/dish.entity'
+import { FoodDto } from 'src/food/dto/food.dto'
 
 export class DishDto {
-    id: number;
-    name: string;
-    description?: string;
-    createdAt: Date;
-    updatedAt: Date;
-    foods: { id: number; name: string }[];
+	@ApiProperty()
+	id: number
 
-    constructor(
-        id: number,
-        name: string,
-        description: string | undefined,
-        createdAt: Date,
-        updatedAt: Date,
-        foods: { id: number; name: string }[]
-    ) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.foods = foods;
-    }
+	@ApiProperty()
+	name: string
 
-    static fromEntity(dish: Dish): DishDto {
-        const foods = dish.foods
-            ? dish.foods.map((food: Food) => ({
-                  id: food.id,
-                  name: food.name,
-              }))
-            : [];
+	@ApiProperty()
+	description?: string
 
-        return new DishDto(dish.id,dish.name,dish.description,dish.createdAt,dish.updatedAt,foods);
-    }
+	@ApiProperty()
+	createdAt: Date
+
+	@ApiProperty()
+	updatedAt: Date
+
+	@ApiProperty()
+	foods: FoodDto[]
+
+	constructor(
+		id: number,
+		name: string,
+		description: string | undefined,
+		createdAt: Date,
+		updatedAt: Date,
+		foods: FoodDto[]
+	) {
+		this.id = id
+		this.name = name
+		this.description = description
+		this.createdAt = createdAt
+		this.updatedAt = updatedAt
+		this.foods = foods
+	}
+
+	static fromEntity(dish: Dish): DishDto {
+		const foods = dish.foods
+			? dish.foods.map((food: FoodDto) => ({
+					id: food.id,
+					name: food.name,
+					nutritionFacts: food.nutritionFacts,
+				}))
+			: []
+
+		return new DishDto(dish.id, dish.name, dish.description, dish.createdAt, dish.updatedAt, foods)
+	}
 }

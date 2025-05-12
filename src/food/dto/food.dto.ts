@@ -1,20 +1,25 @@
-import { Food } from "../entities/food.entity";
-import { NutritionFacts } from "../entities/nutrition-facts.entity";
-import { NutritionFactsDto } from "./nutrition-facts.dto";
+import { ApiProperty } from '@nestjs/swagger'
+import { Food } from '../entities/food.entity'
+import { NutritionFactsDto } from './nutrition-facts.dto'
 
 export class FoodDto {
-    id: number;
-    name: string;
-    nutritionFacts: NutritionFactsDto;
+	@ApiProperty()
+	id: number
 
-    constructor(id: number, name: string, nutritionFacts: NutritionFactsDto) {
-        this.id = id;
-        this.name = name;
-        this.nutritionFacts = nutritionFacts;
-    }
+	@ApiProperty()
+	name: string
 
-    static fromEntity(food: Food): FoodDto {
-        const nutritionFactsDto = NutritionFactsDto.fromEntity(food.nutritionFacts);
-        return new FoodDto(food.id, food.name, nutritionFactsDto);
-    }
+	@ApiProperty()
+	nutritionFacts: NutritionFactsDto
+
+	constructor(id: number, name: string, nutritionFacts: NutritionFactsDto) {
+		this.id = id
+		this.name = name
+		this.nutritionFacts = nutritionFacts
+	}
+
+	static fromEntity(food: Food): FoodDto {
+		const nutritionFactsDto = NutritionFactsDto.fromEntity(food.nutritionFacts)
+		return new FoodDto(food.id, food.name, nutritionFactsDto)
+	}
 }
