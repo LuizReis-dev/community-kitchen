@@ -1,32 +1,50 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common'
 import { CreateDishDto } from './dto/create-dish.dto'
 import { Dish } from './entities/dish.entity'
 import { DishDto } from './dto/dish.dto'
 import { Food } from '../food/entities/food.entity'
 import { Op } from 'sequelize'
 import { UpdateDishDto } from './dto/update-dish.dto'
+import { Sequelize } from 'sequelize-typescript'
 
 @Injectable()
 export class DishRepository {
+	constructor(@Inject('SEQUELIZE') private sequelize: Sequelize) {}	
+
 	async create(createDishDto: CreateDishDto): Promise<DishDto> {
-		const foods = await Food.findAll({
+		const transaction = await this.sequelize.transaction();
+		try {
+			const foods = await Food.findAll({
 			where: {
 				id: {
-					[Op.in]: createDishDto.foodIds,
+				[Op.in]: createDishDto.foodIds,
 				},
 			},
-		})
-		const dish = await Dish.create({
-			name: createDishDto.name,
-			description: createDishDto.description,
-		})
+			transaction,
+			});
 
-		await dish.$set('foods', foods)
+			if (foods.length !== createDishDto.foodIds.length) {
+      			throw new BadRequestException('Um ou mais foodIds são inválidos.');
+    			}
 
-		dish.foods = foods
+			const dish = await Dish.create(
+			{
+				name: createDishDto.name,
+				description: createDishDto.description,
+			},
+			{ transaction }
+			);
 
-		return DishDto.fromEntity(dish)
-	}
+			await dish.$set('foods', foods, { transaction });
+			dish.foods = foods;
+			await transaction.commit();
+			return DishDto.fromEntity(dish);
+
+		}catch (error) {
+			await transaction.rollback();
+			throw error instanceof BadRequestException ? error : new BadRequestException('Erro ao criar o prato: ' + error.message);
+  		}
+}
 
 	async findAll(): Promise<DishDto[]> {
 		const dishes = await Dish.findAll({
@@ -48,62 +66,84 @@ export class DishRepository {
 	}
 
 	async update(id: number, updateDishDto: UpdateDishDto): Promise<DishDto> {
-		const dish = await Dish.findByPk(id, {
+		const transaction = await this.sequelize.transaction();
+		try {
+			const dish = await Dish.findByPk(id, {
 			include: [Food],
-		})
+			transaction,
+			});
 
-		if (!dish) throw new NotFoundException('Prato não encontrado!')
+			if (!dish) {
+			throw new NotFoundException('Prato não encontrado!');
+			}
 
-		await dish.update({
-			name: updateDishDto.name,
-			description: updateDishDto.description,
-		})
+			await dish.update(
+			{
+				name: updateDishDto.name,
+				description: updateDishDto.description,
+			},
+			{ transaction }
+			);
 
-		if (updateDishDto.foodIds !== undefined) {
-			await (dish as any).$set('foods', [])
-			const newFoods = await Food.findAll({ where: { id: updateDishDto.foodIds } })
-			await (dish as any).$add('foods', newFoods)
-		}
+			if (updateDishDto.foodIds !== undefined) {
 
-		const updatedDish = await Dish.findByPk(id, {
+			const newFoods = await Food.findAll({
+				where: { id: updateDishDto.foodIds },
+				transaction,
+			});
+
+			await dish.$set('foods', newFoods, { transaction });
+			dish.foods = newFoods;
+			}
+
+			const updatedDish = await Dish.findByPk(id, {
 			include: [Food],
-		})
+			transaction,
+			});
 
-		if (!updatedDish) {
-			throw new NotFoundException('Erro ao atualizar: prato não encontrado.')
+			if (!updatedDish) {
+			throw new NotFoundException('Erro ao atualizar: prato não encontrado.');
+			}
+			await transaction.commit();
+			return DishDto.fromEntity(dish);
+		}catch (error) {
+			await transaction.rollback();
+			throw error instanceof NotFoundException || error instanceof BadRequestException ? error : new BadRequestException('Erro ao atualizar o prato: ' + error.message);
 		}
-		return DishDto.fromEntity(updatedDish)
 	}
 
 	async patch(id: number, updateDishDto: UpdateDishDto): Promise<DishDto> {
-		const dish = await Dish.findByPk(id, {
+		const transaction = await this.sequelize.transaction();
+		try {
+			const dish = await Dish.findByPk(id, {
 			include: [Food],
-		})
+			transaction,
+			});
 
-		if (!dish) throw new NotFoundException('Prato não encontrado!')
-		if (updateDishDto.name !== undefined) {
-			dish.name = updateDishDto.name
+			if (!dish) {
+			throw new NotFoundException('Prato não encontrado!');
+			}
+			if (updateDishDto.name !== undefined) {
+			dish.name = updateDishDto.name;
+			}
+			if (updateDishDto.description !== undefined) {
+			dish.description = updateDishDto.description;
+			}
+
+			await dish.save({ transaction });
+			await transaction.commit();
+			return DishDto.fromEntity(dish);
+
+		}catch (error) {
+			await transaction.rollback();
+			throw error instanceof NotFoundException ? error : new BadRequestException('Erro ao atualizar o prato: ' + error.message);
 		}
-
-		if (updateDishDto.description !== undefined) {
-			dish.description = updateDishDto.description
-		}
-		await dish.save()
-
-		const updatedDish = await Dish.findByPk(id, {
-			include: [Food],
-		})
-
-		if (!updatedDish) {
-			throw new NotFoundException('Erro ao atualizar: prato não encontrado.')
-		}
-		return DishDto.fromEntity(updatedDish)
 	}
 
 	async remove(id: number): Promise<void> {
 		const dish = await Dish.findByPk(id)
 
-		if (!dish) throw new NotFoundException('Prato nao encontrado.')
+		if (!dish) throw new NotFoundException('Prato não encontrado.')
 		await dish.destroy()
 	}
 }
