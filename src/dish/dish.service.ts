@@ -1,19 +1,18 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common'
+import { Injectable, BadRequestException, NotFoundException, Inject } from '@nestjs/common'
 import { CreateDishDto } from './dto/create-dish.dto'
 import { DishRepository } from './dish.repository'
 import { Food } from '../food/entities/food.entity'
 import { Op } from 'sequelize'
 import { UpdateDishDto } from './dto/update-dish.dto'
 import { DishDto } from './dto/dish.dto'
+import { Sequelize } from 'sequelize-typescript'
 
 @Injectable()
 export class DishService {
 	constructor(private readonly dishRepository: DishRepository) {}
-
+	
 	async create(createDishDto: CreateDishDto) {
-		if (!CreateDishDto.isValid(createDishDto)) {
-			throw new BadRequestException('Dados inválidos.');
-		}
+		
 		const foods = await Food.findAll({
 			where: {
 				id: {
@@ -21,14 +20,23 @@ export class DishService {
 				},
 			},
 		})
-
 		if (foods.length !== createDishDto.foodIds.length) {
 			throw new BadRequestException('Um ou mais foodIds são inválidos.');
 		}
+		const {name, description, foodIds} = createDishDto;
+		if(!name || !description || !foodIds){
+			throw new BadRequestException('Insira todos os dados do prato.');
+		}
+
 		return this.dishRepository.create(createDishDto);
 	}
 
 	async findAll(): Promise<DishDto[]> {
+
+		const dishes = this.dishRepository.findAll();
+		if((await dishes).length === 0){
+			throw new NotFoundException('Nenhum prato cadastrado.');
+		}
 		return this.dishRepository.findAll();
 	}
 
@@ -37,9 +45,6 @@ export class DishService {
 	}
 
 	async update(id: number, updateDishDto: UpdateDishDto) {
-		if (!UpdateDishDto.isValid(updateDishDto)) {
-			throw new BadRequestException('Todos os campos devem estar preenchidos!');
-		}
 		return this.dishRepository.update(id, updateDishDto)
 	}
 

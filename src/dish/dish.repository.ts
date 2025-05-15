@@ -22,11 +22,7 @@ export class DishRepository {
 			},
 			transaction,
 			});
-
-			if (foods.length !== createDishDto.foodIds.length) {
-      			throw new BadRequestException('Um ou mais foodIds são inválidos.');
-    			}
-
+			
 			const dish = await Dish.create(
 			{
 				name: createDishDto.name,
@@ -142,7 +138,6 @@ export class DishRepository {
 
 	async remove(id: number): Promise<void> {
 		const dish = await Dish.findByPk(id)
-
 		if (!dish) throw new NotFoundException('Prato não encontrado.')
 		await dish.destroy()
 	}
