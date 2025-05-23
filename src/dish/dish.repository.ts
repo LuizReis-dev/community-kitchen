@@ -9,38 +9,39 @@ import { Sequelize } from 'sequelize-typescript'
 
 @Injectable()
 export class DishRepository {
-	constructor(@Inject('SEQUELIZE') private sequelize: Sequelize) {}	
+	constructor(@Inject('SEQUELIZE') private sequelize: Sequelize) {}
 
 	async create(createDishDto: CreateDishDto): Promise<DishDto> {
-		const transaction = await this.sequelize.transaction();
+		const transaction = await this.sequelize.transaction()
 		try {
 			const foods = await Food.findAll({
-			where: {
-				id: {
-				[Op.in]: createDishDto.foodIds,
+				where: {
+					id: {
+						[Op.in]: createDishDto.foodIds,
+					},
 				},
-			},
-			transaction,
-			});
-			
+				transaction,
+			})
+
 			const dish = await Dish.create(
-			{
-				name: createDishDto.name,
-				description: createDishDto.description,
-			},
-			{ transaction }
-			);
+				{
+					name: createDishDto.name,
+					description: createDishDto.description,
+				},
+				{ transaction }
+			)
 
-			await dish.$set('foods', foods, { transaction });
-			dish.foods = foods;
-			await transaction.commit();
-			return DishDto.fromEntity(dish);
-
-		}catch (error) {
-			await transaction.rollback();
-			throw error instanceof BadRequestException ? error : new BadRequestException('Erro ao criar o prato: ' + error.message);
-  		}
-}
+			await dish.$set('foods', foods, { transaction })
+			dish.foods = foods
+			await transaction.commit()
+			return DishDto.fromEntity(dish)
+		} catch (error) {
+			await transaction.rollback()
+			throw error instanceof BadRequestException
+				? error
+				: new BadRequestException('Erro ao criar o prato: ' + error.message)
+		}
+	}
 
 	async findAll(): Promise<DishDto[]> {
 		const dishes = await Dish.findAll({
@@ -62,77 +63,79 @@ export class DishRepository {
 	}
 
 	async update(id: number, updateDishDto: UpdateDishDto): Promise<DishDto> {
-		const transaction = await this.sequelize.transaction();
+		const transaction = await this.sequelize.transaction()
 		try {
 			const dish = await Dish.findByPk(id, {
-			include: [Food],
-			transaction,
-			});
+				include: [Food],
+				transaction,
+			})
 
 			if (!dish) {
-			throw new NotFoundException('Prato não encontrado!');
+				throw new NotFoundException('Prato não encontrado!')
 			}
 
 			await dish.update(
-			{
-				name: updateDishDto.name,
-				description: updateDishDto.description,
-			},
-			{ transaction }
-			);
+				{
+					name: updateDishDto.name,
+					description: updateDishDto.description,
+				},
+				{ transaction }
+			)
 
 			if (updateDishDto.foodIds !== undefined) {
+				const newFoods = await Food.findAll({
+					where: { id: updateDishDto.foodIds },
+					transaction,
+				})
 
-			const newFoods = await Food.findAll({
-				where: { id: updateDishDto.foodIds },
-				transaction,
-			});
-
-			await dish.$set('foods', newFoods, { transaction });
-			dish.foods = newFoods;
+				await dish.$set('foods', newFoods, { transaction })
+				dish.foods = newFoods
 			}
 
 			const updatedDish = await Dish.findByPk(id, {
-			include: [Food],
-			transaction,
-			});
+				include: [Food],
+				transaction,
+			})
 
 			if (!updatedDish) {
-			throw new NotFoundException('Erro ao atualizar: prato não encontrado.');
+				throw new NotFoundException('Erro ao atualizar: prato não encontrado.')
 			}
-			await transaction.commit();
-			return DishDto.fromEntity(dish);
-		}catch (error) {
-			await transaction.rollback();
-			throw error instanceof NotFoundException || error instanceof BadRequestException ? error : new BadRequestException('Erro ao atualizar o prato: ' + error.message);
+			await transaction.commit()
+			return DishDto.fromEntity(dish)
+		} catch (error) {
+			await transaction.rollback()
+			throw error instanceof NotFoundException || error instanceof BadRequestException
+				? error
+				: new BadRequestException('Erro ao atualizar o prato: ' + error.message)
 		}
 	}
 
 	async patch(id: number, updateDishDto: UpdateDishDto): Promise<DishDto> {
-		const transaction = await this.sequelize.transaction();
+		const transaction = await this.sequelize.transaction()
 		try {
 			const dish = await Dish.findByPk(id, {
-			include: [Food],
-			transaction,
-			});
+				include: [Food],
+				transaction,
+			})
 
 			if (!dish) {
-			throw new NotFoundException('Prato não encontrado!');
+				throw new NotFoundException('Prato não encontrado!')
 			}
 			if (updateDishDto.name !== undefined) {
-			dish.name = updateDishDto.name;
+				dish.name = updateDishDto.name
 			}
 			if (updateDishDto.description !== undefined) {
-			dish.description = updateDishDto.description;
+				dish.description = updateDishDto.description
 			}
 
-			await dish.save({ transaction });
-			await transaction.commit();
-			return DishDto.fromEntity(dish);
-
-		}catch (error) {
-			await transaction.rollback();
-			throw error instanceof NotFoundException ? error : new BadRequestException('Erro ao atualizar o prato: ' + error.message);
+			await dish.save({ transaction })
+			await transaction.commit()
+			return DishDto.fromEntity(dish)
+		} catch (error) {
+			await transaction.rollback()
+			throw error instanceof NotFoundException
+				? error
+				: new BadRequestException('Erro ao atualizar o prato: ' + error.message)
 		}
 	}
 
