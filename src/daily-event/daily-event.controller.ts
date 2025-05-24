@@ -21,18 +21,19 @@ export class DailyEventController {
 
 	@Get(':id')
 	@ApiOkResponse({ type: DailyEventDto })
-	findOne(@Param('id') id: string) {
+	async findOne(@Param('id') id: string) {
 		return this.dailyEventService.findOne(+id)
 	}
 
 	@Put(':id')
 	@ApiOkResponse({ type: DailyEventDto })
-	update(@Param('id') id: string, @Body() updateDailyEventDto: UpdateDailyEventDto) {
+	async update(@Param('id') id: string, @Body() updateDailyEventDto: UpdateDailyEventDto) {
 		return this.dailyEventService.update(+id, updateDailyEventDto)
 	}
 
 	@Delete(':id')
-	remove(@Param('id') id: string) {
+	@ApiOkResponse({ type: DailyEventDto })
+	async remove(@Param('id') id: string) {
 		return this.dailyEventService.remove(+id)
 	}
 }

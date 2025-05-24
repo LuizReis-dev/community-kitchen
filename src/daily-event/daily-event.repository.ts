@@ -41,4 +41,11 @@ export class DailyEventRepository {
 			throw new BadRequestException('Erro ao atualizar o evento diário!')
 		}
 	}
+
+	async remove(id: number): Promise<void> {
+		const dailyEvent = await DailyEvent.findByPk(id)
+		if (!dailyEvent) throw new NotFoundException('Evento diário não encontrado!')
+
+		await dailyEvent.destroy()
+	}
 }

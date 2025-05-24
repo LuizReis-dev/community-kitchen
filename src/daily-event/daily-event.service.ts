@@ -24,7 +24,7 @@ export class DailyEventService {
 		return this.dailyEventRepository.update(id, updateDailyEventDto)
 	}
 
-	remove(id: number) {
-		return `This action removes a #${id} dailyEvent`
+	async remove(id: number): Promise<void> {
+		return this.dailyEventRepository.remove(id)
 	}
 }
