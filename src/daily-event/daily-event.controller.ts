@@ -15,7 +15,8 @@ export class DailyEventController {
 	}
 
 	@Get()
-	findAll() {
+	@ApiOkResponse({ type: DailyEventDto })
+	async findAll() {
 		return this.dailyEventService.findAll()
 	}
 
@@ -29,6 +30,12 @@ export class DailyEventController {
 	@ApiOkResponse({ type: DailyEventDto })
 	async update(@Param('id') id: string, @Body() updateDailyEventDto: UpdateDailyEventDto) {
 		return this.dailyEventService.update(+id, updateDailyEventDto)
+	}
+
+	@Patch(':id')
+	@ApiOkResponse({ type: DailyEventDto })
+	async patch(@Param('id') id: string, @Body() patchDailyEventDto: UpdateDailyEventDto) {
+		return this.dailyEventService.patch(+id, patchDailyEventDto)
 	}
 
 	@Delete(':id')

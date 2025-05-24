@@ -30,6 +30,13 @@ export class DailyEventService {
 		return this.dailyEventRepository.update(id, updateDailyEventDto)
 	}
 
+	async patch(id: number, patchDailyEventDTO: UpdateDailyEventDto){
+		if(patchDailyEventDTO.requirement_id !== undefined){
+			throw new BadRequestException('Não é permitido alterar o requirement id.')
+		}
+		return this.dailyEventRepository.patch(id, patchDailyEventDTO)
+	}
+
 	async remove(id: number): Promise<void> {
 		return this.dailyEventRepository.remove(id)
 	}
