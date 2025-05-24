@@ -1,14 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { IsRequiredDate, IsRequiredTypeOf } from 'src/decorators/validation'
+import { IsRequiredDate, IsRequiredTypeOf } from 'src/common/decorators/validation'
 
 export class CreateMenuDto {
 	@IsRequiredDate()
 	@ApiProperty()
-	availabilityDate: Date
+	deactivationDate: Date
 
-	@IsRequiredTypeOf('number')
+	@IsRequiredDate()
 	@ApiProperty()
-	availabilityHour: number
+	activationDate: Date
+
+	@IsRequiredTypeOf('string')
+	@ApiProperty()
+	availableDay: string
 
 	@IsRequiredTypeOf('string')
 	@ApiProperty()
@@ -17,4 +21,8 @@ export class CreateMenuDto {
 	@IsRequiredTypeOf('number[]')
 	@ApiProperty({ type: [Number] })
 	dishes: number[]
+
+	@IsRequiredTypeOf('number')
+	@ApiProperty()
+	dailyEvent: number
 }

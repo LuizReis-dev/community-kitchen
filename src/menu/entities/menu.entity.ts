@@ -9,9 +9,11 @@ import {
 	Model,
 	UpdatedAt,
 	BelongsToMany,
+	BelongsTo,
 } from 'sequelize-typescript'
 import { Dish } from 'src/dish/entities/dish.entity'
 import { DishMenu } from './dish-menu'
+import { DailyEvent } from 'src/daily-event/entities/daily-event.entity'
 
 @Table({
 	tableName: 'tb_menu',
@@ -24,17 +26,23 @@ export class Menu extends Model {
 	@Column(DataType.INTEGER)
 	declare id: number
 
-	@Column({ type: DataType.DATE, allowNull: false })
-	declare availabilityDate: Date
+	@Column({ type: DataType.DATE, allowNull: true, defaultValue: new Date() })
+	declare activationDate: Date
 
-	@Column({ type: DataType.INTEGER, allowNull: false })
-	declare availabilityHour: number
+	@Column({ type: DataType.DATE, allowNull: true, defaultValue: null })
+	declare deactivationDate: Date
+
+	@Column({ type: DataType.STRING, allowNull: false })
+	declare availableDay: string
 
 	@Column({ type: DataType.STRING, allowNull: false })
 	declare createdBy: string
 
 	@BelongsToMany(() => Dish, () => DishMenu)
 	declare dishes: Dish[]
+
+	@BelongsTo(() => DailyEvent)
+	declare dailyEvent: DailyEvent
 
 	@CreatedAt
 	@Column({
