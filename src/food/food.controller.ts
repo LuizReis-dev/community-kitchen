@@ -31,4 +31,9 @@ export class FoodController {
 	async remove(@Param('id') id: string) {
 		return this.foodService.remove(+id)
 	}
+
+	@Get('foods-by-max-sugar-amount/:maxSugarAmount')
+	async findFoodsByMaxSugarAmount(@Param('maxSugarAmount') maxSugarAmount: number) {
+		return this.foodService.findFoodsByMaxSugarAmount(maxSugarAmount)
+	}
 }

@@ -5,6 +5,7 @@ import { NutritionFacts } from './entities/nutrition-facts.entity'
 import { FoodDto } from './dto/food.dto'
 import { UpdateFoodDto } from './dto/update-food.dto'
 import { Sequelize } from 'sequelize-typescript'
+import { Op } from 'sequelize'
 
 @Injectable()
 export class FoodRepository {
@@ -31,7 +32,7 @@ export class FoodRepository {
 			food.nutritionFacts = nutritionFacts
 
 			return FoodDto.fromEntity(food)
-		} catch (error) {
+		} catch {
 			await transaction.rollback()
 			throw new BadRequestException('Erro ao inserir o alimento!')
 		}
@@ -52,7 +53,7 @@ export class FoodRepository {
 			include: ['nutritionFacts'],
 		})
 
-		return foods.map(FoodDto.fromEntity)
+		return foods.map(food => FoodDto.fromEntity(food))
 	}
 
 	async remove(id: number): Promise<void> {
@@ -88,9 +89,29 @@ export class FoodRepository {
 
 			await transaction.commit()
 			return FoodDto.fromEntity(food)
-		} catch (error) {
+		} catch {
 			await transaction.rollback()
 			throw new BadRequestException('Erro ao atualizar o alimento!')
 		}
+	}
+
+	async findFoodsByMaxSugarAmount(maxSugarAmount: number): Promise<FoodDto[]> {
+		const foods = await Food.findAll({
+			include: [
+				{
+					model: NutritionFacts,
+					where: {
+						sugar: {
+							[Op.lte]: maxSugarAmount,
+						},
+					},
+				},
+			],
+		})
+
+		if (foods.length === 0)
+			throw new NotFoundException(`Nenhum alimento encontrado com até ${maxSugarAmount} de açúcar!`)
+
+		return foods.map(food => FoodDto.fromEntity(food))
 	}
 }
