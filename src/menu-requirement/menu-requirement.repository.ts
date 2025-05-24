@@ -24,7 +24,7 @@ export class MenuRequirementRepository {
 			console.error(error)
 			await transaction.rollback()
 			throw new BadRequestException('Erro ao cadastrar especificações do menu')
-	}
+		}
 	}
 
 	async findOne(id: number): Promise<MenuRequirementDto> {

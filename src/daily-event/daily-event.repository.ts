@@ -10,29 +10,28 @@ export class DailyEventRepository {
 	constructor(@Inject('SEQUELIZE') private sequelize: Sequelize) {}
 
 	async create(createDailyEventDto: CreateDailyEventDto): Promise<DailyEventDto> {
-	const transaction = await this.sequelize.transaction()
+		const transaction = await this.sequelize.transaction()
 
-	try {
-		const dailyEvent = await DailyEvent.create(
-			{
-				name: createDailyEventDto.name,
-				start_time: createDailyEventDto.start_time,
-				end_time: createDailyEventDto.end_time,
-				requirement_id: createDailyEventDto.requirement_id,
-			},
-			{ transaction }
-		);
+		try {
+			const dailyEvent = await DailyEvent.create(
+				{
+					name: createDailyEventDto.name,
+					start_time: createDailyEventDto.start_time,
+					end_time: createDailyEventDto.end_time,
+					requirement_id: createDailyEventDto.requirement_id,
+				},
+				{ transaction }
+			)
 
-		await transaction.commit()
-		return DailyEventDto.fromEntity(dailyEvent)
-
-	} catch (error) {
-		await transaction.rollback()
-		throw new BadRequestException('Erro ao criar evento diário: ' + error.message)
+			await transaction.commit()
+			return DailyEventDto.fromEntity(dailyEvent)
+		} catch (error) {
+			await transaction.rollback()
+			throw new BadRequestException('Erro ao criar evento diário: ' + error.message)
+		}
 	}
-	}
 
-	async findAll(): Promise<DailyEventDto[]>{
+	async findAll(): Promise<DailyEventDto[]> {
 		const dailyEvents = await DailyEvent.findAll({
 			include: ['menu_requirement'],
 		})
@@ -75,34 +74,36 @@ export class DailyEventRepository {
 	}
 
 	async patch(id: number, patchDailyEventDTO: UpdateDailyEventDto): Promise<DailyEventDto> {
-	const transaction = await this.sequelize.transaction();
+		const transaction = await this.sequelize.transaction()
 
-	try {
-		const dailyEvent = await DailyEvent.findByPk(id, { transaction });
+		try {
+			const dailyEvent = await DailyEvent.findByPk(id, { transaction })
 
-		if (!dailyEvent) {
-			throw new NotFoundException('Evento diário não encontrado!');
-		}
+			if (!dailyEvent) {
+				throw new NotFoundException('Evento diário não encontrado!')
+			}
 
-		if (patchDailyEventDTO.name !== undefined) {
-			dailyEvent.name = patchDailyEventDTO.name;
-		}
-		if (patchDailyEventDTO.start_time !== undefined) {
-			dailyEvent.start_time = patchDailyEventDTO.start_time;
-		}
-		if (patchDailyEventDTO.end_time !== undefined) {
-			dailyEvent.end_time = patchDailyEventDTO.end_time;
-		}
-		await dailyEvent.save({ transaction });
-		await transaction.commit();
+			if (patchDailyEventDTO.name !== undefined) {
+				dailyEvent.name = patchDailyEventDTO.name
+			}
+			if (patchDailyEventDTO.start_time !== undefined) {
+				dailyEvent.start_time = patchDailyEventDTO.start_time
+			}
+			if (patchDailyEventDTO.end_time !== undefined) {
+				dailyEvent.end_time = patchDailyEventDTO.end_time
+			}
+			await dailyEvent.save({ transaction })
+			await transaction.commit()
 
-		return DailyEventDto.fromEntity(dailyEvent);
-	} catch (error) {
-		await transaction.rollback();
-		throw error instanceof NotFoundException
-			? error
-			: new BadRequestException('Erro ao atualizar parcialmente o evento diário: ' + error.message);
-	}
+			return DailyEventDto.fromEntity(dailyEvent)
+		} catch (error) {
+			await transaction.rollback()
+			throw error instanceof NotFoundException
+				? error
+				: new BadRequestException(
+						'Erro ao atualizar parcialmente o evento diário: ' + error.message
+					)
+		}
 	}
 
 	async remove(id: number): Promise<void> {
