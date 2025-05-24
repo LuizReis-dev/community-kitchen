@@ -4,20 +4,29 @@ import { UpdateDailyEventDto } from './dto/update-daily-event.dto'
 import { DailyEventRepository } from './daily-event.repository'
 import { DailyEventDto } from './dto/daily-event.dto'
 import { Not } from 'sequelize-typescript'
+import { MenuRequirement } from 'src/menu-requirement/entities/menu-requirement.entity'
 
 @Injectable()
 export class DailyEventService {
 	constructor(private readonly dailyEventRepository: DailyEventRepository) {}
 
-	create(createDailyEventDto: CreateDailyEventDto) {
-		return 'This action adds a new dailyEvent'
+	async create(createDailyEventDto: CreateDailyEventDto) {
+		const menuRequirement = await MenuRequirement.findOne({
+			where: { id: createDailyEventDto.requirement_id },
+		});
+
+		if (!menuRequirement) {
+			throw new BadRequestException('MenuRequirement com esse ID não existe!')
+		}
+
+	return this.dailyEventRepository.create(createDailyEventDto);
 	}
 
 	async findAll(): Promise<DailyEventDto[]> {
 		const dailyEvents = await this.dailyEventRepository.findAll() 
 
 		if (dailyEvents.length === 0) {
-		throw new NotFoundException('Nenhum evento encontrado');
+		throw new NotFoundException('Nenhum evento encontrado')
 	}
 		return dailyEvents;
 	}
@@ -27,6 +36,14 @@ export class DailyEventService {
 	}
 
 	async update(id: number, updateDailyEventDto: UpdateDailyEventDto) {
+
+		const menuRequirement = await MenuRequirement.findOne({
+			where: { id: updateDailyEventDto.requirement_id },
+		});
+
+		if (!menuRequirement) {
+			throw new BadRequestException('MenuRequirement com esse ID não existe!')
+		}
 		return this.dailyEventRepository.update(id, updateDailyEventDto)
 	}
 

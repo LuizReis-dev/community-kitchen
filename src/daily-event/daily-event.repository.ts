@@ -4,9 +4,33 @@ import { DailyEventDto } from './dto/daily-event.dto'
 import { DailyEvent } from './entities/daily-event.entity'
 import { UpdateDailyEventDto } from './dto/update-daily-event.dto'
 import { MenuRequirement } from 'src/menu-requirement/entities/menu-requirement.entity'
+import { CreateDailyEventDto } from './dto/create-daily-event.dto'
 
 export class DailyEventRepository {
 	constructor(@Inject('SEQUELIZE') private sequelize: Sequelize) {}
+
+	async create(createDailyEventDto: CreateDailyEventDto): Promise<DailyEventDto> {
+	const transaction = await this.sequelize.transaction()
+
+	try {
+		const dailyEvent = await DailyEvent.create(
+			{
+				name: createDailyEventDto.name,
+				start_time: createDailyEventDto.start_time,
+				end_time: createDailyEventDto.end_time,
+				requirement_id: createDailyEventDto.requirement_id,
+			},
+			{ transaction }
+		);
+
+		await transaction.commit()
+		return DailyEventDto.fromEntity(dailyEvent)
+
+	} catch (error) {
+		await transaction.rollback()
+		throw new BadRequestException('Erro ao criar evento diário: ' + error.message)
+	}
+	}
 
 	async findAll(): Promise<DailyEventDto[]>{
 		const dailyEvents = await DailyEvent.findAll({

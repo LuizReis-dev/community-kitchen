@@ -10,7 +10,8 @@ export class DailyEventController {
 	constructor(private readonly dailyEventService: DailyEventService) {}
 
 	@Post()
-	create(@Body() createDailyEventDto: CreateDailyEventDto) {
+	@ApiOkResponse({ type: DailyEventDto })
+	async create(@Body() createDailyEventDto: CreateDailyEventDto) {
 		return this.dailyEventService.create(createDailyEventDto)
 	}
 
