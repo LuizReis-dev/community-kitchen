@@ -2,6 +2,8 @@ import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common'
 import { FoodService } from './food.service'
 import { CreateFoodDto } from './dto/create-food.dto'
 import { UpdateFoodDto } from './dto/update-food.dto'
+import { ApiOkResponse } from '@nestjs/swagger'
+import { FoodDto } from './dto/food.dto'
 
 @Controller('foods')
 export class FoodController {
@@ -30,5 +32,17 @@ export class FoodController {
 	@Delete(':id')
 	async remove(@Param('id') id: string) {
 		return this.foodService.remove(+id)
+	}
+
+	@ApiOkResponse({ type: [FoodDto] })
+	@Get('foods-by-max-sugar-amount/:maxSugarAmount')
+	async findFoodsByMaxSugarAmount(@Param('maxSugarAmount') maxSugarAmount: number) {
+		return this.foodService.findFoodsByMaxSugarAmount(maxSugarAmount)
+	}
+
+	@ApiOkResponse({ type: [FoodDto] })
+	@Get('foods-by-min-protein-amount/:minProteinAmount')
+	async findFoodsByMinProteinAmount(@Param('minProteinAmount') minProteinAmount: number) {
+		return this.foodService.findFoodsByMinProteinAmount(minProteinAmount)
 	}
 }

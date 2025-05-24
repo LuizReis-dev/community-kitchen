@@ -34,4 +34,12 @@ export class FoodService {
 	async remove(id: number): Promise<void> {
 		return this.foodRepository.remove(id)
 	}
+
+	async findFoodsByMaxSugarAmount(maxSugarAmount: number): Promise<FoodDto[]> {
+		return this.foodRepository.findFoodsByMaxSugarAmount(maxSugarAmount)
+	}
+
+	async findFoodsByMinProteinAmount(minProteinAmount: number): Promise<FoodDto[]> {
+		return this.foodRepository.findFoodsByMinProteinAmount(minProteinAmount)
+	}
 }
