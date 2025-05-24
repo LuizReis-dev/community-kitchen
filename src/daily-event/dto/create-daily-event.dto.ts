@@ -1,15 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger'
-import {
-	IsString,
-	IsNumber,
-	IsNotEmpty,
-	MaxLength,
-} from 'class-validator'
+import { IsString, IsNumber, IsNotEmpty, MaxLength } from 'class-validator'
 import { Type } from 'class-transformer'
 
 export class CreateDailyEventDto {
-
-    @ApiProperty({
+	@ApiProperty({
 		description: 'Nome do evento.',
 		example: 'Jantar.',
 	})
@@ -19,22 +13,22 @@ export class CreateDailyEventDto {
 	name: string
 
 	@ApiProperty({
-        description: 'Hora a qual o evento comeca a ficar disponivel.',
-        example: '19:00',
-    })
-    @IsString({ message: 'Horário de inicio deve ser uma string.' })
+		description: 'Hora a qual o evento comeca a ficar disponivel.',
+		example: '19:00',
+	})
+	@IsString({ message: 'Horário de inicio deve ser uma string.' })
 	@IsNotEmpty({ message: 'Horário de inicio não pode ser vazio.' })
-    start_time: string
+	start_time: string
 
-    @ApiProperty({
-        description: 'Hora a qual o evento encerra.',
-        example: '22:30',
-    })
-    @IsString({ message: 'Horário de encerramento deve ser uma string.' })
+	@ApiProperty({
+		description: 'Hora a qual o evento encerra.',
+		example: '22:30',
+	})
+	@IsString({ message: 'Horário de encerramento deve ser uma string.' })
 	@IsNotEmpty({ message: 'Horário de encerramento não pode ser vazio.' })
-    end_time: string
+	end_time: string
 
-    @ApiProperty({
+	@ApiProperty({
 		description: 'Id do Menu Requirement referente a esse evento.',
 		example: 1,
 	})
