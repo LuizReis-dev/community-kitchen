@@ -114,4 +114,26 @@ export class FoodRepository {
 
 		return foods.map(food => FoodDto.fromEntity(food))
 	}
+
+	async findFoodsByMinProteinAmount(minProteinAmount: number): Promise<FoodDto[]> {
+		const foods = await Food.findAll({
+			include: [
+				{
+					model: NutritionFacts,
+					where: {
+						proteins: {
+							[Op.gte]: minProteinAmount,
+						},
+					},
+				},
+			],
+		})
+
+		if (foods.length === 0)
+			throw new NotFoundException(
+				`Nenhum alimento encontrado com pelo menos ${minProteinAmount} de proteínas!`
+			)
+
+		return foods.map(food => FoodDto.fromEntity(food))
+	}
 }
