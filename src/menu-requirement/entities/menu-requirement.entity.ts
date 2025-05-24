@@ -4,12 +4,14 @@ import {
 	CreatedAt,
 	DataType,
 	DeletedAt,
+	HasMany,
 	Model,
 	NotNull,
 	PrimaryKey,
 	Table,
 	UpdatedAt,
 } from 'sequelize-typescript'
+import { DailyEvent } from 'src/daily-event/entities/daily-event.entity'
 
 @Table({
 	tableName: 'tb_menu_requirements',
@@ -103,4 +105,7 @@ export class MenuRequirement extends Model {
 		field: 'updated_at',
 	})
 	declare updateAt: Date
+
+	@HasMany(() => DailyEvent)
+	declare daily_event: DailyEvent
 }
