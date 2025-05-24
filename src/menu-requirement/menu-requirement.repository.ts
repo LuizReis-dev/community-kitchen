@@ -13,10 +13,8 @@ export class MenuRequirementRepository {
 	async create(createMenuRequirementDto: CreateMenuRequirementDto): Promise<MenuRequirementDto> {
 		const transaction = await this.sequelize.transaction()
 		try {
-			this.deactivateMenuRequirement(transaction)
-
 			const menuRequirement = await MenuRequirement.create(
-				{ ...createMenuRequirementDto }, // Converte o DTO para um objeto literal
+				{ ...createMenuRequirementDto },
 				{ transaction }
 			)
 
@@ -26,19 +24,6 @@ export class MenuRequirementRepository {
 			await transaction.rollback()
 			throw new BadRequestException('Erro ao cadastrar especificações do menu')
 		}
-	}
-
-	async deactivateMenuRequirement(transaction: Transaction): Promise<void> {
-		await MenuRequirement.update(
-			{ isActive: false },
-			{
-				where: {
-					isActive: true,
-					deletedAt: null,
-				},
-				transaction,
-			}
-		)
 	}
 
 	async findOne(id: number): Promise<MenuRequirementDto> {
