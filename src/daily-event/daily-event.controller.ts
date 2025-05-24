@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common'
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common'
 import { DailyEventService } from './daily-event.service'
 import { CreateDailyEventDto } from './dto/create-daily-event.dto'
 import { UpdateDailyEventDto } from './dto/update-daily-event.dto'
@@ -25,7 +25,8 @@ export class DailyEventController {
 		return this.dailyEventService.findOne(+id)
 	}
 
-	@Patch(':id')
+	@Put(':id')
+	@ApiOkResponse({ type: DailyEventDto })
 	update(@Param('id') id: string, @Body() updateDailyEventDto: UpdateDailyEventDto) {
 		return this.dailyEventService.update(+id, updateDailyEventDto)
 	}

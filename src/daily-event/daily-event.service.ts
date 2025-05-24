@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
 import { CreateDailyEventDto } from './dto/create-daily-event.dto'
 import { UpdateDailyEventDto } from './dto/update-daily-event.dto'
 import { DailyEventRepository } from './daily-event.repository'
@@ -20,8 +20,8 @@ export class DailyEventService {
 		return this.dailyEventRepository.findOne(id)
 	}
 
-	update(id: number, updateDailyEventDto: UpdateDailyEventDto) {
-		return `This action updates a #${id} dailyEvent`
+	async update(id: number, updateDailyEventDto: UpdateDailyEventDto) {
+		return this.dailyEventRepository.update(id, updateDailyEventDto)
 	}
 
 	remove(id: number) {
