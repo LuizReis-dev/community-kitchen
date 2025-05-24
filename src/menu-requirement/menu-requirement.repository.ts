@@ -21,9 +21,10 @@ export class MenuRequirementRepository {
 			await transaction.commit()
 			return MenuRequirementDto.fromEntity(menuRequirement)
 		} catch (error) {
+			console.error(error)
 			await transaction.rollback()
 			throw new BadRequestException('Erro ao cadastrar especificações do menu')
-		}
+	}
 	}
 
 	async findOne(id: number): Promise<MenuRequirementDto> {

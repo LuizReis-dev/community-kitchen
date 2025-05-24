@@ -6,6 +6,7 @@ import { NutritionFacts } from 'src/food/entities/nutrition-facts.entity'
 import { DishMenu } from 'src/menu/entities/dish-menu'
 import { Menu } from 'src/menu/entities/menu.entity'
 import { MenuRequirement } from 'src/menu-requirement/entities/menu-requirement.entity'
+import { DailyEvent } from 'src/daily-event/entities/daily-event.entity'
 const dotenv = require('dotenv')
 
 dotenv.config()
@@ -22,7 +23,16 @@ export const databaseProviders = [
 				password: process.env.DB_PASSWORD || '1234',
 				database: process.env.DB_NAME || 'postgres',
 			})
-			sequelize.addModels([Food, NutritionFacts, Dish, DishFood, MenuRequirement, Menu, DishMenu])
+			sequelize.addModels([
+				Food,
+				NutritionFacts,
+				Dish,
+				DishFood,
+				MenuRequirement,
+				Menu,
+				DishMenu,
+				DailyEvent,
+			])
 			await sequelize.sync()
 			return sequelize
 		},
