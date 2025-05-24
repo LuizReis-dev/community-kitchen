@@ -15,7 +15,7 @@ import { MenuRequirement } from 'src/menu-requirement/entities/menu-requirement.
 
 @Table({
 	tableName: 'tb_daily_events',
-	modelName: 'DailyEvents',
+	modelName: 'DailyEvent',
 })
 export class DailyEvent extends Model {
 	@PrimaryKey
@@ -28,7 +28,7 @@ export class DailyEvent extends Model {
 	declare requirement_id: number
 
 	@BelongsTo(() => MenuRequirement)
-	menu_requirement: MenuRequirement
+	declare menu_requirement?: MenuRequirement
 
 	@Column({ type: DataType.STRING, allowNull: false })
 	declare name: string

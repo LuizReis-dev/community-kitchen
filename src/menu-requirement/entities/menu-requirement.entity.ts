@@ -107,5 +107,5 @@ export class MenuRequirement extends Model {
 	declare updateAt: Date
 
 	@HasMany(() => DailyEvent)
-	declare daily_event: DailyEvent
+	declare daily_event: DailyEvent[]
 }
