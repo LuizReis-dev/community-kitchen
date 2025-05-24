@@ -3,6 +3,7 @@ import { CreateMenuRequirementDto } from './dto/create-menu-requirement.dto'
 import { UpdateMenuRequirementDto } from './dto/update-menu-requirement.dto'
 import { MenuRequirementRepository } from './menu-requirement.repository'
 import { validateSync } from 'class-validator'
+import { MenuRequirementDto } from './dto/menu-requirement.dto'
 
 @Injectable()
 export class MenuRequirementService {
@@ -12,16 +13,16 @@ export class MenuRequirementService {
 		return this.menuRequirementRepository.create(createMenuRequirementDto)
 	}
 
-	async findAll() {
+	async findAll(): Promise<MenuRequirementDto[]> {
 		return this.menuRequirementRepository.findAll()
 	}
 
-	async findOne(id: number) {
+	async findOne(id: number): Promise<MenuRequirementDto> {
 		return this.menuRequirementRepository.findOne(id)
 	}
 
 	async update(id: number, updateMenuRequirementDto: UpdateMenuRequirementDto) {
-		const dto = Object.assign(new UpdateMenuRequirementDto(), updateMenuRequirementDto)
+		/*		const dto = Object.assign(new UpdateMenuRequirementDto(), updateMenuRequirementDto)
 		const errors = validateSync(dto, {
 			whitelist: true,
 			forbidNonWhitelisted: true,
@@ -32,13 +33,13 @@ export class MenuRequirementService {
 				msg: 'Não foi possivel atualizar, dados inválidos!',
 				errors,
 			})
-		}
+		}*/
 
 		return this.menuRequirementRepository.update(id, updateMenuRequirementDto)
 	}
 
 	async remove(id: number): Promise<void> {
-		if ((await this.menuRequirementRepository.findOne(id)).isActive == true) {
+		if ((await this.menuRequirementRepository.findOne(id)).is_active == true) {
 			throw new BadRequestException(
 				'Não é possivel remover essa especificação, pois ela está em uso!'
 			)

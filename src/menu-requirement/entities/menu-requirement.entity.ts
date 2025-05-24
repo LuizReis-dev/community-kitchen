@@ -24,40 +24,67 @@ export class MenuRequirement extends Model {
 
 	@NotNull
 	@Column({ type: DataType.DECIMAL, allowNull: false })
-	declare calories: number
+	declare min_calories: number
 
 	@NotNull
 	@Column({ type: DataType.DECIMAL, allowNull: false })
-	declare carbohydrates: number
+	declare max_calories: number
 
 	@NotNull
 	@Column({ type: DataType.DECIMAL, allowNull: false })
-	declare proteins: number
+	declare min_carbohydrates: number
 
 	@NotNull
 	@Column({ type: DataType.DECIMAL, allowNull: false })
-	declare fats: number
+	declare max_carbohydrates: number
 
 	@NotNull
 	@Column({ type: DataType.DECIMAL, allowNull: false })
-	declare fiber: number
+	declare min_proteins: number
 
 	@NotNull
 	@Column({ type: DataType.DECIMAL, allowNull: false })
-	declare sugar: number
+	declare max_proteins: number
 
 	@NotNull
 	@Column({ type: DataType.DECIMAL, allowNull: false })
-	declare sodium: number
+	declare min_fats: number
+
+	@NotNull
+	@Column({ type: DataType.DECIMAL, allowNull: false })
+	declare max_fats: number
+
+	@NotNull
+	@Column({ type: DataType.DECIMAL, allowNull: false })
+	declare min_fiber: number
+
+	@NotNull
+	@Column({ type: DataType.DECIMAL, allowNull: false })
+	declare max_fiber: number
+
+	@NotNull
+	@Column({ type: DataType.DECIMAL, allowNull: false })
+	declare min_sugar: number
+
+	@NotNull
+	@Column({ type: DataType.DECIMAL, allowNull: false })
+	declare max_sugar: number
+
+	@NotNull
+	@Column({ type: DataType.DECIMAL, allowNull: false })
+	declare min_sodium: number
+
+	@NotNull
+	@Column({ type: DataType.DECIMAL, allowNull: false })
+	declare max_sodium: number
 
 	@NotNull
 	@Column({
 		type: DataType.BOOLEAN,
-		field: 'is_active',
 		allowNull: false,
 		defaultValue: true,
 	})
-	declare isActive: boolean
+	declare is_active: boolean
 
 	@CreatedAt
 	@Column({
