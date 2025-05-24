@@ -2,6 +2,8 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { DailyEventService } from './daily-event.service'
 import { CreateDailyEventDto } from './dto/create-daily-event.dto'
 import { UpdateDailyEventDto } from './dto/update-daily-event.dto'
+import { ApiOkResponse } from '@nestjs/swagger'
+import { DailyEventDto } from './dto/daily-event.dto'
 
 @Controller('daily-events')
 export class DailyEventController {
@@ -18,6 +20,7 @@ export class DailyEventController {
 	}
 
 	@Get(':id')
+	@ApiOkResponse({ type: DailyEventDto })
 	findOne(@Param('id') id: string) {
 		return this.dailyEventService.findOne(+id)
 	}

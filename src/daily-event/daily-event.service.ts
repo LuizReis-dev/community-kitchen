@@ -1,26 +1,30 @@
-import { Injectable } from '@nestjs/common';
-import { CreateDailyEventDto } from './dto/create-daily-event.dto';
-import { UpdateDailyEventDto } from './dto/update-daily-event.dto';
+import { Injectable } from '@nestjs/common'
+import { CreateDailyEventDto } from './dto/create-daily-event.dto'
+import { UpdateDailyEventDto } from './dto/update-daily-event.dto'
+import { DailyEventRepository } from './daily-event.repository'
+import { DailyEventDto } from './dto/daily-event.dto'
 
 @Injectable()
 export class DailyEventService {
-  create(createDailyEventDto: CreateDailyEventDto) {
-    return 'This action adds a new dailyEvent';
-  }
+	constructor(private readonly dailyEventRepository: DailyEventRepository) {}
 
-  findAll() {
-    return `This action returns all dailyEvent`;
-  }
+	create(createDailyEventDto: CreateDailyEventDto) {
+		return 'This action adds a new dailyEvent'
+	}
 
-  findOne(id: number) {
-    return `This action returns a #${id} dailyEvent`;
-  }
+	findAll() {
+		return `This action returns all dailyEvent`
+	}
 
-  update(id: number, updateDailyEventDto: UpdateDailyEventDto) {
-    return `This action updates a #${id} dailyEvent`;
-  }
+	async findOne(id: number): Promise<DailyEventDto> {
+		return this.dailyEventRepository.findOne(id)
+	}
 
-  remove(id: number) {
-    return `This action removes a #${id} dailyEvent`;
-  }
+	update(id: number, updateDailyEventDto: UpdateDailyEventDto) {
+		return `This action updates a #${id} dailyEvent`
+	}
+
+	remove(id: number) {
+		return `This action removes a #${id} dailyEvent`
+	}
 }
