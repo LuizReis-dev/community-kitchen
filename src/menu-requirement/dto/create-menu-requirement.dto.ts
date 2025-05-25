@@ -16,21 +16,21 @@ export class CreateMenuRequirementDto {
 	@Max(800)
 	max_calories: number
 
-	@ApiProperty({ example: 0, description: 'Mínimo de carboidratos em g' })
+	@ApiProperty({ example: 20, description: 'Mínimo de carboidratos em g' })
 	@IsNotEmpty()
 	@IsNumber()
 	@Min(20)
 	@Max(30)
 	min_carbohydrates: number
 
-	@ApiProperty({ example: 100, description: 'Máximo de carboidratos em g' })
+	@ApiProperty({ example: 80, description: 'Máximo de carboidratos em g' })
 	@IsNotEmpty()
 	@IsNumber()
 	@Min(30)
 	@Max(80)
 	max_carbohydrates: number
 
-	@ApiProperty({ example: 0, description: 'Mínimo de proteínas em g' })
+	@ApiProperty({ example: 5, description: 'Mínimo de proteínas em g' })
 	@IsNotEmpty()
 	@IsNumber()
 	@Min(5)
@@ -44,7 +44,7 @@ export class CreateMenuRequirementDto {
 	@Max(30)
 	max_proteins: number
 
-	@ApiProperty({ example: 0, description: 'Mínimo de gordura em g' })
+	@ApiProperty({ example: 5, description: 'Mínimo de gordura em g' })
 	@IsNotEmpty()
 	@IsNumber()
 	@Min(5)
@@ -58,7 +58,7 @@ export class CreateMenuRequirementDto {
 	@Max(30)
 	max_fats: number
 
-	@ApiProperty({ example: 0, description: 'Mínimo de fibras em g' })
+	@ApiProperty({ example: 2, description: 'Mínimo de fibras em g' })
 	@IsNotEmpty()
 	@IsNumber()
 	@Min(2)
@@ -79,14 +79,14 @@ export class CreateMenuRequirementDto {
 	@Max(5)
 	min_sugar: number
 
-	@ApiProperty({ example: 25, description: 'Máximo de açúcar em g' })
+	@ApiProperty({ example: 20, description: 'Máximo de açúcar em g' })
 	@IsNotEmpty()
 	@IsNumber()
 	@Min(5)
 	@Max(20)
 	max_sugar: number
 
-	@ApiProperty({ example: 0, description: 'Mínimo de sódio em mg' })
+	@ApiProperty({ example: 50, description: 'Mínimo de sódio em mg' })
 	@IsNotEmpty()
 	@IsNumber()
 	@Min(50)

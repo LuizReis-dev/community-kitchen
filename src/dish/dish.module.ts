@@ -8,5 +8,6 @@ import { DishRepository } from './dish.repository'
 	imports: [DatabaseModule],
 	controllers: [DishController],
 	providers: [DishService, DishRepository],
+	exports: [DishService],
 })
 export class DishModule {}

@@ -21,21 +21,21 @@ export class MenuRequirementDto {
 		is_active: boolean
 	) {
 		this.id = id
-		;(this.min_calories = min_calories),
-			(this.max_calories = max_calories),
-			(this.min_carbohydrates = min_carbohydrates),
-			(this.max_carbohydrates = max_carbohydrates),
-			(this.min_proteins = min_proteins),
-			(this.max_proteins = max_proteins),
-			(this.min_fats = min_fats),
-			(this.max_fats = max_fats),
-			(this.min_fiber = min_fiber),
-			(this.max_fiber = max_fiber),
-			(this.min_sugar = min_sugar),
-			(this.max_sugar = max_sugar),
-			(this.min_sodium = min_sodium),
-			(this.max_sodium = max_sodium),
-			(this.is_active = is_active)
+		this.min_calories = min_calories
+		this.max_calories = max_calories
+		this.min_carbohydrates = min_carbohydrates
+		this.max_carbohydrates = max_carbohydrates
+		this.min_proteins = min_proteins
+		this.max_proteins = max_proteins
+		this.min_fats = min_fats
+		this.max_fats = max_fats
+		this.min_fiber = min_fiber
+		this.max_fiber = max_fiber
+		this.min_sugar = min_sugar
+		this.max_sugar = max_sugar
+		this.min_sodium = min_sodium
+		this.max_sodium = max_sodium
+		this.is_active = is_active
 	}
 
 	@ApiProperty()

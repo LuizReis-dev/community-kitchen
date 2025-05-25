@@ -6,12 +6,14 @@ import {
 	DataType,
 	DeletedAt,
 	ForeignKey,
+	HasOne,
 	Model,
 	PrimaryKey,
 	Table,
 	UpdatedAt,
 } from 'sequelize-typescript'
 import { MenuRequirement } from 'src/menu-requirement/entities/menu-requirement.entity'
+import { Menu } from 'src/menu/entities/menu.entity'
 
 @Table({
 	tableName: 'tb_daily_events',
@@ -38,6 +40,9 @@ export class DailyEvent extends Model {
 
 	@Column({ type: DataType.TIME, allowNull: false })
 	declare end_time: string
+
+	@HasOne(() => Menu)
+	declare menu: Menu
 
 	@CreatedAt
 	@Column({

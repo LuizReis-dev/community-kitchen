@@ -1,11 +1,10 @@
-import { Injectable, BadRequestException, NotFoundException, Inject } from '@nestjs/common'
+import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common'
 import { CreateDishDto } from './dto/create-dish.dto'
 import { DishRepository } from './dish.repository'
 import { Food } from '../food/entities/food.entity'
 import { Op } from 'sequelize'
 import { UpdateDishDto } from './dto/update-dish.dto'
 import { DishDto } from './dto/dish.dto'
-import { Sequelize } from 'sequelize-typescript'
 
 @Injectable()
 export class DishService {
@@ -59,5 +58,8 @@ export class DishService {
 			throw new NotFoundException('Prato não encontrado.')
 		}
 		await this.dishRepository.remove(id)
+	}
+	async findDishesByIds(ids: number[]): Promise<DishDto[]> {
+		return await this.dishRepository.findDishesByIds(ids)
 	}
 }

@@ -4,7 +4,6 @@ import { Sequelize } from 'sequelize-typescript'
 import { MenuRequirementDto } from './dto/menu-requirement.dto'
 import { MenuRequirement } from './entities/menu-requirement.entity'
 import { UpdateMenuRequirementDto } from './dto/update-menu-requirement.dto'
-import { Transaction } from 'sequelize'
 
 @Injectable()
 export class MenuRequirementRepository {
@@ -42,7 +41,7 @@ export class MenuRequirementRepository {
 		if (!menuRequirement)
 			throw new NotFoundException('Especificações do menu não foram encontradas!')
 
-		return menuRequirement.map(MenuRequirementDto.fromEntity)
+		return menuRequirement.map(requirement => MenuRequirementDto.fromEntity(requirement))
 	}
 
 	async update(
@@ -60,7 +59,7 @@ export class MenuRequirementRepository {
 
 			await transaction.commit()
 			return MenuRequirementDto.fromEntity(menuRequirement)
-		} catch (error) {
+		} catch {
 			await transaction.rollback()
 			throw new BadRequestException('Erro ao atualizar as especificações do menu!')
 		}
@@ -72,5 +71,17 @@ export class MenuRequirementRepository {
 			throw new NotFoundException('As especifiações do menu não foram encontrado!')
 
 		await menuRequirement.destroy()
+	}
+
+	async findActiveMenuRequirement(): Promise<MenuRequirementDto> {
+		const menuRequirement = await MenuRequirement.findOne({
+			where: {
+				is_active: true,
+			},
+		})
+
+		if (!menuRequirement) throw new NotFoundException('Nenhuma especificação ativa encontrada.')
+
+		return MenuRequirementDto.fromEntity(menuRequirement)
 	}
 }
