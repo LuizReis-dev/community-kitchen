@@ -100,7 +100,7 @@ export class MenuRequirementDto {
 		const max_fiber = menuRequirement.max_fiber
 		const min_sugar = menuRequirement.min_sugar
 		const max_sugar = menuRequirement.max_sugar
-		const min_sodium = menuRequirement.max_sodium
+		const min_sodium = menuRequirement.min_sodium
 		const max_sodium = menuRequirement.max_sodium
 		const is_active = menuRequirement.is_active
 

@@ -41,7 +41,7 @@ export class DailyEvent extends Model {
 	@Column({ type: DataType.TIME, allowNull: false })
 	declare end_time: string
 
-	@HasOne(() => Menu)
+	@BelongsTo(() => Menu)
 	declare menu: Menu
 
 	@CreatedAt

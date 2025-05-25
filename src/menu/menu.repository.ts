@@ -4,6 +4,7 @@ import { UpdateMenuDto } from './dto/update-menu.dto'
 import { Sequelize } from 'sequelize'
 import { Menu } from './entities/menu.entity'
 import { MenuDto } from './dto/menu.dto'
+import { DailyEvent } from 'src/daily-event/entities/daily-event.entity'
 
 @Injectable()
 export class MenuRepository {
@@ -20,15 +21,19 @@ export class MenuRepository {
 			)
 
 			const dishesIds = createMenuDto.dishes
+			const eventId = createMenuDto.dailyEventId
 
 			await menu.$set('dishes', dishesIds, { transaction })
+			await menu.$set('dailyEvent', eventId, { transaction })
 
 			menu.dishes = await menu.$get('dishes', { transaction })
+			menu.dailyEvent = (await menu.$get('dailyEvent', { transaction })) as DailyEvent
 
 			await transaction.commit()
 			return MenuDto.fromEntity(menu)
-		} catch {
+		} catch (error) {
 			await transaction.rollback()
+			console.log(error)
 			throw new BadRequestException('Error creating menu')
 		}
 	}

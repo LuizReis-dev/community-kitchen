@@ -9,7 +9,7 @@ export class MenuDto {
 		deactivationDate: Date,
 		activationDate: Date,
 		availableDay: string,
-		//dailyEvent: DailyEventDto,
+		dailyEvent: DailyEventDto,
 		createdBy: string,
 		dishes: DishDto[]
 	) {
@@ -18,7 +18,7 @@ export class MenuDto {
 		this.deactivationDate = deactivationDate
 		this.activationDate = activationDate
 		this.availableDay = availableDay
-		//this.dailyEvent = dailyEvent
+		this.dailyEvent = dailyEvent
 		this.dishes = dishes
 	}
 
@@ -45,7 +45,7 @@ export class MenuDto {
 
 	static fromEntity(menu: Menu): MenuDto {
 		const dishes = menu.dishes.map(dish => DishDto.fromEntity(dish))
-		//const dailyEvent = DailyEventDto.fromEntity(menu.dailyEvent)
+		const dailyEvent = DailyEventDto.fromEntity(menu.dailyEvent)
 		const deactivationDate = menu.deactivationDate
 		const activationDate = menu.activationDate
 		const availableDay = menu.availableDay
@@ -57,7 +57,7 @@ export class MenuDto {
 			deactivationDate,
 			activationDate,
 			availableDay,
-			//dailyEvent,
+			dailyEvent,
 			createdBy,
 			dishes
 		)
