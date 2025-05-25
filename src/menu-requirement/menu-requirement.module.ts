@@ -8,5 +8,6 @@ import { DatabaseModule } from 'src/database/database.module'
 	imports: [DatabaseModule],
 	controllers: [MenuRequirementController],
 	providers: [MenuRequirementService, MenuRequirementRepository],
+	exports: [MenuRequirementService],
 })
 export class MenuRequirementModule {}

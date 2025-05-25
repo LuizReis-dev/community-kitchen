@@ -15,6 +15,12 @@ export class MenuRequirementController {
 		return this.menuRequirementService.create(createMenuRequirementDto)
 	}
 
+	@Get('get-active-menu-requirement')
+	@ApiOkResponse({ type: MenuRequirementDto })
+	async findActiveMenuRequirement() {
+		return await this.menuRequirementService.findActiveMenuRequirement()
+	}
+
 	@Get()
 	@ApiOkResponse({ type: MenuRequirementDto })
 	findAll() {
