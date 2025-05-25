@@ -15,6 +15,7 @@ import { CreateDishDto } from './dto/create-dish.dto'
 import { UpdateDishDto } from './dto/update-dish.dto'
 import { DishDto } from './dto/dish.dto'
 import { ApiOkResponse, ApiQuery } from '@nestjs/swagger'
+import { DishNutritionFactsDto } from './dto/dish-nutritionFacts.dto'
 
 @Controller('dishes')
 export class DishController {
@@ -69,5 +70,11 @@ export class DishController {
 	@ApiOkResponse({ type: DishDto })
 	async remove(@Param('id') id: string) {
 		return this.dishService.remove(+id)
+	}
+
+	@Get(':id/nutrition-facts')
+	@ApiOkResponse({ type: DishNutritionFactsDto })
+	async getDishNutritionFacts(@Param('id') id: number): Promise<DishNutritionFactsDto> {
+		return this.dishService.getDishNutritionFacts(id)
 	}
 }

@@ -5,6 +5,7 @@ import { Food } from '../food/entities/food.entity'
 import { Op } from 'sequelize'
 import { UpdateDishDto } from './dto/update-dish.dto'
 import { DishDto } from './dto/dish.dto'
+import { DishNutritionFactsDto } from './dto/dish-nutritionFacts.dto'
 
 @Injectable()
 export class DishService {
@@ -61,5 +62,9 @@ export class DishService {
 	}
 	async findDishesByIds(ids: number[]): Promise<DishDto[]> {
 		return await this.dishRepository.findDishesByIds(ids)
+	}
+
+	async getDishNutritionFacts(id: number): Promise<DishNutritionFactsDto> {
+		return await this.dishRepository.getDishNutritionFacts(id)
 	}
 }
