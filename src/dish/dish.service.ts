@@ -59,4 +59,7 @@ export class DishService {
 		}
 		await this.dishRepository.remove(id)
 	}
+	async findDishesByIds(ids: number[]): Promise<DishDto[]> {
+		return await this.dishRepository.findDishesByIds(ids)
+	}
 }

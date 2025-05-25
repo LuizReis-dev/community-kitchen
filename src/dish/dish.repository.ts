@@ -47,7 +47,7 @@ export class DishRepository {
 		const dishes = await Dish.findAll({
 			include: [Food],
 		})
-		return dishes.map(DishDto.fromEntity)
+		return dishes.map(dish => DishDto.fromEntity(dish))
 	}
 
 	async findOne(id: number): Promise<DishDto> {
@@ -143,5 +143,18 @@ export class DishRepository {
 		const dish = await Dish.findByPk(id)
 		if (!dish) throw new NotFoundException('Prato não encontrado.')
 		await dish.destroy()
+	}
+
+	async findDishesByIds(ids: number[]): Promise<DishDto[]> {
+		const dishes = await Dish.findAll({
+			where: {
+				id: {
+					[Op.in]: ids,
+				},
+			},
+			include: [Food],
+		})
+
+		return dishes.map(dish => DishDto.fromEntity(dish))
 	}
 }
