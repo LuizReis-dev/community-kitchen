@@ -4,10 +4,6 @@ import { IsRequiredDate, IsRequiredTypeOf } from 'src/common/decorators/validati
 export class CreateMenuDto {
 	@IsRequiredDate()
 	@ApiProperty()
-	deactivationDate: Date
-
-	@IsRequiredDate()
-	@ApiProperty()
 	activationDate: Date
 
 	@IsRequiredTypeOf('string')
@@ -22,7 +18,8 @@ export class CreateMenuDto {
 	@ApiProperty({ type: [Number] })
 	dishes: number[]
 
-	@IsRequiredTypeOf('number')
-	@ApiProperty()
-	dailyEvent: number
+	// TODO: implement daily event to menu
+	// @IsRequiredTypeOf('number')
+	// @ApiProperty()
+	// dailyEvent: number
 }

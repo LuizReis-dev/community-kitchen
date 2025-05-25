@@ -6,6 +6,7 @@ import { Food } from '../food/entities/food.entity'
 import { Op } from 'sequelize'
 import { UpdateDishDto } from './dto/update-dish.dto'
 import { Sequelize } from 'sequelize-typescript'
+import { NutritionFacts } from 'src/food/entities/nutrition-facts.entity'
 
 @Injectable()
 export class DishRepository {
@@ -152,7 +153,12 @@ export class DishRepository {
 					[Op.in]: ids,
 				},
 			},
-			include: [Food],
+			include: [
+				{
+					model: Food,
+					include: [NutritionFacts],
+				},
+			],
 		})
 
 		return dishes.map(dish => DishDto.fromEntity(dish))
