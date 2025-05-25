@@ -9,12 +9,13 @@ import {
 	Put,
 	ParseArrayPipe,
 	Query,
+	ParseIntPipe,
 } from '@nestjs/common'
 import { DishService } from './dish.service'
 import { CreateDishDto } from './dto/create-dish.dto'
 import { UpdateDishDto } from './dto/update-dish.dto'
 import { DishDto } from './dto/dish.dto'
-import { ApiOkResponse, ApiQuery } from '@nestjs/swagger'
+import { ApiOkResponse, ApiParam, ApiQuery } from '@nestjs/swagger'
 import { DishNutritionFactsDto } from './dto/dish-nutritionFacts.dto'
 
 @Controller('dishes')
@@ -76,5 +77,12 @@ export class DishController {
 	@ApiOkResponse({ type: DishNutritionFactsDto })
 	async getDishNutritionFacts(@Param('id') id: number): Promise<DishNutritionFactsDto> {
 		return this.dishService.getDishNutritionFacts(id)
+	}
+
+	@Get('dishes-by-description/:term')
+	@ApiOkResponse({ type: [DishDto] })
+	@ApiParam({ name: 'term', type: String, example: 'arroz' })
+	async searchDishesByName(@Param('term') term: string): Promise<DishDto[]> {
+		return this.dishService.findDishesByDescription(term)
 	}
 }

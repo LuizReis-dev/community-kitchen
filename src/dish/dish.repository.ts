@@ -196,4 +196,25 @@ export class DishRepository {
 
 		return DishNutritionFactsDto.fromEntity(dish, totalNutritionFacts)
 	}
+
+	async findDishesByDescription(term: string): Promise<DishDto[]> {
+		const dishes = await Dish.findAll({
+			include: [
+				{
+					model: Food,
+				},
+			],
+			where: {
+				description: {
+					[Op.iLike]: `%${term}%`,
+				},
+			},
+		})
+
+		if (dishes.length === 0) {
+			throw new NotFoundException(`Nenhum prato encontrado com o termo '${term}'`)
+		}
+
+		return dishes.map(dish => DishDto.fromEntity(dish))
+	}
 }

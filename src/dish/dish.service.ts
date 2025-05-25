@@ -67,4 +67,12 @@ export class DishService {
 	async getDishNutritionFacts(id: number): Promise<DishNutritionFactsDto> {
 		return await this.dishRepository.getDishNutritionFacts(id)
 	}
+
+	async findDishesByDescription(term: string): Promise<DishDto[]> {
+		if (!term || term.trim() === '') {
+			throw new BadRequestException('Termo de busca não pode ser vazio')
+		}
+
+		return this.dishRepository.findDishesByDescription(term)
+	}
 }
