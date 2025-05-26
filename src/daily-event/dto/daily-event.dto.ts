@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { DailyEvent } from '../entities/daily-event.entity'
+import { MenuRequirementDto } from 'src/menu-requirement/dto/menu-requirement.dto'
 
 export class DailyEventDto {
 	constructor(
@@ -7,20 +8,20 @@ export class DailyEventDto {
 		name: string,
 		start_time: string,
 		end_time: string,
-		requirement_id: number
+		requirement: MenuRequirementDto
 	) {
 		this.id = id
 		this.name = name
 		this.start_time = start_time
 		this.end_time = end_time
-		this.requirement_id = requirement_id
+		this.requirement = requirement
 	}
 
 	@ApiProperty()
 	id: number
 
 	@ApiProperty()
-	requirement_id: number
+	requirement: MenuRequirementDto
 
 	@ApiProperty()
 	name: string
@@ -36,8 +37,8 @@ export class DailyEventDto {
 		const name = dailyEvent.name
 		const start_time = dailyEvent.start_time
 		const end_time = dailyEvent.end_time
-		const requirement_id = dailyEvent.requirement_id
+		const requirement = dailyEvent.menu_requirement
 
-		return new DailyEventDto(id, name, start_time, end_time, requirement_id)
+		return new DailyEventDto(id, name, start_time, end_time, requirement)
 	}
 }

@@ -73,15 +73,16 @@ export class MenuRequirementRepository {
 		await menuRequirement.destroy()
 	}
 
-	async findActiveMenuRequirement(): Promise<MenuRequirementDto> {
-		const menuRequirement = await MenuRequirement.findOne({
+	async findActiveMenuRequirements(): Promise<MenuRequirementDto[]> {
+		const menuRequirements = await MenuRequirement.findAll({
 			where: {
 				is_active: true,
 			},
 		})
 
-		if (!menuRequirement) throw new NotFoundException('Nenhuma especificação ativa encontrada.')
+		if (menuRequirements.length === 0)
+			throw new NotFoundException('Nenhuma especificação ativa encontrada.')
 
-		return MenuRequirementDto.fromEntity(menuRequirement)
+		return menuRequirements.map(requirement => MenuRequirementDto.fromEntity(requirement))
 	}
 }

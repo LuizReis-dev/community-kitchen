@@ -3,7 +3,6 @@ import { Sequelize } from 'sequelize-typescript'
 import { DailyEventDto } from './dto/daily-event.dto'
 import { DailyEvent } from './entities/daily-event.entity'
 import { UpdateDailyEventDto } from './dto/update-daily-event.dto'
-import { MenuRequirement } from 'src/menu-requirement/entities/menu-requirement.entity'
 import { CreateDailyEventDto } from './dto/create-daily-event.dto'
 
 export class DailyEventRepository {
@@ -35,7 +34,7 @@ export class DailyEventRepository {
 		const dailyEvents = await DailyEvent.findAll({
 			include: ['menu_requirement'],
 		})
-		return dailyEvents.map(DailyEventDto.fromEntity)
+		return dailyEvents.map(event => DailyEventDto.fromEntity(event))
 	}
 
 	async findOne(id: number): Promise<DailyEventDto> {

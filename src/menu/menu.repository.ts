@@ -4,6 +4,8 @@ import { UpdateMenuDto } from './dto/update-menu.dto'
 import { Sequelize } from 'sequelize'
 import { Menu } from './entities/menu.entity'
 import { MenuDto } from './dto/menu.dto'
+import { DailyEvent } from 'src/daily-event/entities/daily-event.entity'
+import { WEEK_DAYS } from 'src/common/enums/week-days'
 
 @Injectable()
 export class MenuRepository {
@@ -20,15 +22,19 @@ export class MenuRepository {
 			)
 
 			const dishesIds = createMenuDto.dishes
+			const eventId = createMenuDto.dailyEventId
 
 			await menu.$set('dishes', dishesIds, { transaction })
+			await menu.$set('dailyEvent', eventId, { transaction })
 
 			menu.dishes = await menu.$get('dishes', { transaction })
+			menu.dailyEvent = (await menu.$get('dailyEvent', { transaction })) as DailyEvent
 
 			await transaction.commit()
 			return MenuDto.fromEntity(menu)
-		} catch {
+		} catch (error) {
 			await transaction.rollback()
+			console.log(error)
 			throw new BadRequestException('Error creating menu')
 		}
 	}
@@ -85,5 +91,19 @@ export class MenuRepository {
 			},
 		})
 		return 'Menu deleted'
+	}
+
+	async countByDailyEventIdAndAvaibleDay(
+		dailyEventId: number,
+		availableDay: WEEK_DAYS
+	): Promise<boolean> {
+		const menuCount = await Menu.count({
+			where: {
+				dailyEventId,
+				availableDay,
+			},
+		})
+
+		return menuCount > 0
 	}
 }
