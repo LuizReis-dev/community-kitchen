@@ -42,4 +42,8 @@ export class FoodService {
 	async findFoodsByMinProteinAmount(minProteinAmount: number): Promise<FoodDto[]> {
 		return this.foodRepository.findFoodsByMinProteinAmount(minProteinAmount)
 	}
+
+	async findMostUsedFoods(page: number, limit: number) {
+		return this.foodRepository.findMostUsedFoods(page, limit)
+	}
 }
