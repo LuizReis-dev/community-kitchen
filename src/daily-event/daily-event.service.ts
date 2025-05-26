@@ -3,7 +3,6 @@ import { CreateDailyEventDto } from './dto/create-daily-event.dto'
 import { UpdateDailyEventDto } from './dto/update-daily-event.dto'
 import { DailyEventRepository } from './daily-event.repository'
 import { DailyEventDto } from './dto/daily-event.dto'
-import { Not } from 'sequelize-typescript'
 import { MenuRequirement } from 'src/menu-requirement/entities/menu-requirement.entity'
 import { DailyEvent } from './entities/daily-event.entity'
 

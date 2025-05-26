@@ -6,7 +6,7 @@ import {
 	DataType,
 	DeletedAt,
 	ForeignKey,
-	HasOne,
+	HasMany,
 	Model,
 	PrimaryKey,
 	Table,
@@ -30,7 +30,7 @@ export class DailyEvent extends Model {
 	declare requirement_id: number
 
 	@BelongsTo(() => MenuRequirement)
-	declare menu_requirement?: MenuRequirement
+	declare menu_requirement: MenuRequirement
 
 	@Column({ type: DataType.STRING, allowNull: false })
 	declare name: string
@@ -41,8 +41,8 @@ export class DailyEvent extends Model {
 	@Column({ type: DataType.TIME, allowNull: false })
 	declare end_time: string
 
-	@HasOne(() => Menu)
-	declare menu: Menu
+	@HasMany(() => Menu)
+	declare menu: Menu[]
 
 	@CreatedAt
 	@Column({
