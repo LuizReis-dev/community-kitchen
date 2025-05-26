@@ -33,7 +33,7 @@ export class MenuRequirementService {
 		return this.menuRequirementRepository.remove(id)
 	}
 
-	async findActiveMenuRequirement(): Promise<MenuRequirementDto> {
-		return await this.menuRequirementRepository.findActiveMenuRequirement()
+	async findActiveMenuRequirements(): Promise<MenuRequirementDto[]> {
+		return await this.menuRequirementRepository.findActiveMenuRequirements()
 	}
 }

@@ -5,7 +5,7 @@ import { WEEK_DAYS } from 'src/common/enums/week-days'
 
 export class CreateMenuDto {
 	@IsRequiredDate()
-	@ApiProperty()
+	@ApiProperty({ example: new Date().toISOString().split('T')[0] })
 	activationDate: Date
 
 	@IsEnum(WEEK_DAYS, {

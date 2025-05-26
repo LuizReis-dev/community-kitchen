@@ -8,5 +8,6 @@ import { DailyEventRepository } from './daily-event.repository'
 	imports: [DatabaseModule],
 	controllers: [DailyEventController],
 	providers: [DailyEventService, DailyEventRepository],
+	exports: [DailyEventService],
 })
 export class DailyEventModule {}

@@ -2,26 +2,29 @@ import { BadRequestException, Injectable } from '@nestjs/common'
 import { CreateMenuDto } from './dto/create-menu.dto'
 import { UpdateMenuDto } from './dto/update-menu.dto'
 import { MenuRepository } from './menu.repository'
-import { MenuRequirementService } from 'src/menu-requirement/menu-requirement.service'
 import { DishService } from 'src/dish/dish.service'
 import { NutritionFactsDto } from 'src/food/dto/nutrition-facts.dto'
 import { MenuRequirementDto } from 'src/menu-requirement/dto/menu-requirement.dto'
+import { DailyEventService } from 'src/daily-event/daily-event.service'
 
 @Injectable()
 export class MenuService {
 	constructor(
 		private readonly menuRepository: MenuRepository,
-		private readonly menuRequirementService: MenuRequirementService,
-		private readonly dishService: DishService
+		private readonly dishService: DishService,
+		private readonly dailyEventService: DailyEventService
 	) {}
 	async create(createMenuDto: CreateMenuDto) {
-		const menuRequirement = await this.menuRequirementService.findActiveMenuRequirement()
-		if (!menuRequirement)
-			throw new BadRequestException('Menu requirement not found, please create one first.')
+		const dailyEventId = createMenuDto.dailyEventId
+		const dailyEvent = await this.dailyEventService.findOne(dailyEventId)
+
+		if (!dailyEvent) throw new BadRequestException('Daily event associated not found.')
 
 		const dishes = await this.dishService.findDishesByIds(createMenuDto.dishes)
 
 		if (dishes.length === 0) throw new BadRequestException('No dishes found with the provided IDs.')
+
+		const menuRequirement = dailyEvent.requirement
 
 		const foods = dishes.flatMap(dish => dish.foods)
 

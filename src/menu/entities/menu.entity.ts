@@ -10,7 +10,7 @@ import {
 	UpdatedAt,
 	BelongsToMany,
 	ForeignKey,
-	HasOne,
+	BelongsTo,
 } from 'sequelize-typescript'
 import { Dish } from 'src/dish/entities/dish.entity'
 import { DishMenu } from './dish-menu'
@@ -46,7 +46,7 @@ export class Menu extends Model {
 	@Column({ field: 'daily_event_id' })
 	declare dailyEventId: number
 
-	@HasOne(() => DailyEvent)
+	@BelongsTo(() => DailyEvent)
 	declare dailyEvent: DailyEvent
 
 	@CreatedAt
