@@ -5,6 +5,7 @@ import { Sequelize } from 'sequelize'
 import { Menu } from './entities/menu.entity'
 import { MenuDto } from './dto/menu.dto'
 import { DailyEvent } from 'src/daily-event/entities/daily-event.entity'
+import { WEEK_DAYS } from 'src/common/enums/week-days'
 
 @Injectable()
 export class MenuRepository {
@@ -90,5 +91,19 @@ export class MenuRepository {
 			},
 		})
 		return 'Menu deleted'
+	}
+
+	async countByDailyEventIdAndAvaibleDay(
+		dailyEventId: number,
+		availableDay: WEEK_DAYS
+	): Promise<boolean> {
+		const menuCount = await Menu.count({
+			where: {
+				dailyEventId,
+				availableDay,
+			},
+		})
+
+		return menuCount > 0
 	}
 }

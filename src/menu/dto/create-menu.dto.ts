@@ -13,7 +13,7 @@ export class CreateMenuDto {
 			'availableDay must be a valid week day (Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday)',
 	})
 	@ApiProperty()
-	availableDay: string
+	availableDay: WEEK_DAYS
 
 	@IsRequiredTypeOf('string')
 	@ApiProperty()
