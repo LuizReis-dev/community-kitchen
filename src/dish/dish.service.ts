@@ -82,5 +82,9 @@ export class DishService {
 			throw new BadRequestException('name de busca não pode ser vazio')
 		}
 		return this.dishRepository.findDishesByName(name)
-	}	
+	}
+
+	async isDishHealthy(id: number): Promise<{ dish: DishDto; healthy: boolean }> {
+		return this.dishRepository.isDishHealthy(id)
+	}
 }

@@ -92,5 +92,9 @@ export class DishController {
 	async searchDishesByName(@Param('name') name: string): Promise<DishDto[]> {
 		return this.dishService.findDishesByName(name);
 	}
-	
+
+	@Get(':id/healthy')
+	async isDishHealthy(@Param('id', ParseIntPipe) id: number): Promise<{ dish: DishDto; healthy: boolean }> {
+		return this.dishService.isDishHealthy(id)
+	}	
 }
