@@ -11,7 +11,6 @@ export class DishNutritionFactsDto {
 
 	@ApiProperty()
 	nutritionFacts: NutritionFactsDto
-	
 
 	constructor(id: number, name: string, nutritionFacts: NutritionFactsDto) {
 		this.id = id

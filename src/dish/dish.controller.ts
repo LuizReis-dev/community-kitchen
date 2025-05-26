@@ -90,11 +90,13 @@ export class DishController {
 	@ApiOkResponse({ type: [DishDto] })
 	@ApiParam({ name: 'name', type: String, example: 'feijoada' })
 	async searchDishesByName(@Param('name') name: string): Promise<DishDto[]> {
-		return this.dishService.findDishesByName(name);
+		return this.dishService.findDishesByName(name)
 	}
 
 	@Get(':id/healthy')
-	async isDishHealthy(@Param('id', ParseIntPipe) id: number): Promise<{ dish: DishDto; healthy: boolean }> {
+	async isDishHealthy(
+		@Param('id', ParseIntPipe) id: number
+	): Promise<{ dish: DishDto; healthy: boolean }> {
 		return this.dishService.isDishHealthy(id)
-	}	
+	}
 }

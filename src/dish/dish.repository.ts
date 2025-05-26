@@ -222,46 +222,49 @@ export class DishRepository {
 		const dishes = await Dish.findAll({
 			include: [Food],
 			where: {
-			name: {
-				[Op.iLike]: `%${name}%`,
+				name: {
+					[Op.iLike]: `%${name}%`,
+				},
 			},
-			},
-		});
+		})
 
 		if (dishes.length === 0) {
-			throw new NotFoundException(`Nenhum prato encontrado com o nome contendo '${name}'`);
+			throw new NotFoundException(`Nenhum prato encontrado com o nome contendo '${name}'`)
 		}
 
-		return dishes.map(dish => DishDto.fromEntity(dish));
+		return dishes.map(dish => DishDto.fromEntity(dish))
 	}
 
 	async isDishHealthy(id: number): Promise<{ dish: DishDto; healthy: boolean }> {
-	const dish = await Dish.findByPk(id, {
-		include: [{ model: Food, include: [NutritionFacts] }],
-	});
+		const dish = await Dish.findByPk(id, {
+			include: [{ model: Food, include: [NutritionFacts] }],
+		})
 
-	if (!dish) throw new NotFoundException('Prato não encontrado.');
+		if (!dish) throw new NotFoundException('Prato não encontrado.')
 
-	const dishNutritionFacts = await this.getDishNutritionFacts(id);
+		const dishNutritionFacts = await this.getDishNutritionFacts(id)
 
-	let score = 0;
+		let score = 0
 
-	if (dishNutritionFacts.nutritionFacts.calories <= 600) score += 2;
-	else if (dishNutritionFacts.nutritionFacts.calories <= 700) score += 1;
+		if (dishNutritionFacts.nutritionFacts.calories <= 600) score += 2
+		else if (dishNutritionFacts.nutritionFacts.calories <= 700) score += 1
 
-	if (dishNutritionFacts.nutritionFacts.sodium <= 400) score += 2;
-	else if(dishNutritionFacts.nutritionFacts.sodium <= 500) score += 1;
+		if (dishNutritionFacts.nutritionFacts.sodium <= 400) score += 2
+		else if (dishNutritionFacts.nutritionFacts.sodium <= 500) score += 1
 
-	if (dishNutritionFacts.nutritionFacts.proteins >= 15 && dishNutritionFacts.nutritionFacts.proteins <=35) score += 2;
-	if (dishNutritionFacts.nutritionFacts.carbohydrates <= 80) score += 1;
-	if (dishNutritionFacts.nutritionFacts.fats <= 25) score += 1;
-	if (dishNutritionFacts.nutritionFacts.fiber >= 5) score += 1;
+		if (
+			dishNutritionFacts.nutritionFacts.proteins >= 15 &&
+			dishNutritionFacts.nutritionFacts.proteins <= 35
+		)
+			score += 2
+		if (dishNutritionFacts.nutritionFacts.carbohydrates <= 80) score += 1
+		if (dishNutritionFacts.nutritionFacts.fats <= 25) score += 1
+		if (dishNutritionFacts.nutritionFacts.fiber >= 5) score += 1
 
-	const healthy = score >= 6;
-	return {
-		dish: DishDto.fromEntity(dish),
-		healthy,
-	};
-}
-
+		const healthy = score >= 6
+		return {
+			dish: DishDto.fromEntity(dish),
+			healthy,
+		}
+	}
 }

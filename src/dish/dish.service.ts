@@ -77,7 +77,7 @@ export class DishService {
 		return this.dishRepository.findDishesByDescription(term)
 	}
 
-	async findDishesByName(name : string): Promise<DishDto[]>{
+	async findDishesByName(name: string): Promise<DishDto[]> {
 		if (!name || name.trim() === '') {
 			throw new BadRequestException('name de busca não pode ser vazio')
 		}
