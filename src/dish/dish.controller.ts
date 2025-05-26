@@ -82,7 +82,15 @@ export class DishController {
 	@Get('dishes-by-description/:term')
 	@ApiOkResponse({ type: [DishDto] })
 	@ApiParam({ name: 'term', type: String, example: 'arroz' })
-	async searchDishesByName(@Param('term') term: string): Promise<DishDto[]> {
+	async searchDishesByTerm(@Param('term') term: string): Promise<DishDto[]> {
 		return this.dishService.findDishesByDescription(term)
 	}
+
+	@Get('dishes-by-name/:name')
+	@ApiOkResponse({ type: [DishDto] })
+	@ApiParam({ name: 'name', type: String, example: 'feijoada' })
+	async searchDishesByName(@Param('name') name: string): Promise<DishDto[]> {
+		return this.dishService.findDishesByName(name);
+	}
+	
 }

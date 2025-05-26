@@ -217,4 +217,21 @@ export class DishRepository {
 
 		return dishes.map(dish => DishDto.fromEntity(dish))
 	}
+
+	async findDishesByName(name: string): Promise<DishDto[]> {
+		const dishes = await Dish.findAll({
+			include: [Food],
+			where: {
+			name: {
+				[Op.iLike]: `%${name}%`,
+			},
+			},
+		});
+
+		if (dishes.length === 0) {
+			throw new NotFoundException(`Nenhum prato encontrado com o nome contendo '${name}'`);
+		}
+
+		return dishes.map(dish => DishDto.fromEntity(dish));
+		}
 }
