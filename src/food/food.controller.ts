@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common'
+import { Controller, Get, Post, Body, Param, Delete, Put, Query } from '@nestjs/common'
 import { FoodService } from './food.service'
 import { CreateFoodDto } from './dto/create-food.dto'
 import { UpdateFoodDto } from './dto/update-food.dto'
@@ -44,5 +44,11 @@ export class FoodController {
 	@Get('foods-by-min-protein-amount/:minProteinAmount')
 	async findFoodsByMinProteinAmount(@Param('minProteinAmount') minProteinAmount: number) {
 		return this.foodService.findFoodsByMinProteinAmount(minProteinAmount)
+	}
+
+	@ApiOkResponse()
+	@Get('filter/most-used')
+	async findMostUsedFoods(@Query('page') page: number = 1, @Query('limit') limit: number = 10) {
+		return this.foodService.findMostUsedFoods(page, limit)
 	}
 }
