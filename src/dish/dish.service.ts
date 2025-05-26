@@ -60,6 +60,7 @@ export class DishService {
 		}
 		await this.dishRepository.remove(id)
 	}
+
 	async findDishesByIds(ids: number[]): Promise<DishDto[]> {
 		return await this.dishRepository.findDishesByIds(ids)
 	}
@@ -74,5 +75,16 @@ export class DishService {
 		}
 
 		return this.dishRepository.findDishesByDescription(term)
+	}
+
+	async findDishesByName(name: string): Promise<DishDto[]> {
+		if (!name || name.trim() === '') {
+			throw new BadRequestException('name de busca não pode ser vazio')
+		}
+		return this.dishRepository.findDishesByName(name)
+	}
+
+	async isDishHealthy(id: number): Promise<{ dish: DishDto; healthy: boolean }> {
+		return this.dishRepository.isDishHealthy(id)
 	}
 }
