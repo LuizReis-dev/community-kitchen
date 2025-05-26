@@ -7,6 +7,8 @@ import { Op } from 'sequelize'
 import { UpdateDishDto } from './dto/update-dish.dto'
 import { Sequelize } from 'sequelize-typescript'
 import { NutritionFacts } from 'src/food/entities/nutrition-facts.entity'
+import { DishNutritionFactsDto } from './dto/dish-nutritionFacts.dto'
+import { NutritionFactsDto } from 'src/food/dto/nutrition-facts.dto'
 
 @Injectable()
 export class DishRepository {
@@ -160,6 +162,58 @@ export class DishRepository {
 				},
 			],
 		})
+
+		return dishes.map(dish => DishDto.fromEntity(dish))
+	}
+
+	async getDishNutritionFacts(id: number): Promise<DishNutritionFactsDto> {
+		const dish = await Dish.findByPk(id, {
+			include: [{ model: Food, include: [NutritionFacts] }],
+		})
+
+		if (!dish) {
+			throw new NotFoundException('Prato não encontrado.')
+		}
+
+		if (!dish.foods) {
+			throw new NotFoundException('O prato está incompleto')
+		}
+
+		const totalNutritionFacts = new NutritionFactsDto(0, 0, 0, 0, 0, 0, 0)
+
+		for (const food of dish.foods) {
+			const nf = food.nutritionFacts
+			if (!nf) continue
+
+			totalNutritionFacts.calories += Number(nf.calories)
+			totalNutritionFacts.carbohydrates += Number(nf.carbohydrates)
+			totalNutritionFacts.proteins += Number(nf.proteins)
+			totalNutritionFacts.fats += Number(nf.fats)
+			totalNutritionFacts.fiber += Number(nf.fiber)
+			totalNutritionFacts.sugar += Number(nf.sugar)
+			totalNutritionFacts.sodium += Number(nf.sodium)
+		}
+
+		return DishNutritionFactsDto.fromEntity(dish, totalNutritionFacts)
+	}
+
+	async findDishesByDescription(term: string): Promise<DishDto[]> {
+		const dishes = await Dish.findAll({
+			include: [
+				{
+					model: Food,
+				},
+			],
+			where: {
+				description: {
+					[Op.iLike]: `%${term}%`,
+				},
+			},
+		})
+
+		if (dishes.length === 0) {
+			throw new NotFoundException(`Nenhum prato encontrado com o termo '${term}'`)
+		}
 
 		return dishes.map(dish => DishDto.fromEntity(dish))
 	}
