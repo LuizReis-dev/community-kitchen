@@ -237,6 +237,32 @@ export class DishRepository {
 		})
 	}
 
+	async findWithFilters(
+		whereNutritionFacts: {
+			sodium?: { [Op.lte]: number };
+			calories?: { [Op.lte]: number };
+			proteins?: { [Op.gte]: number };
+		},
+		limit: number,
+		offset: number
+		): Promise<Dish[]> {
+		return Dish.findAll({
+			limit,
+			offset,
+			include: [{
+			model: Food,
+			include: [{
+				model: NutritionFacts,
+				where: whereNutritionFacts,
+				attributes: ['sodium', 'calories', 'proteins']
+			}],
+			attributes: []
+			}],
+			order: [[{ model: Food, as: 'foods' }, { model: NutritionFacts, as: 'nutritionFacts' }, 'sodium', 'ASC']]
+		});
+	}
+
+
 	async validateFoodIds(foodIds: number[]): Promise<void> {
 		const transaction = await this.sequelize.transaction()
 		const foods = await Food.findAll({

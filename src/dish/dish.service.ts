@@ -104,18 +104,25 @@ export class DishService {
 
 		let score = 0
 
-		if (nutritionFacts.calories <= 600) score += 2
-		else if (nutritionFacts.calories <= 700) score += 1
+		if (nutritionFacts.calories <= 250) score += 2;
+		else if (nutritionFacts.calories <= 350) score += 1;
 
-		if (nutritionFacts.sodium <= 400) score += 2
-		else if (nutritionFacts.sodium <= 500) score += 1
+		if (nutritionFacts.sodium <= 200) score += 2;
+		else if (nutritionFacts.sodium <= 300) score += 1;
 
-		if (nutritionFacts.proteins >= 15 && nutritionFacts.proteins <= 28) score += 2
-		if (nutritionFacts.carbohydrates <= 80) score += 1
-		if (nutritionFacts.fats <= 25) score += 1
-		if (nutritionFacts.fiber >= 5) score += 1
+		if (nutritionFacts.proteins >= 10) score += 2;
+		else if (nutritionFacts.proteins >= 5) score += 1;
 
-		const healthy = score >= 6
+		if (nutritionFacts.carbohydrates <= 30) score += 2;
+		else if (nutritionFacts.carbohydrates <= 60) score += 1;
+
+		if (nutritionFacts.fats <= 10) score += 2;
+		else if (nutritionFacts.fats <= 20) score += 1;
+
+		if (nutritionFacts.fiber >= 3) score += 2;
+		else if (nutritionFacts.fiber >= 1.5) score += 1;
+
+		const healthy = score >= 8
 
 		return {
 			dish: DishDto.fromEntity(dish),
@@ -133,5 +140,37 @@ export class DishService {
 		}	
 		return healthyDishes;
 	}
+
+	async getFilteredDishes(params: {
+		sodium?: number;
+		calories?: number;
+		proteins?: number;
+		limit?: number;
+		offset?: number;
+		}): Promise<DishDto[]> {
+		const whereNutritionFacts: {
+			sodium?: { [Op.lte]: number };
+			calories?: { [Op.lte]: number };
+			proteins?: { [Op.gte]: number };
+		} = {};
+
+		if (params.sodium !== undefined) {
+			whereNutritionFacts.sodium = { [Op.lte]: params.sodium };
+		}
+		if (params.calories !== undefined) {
+			whereNutritionFacts.calories = { [Op.lte]: params.calories };
+		}
+		if (params.proteins !== undefined) {
+			whereNutritionFacts.proteins = { [Op.gte]: params.proteins };
+		}
+
+		const limit = params.limit ?? 10;
+		const offset = params.offset ?? 0;
+
+		const dishes = await this.dishRepository.findWithFilters(whereNutritionFacts, limit, offset);
+
+		return dishes.map(DishDto.fromEntity);
+	}
+
 
 }
