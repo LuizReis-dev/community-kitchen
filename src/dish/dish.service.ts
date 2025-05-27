@@ -122,4 +122,16 @@ export class DishService {
 			healthy,
 		}
 	}
+
+	async listAllHealthyDishes(): Promise<DishDto[]> {
+		const dishes = await this.dishRepository.findAllDishesWithNutritionFacts();
+		const healthyDishes: DishDto[] = [];
+
+		for (const dish of dishes) {
+			const result = await this.isDishHealthy(dish.id);
+			if (result.healthy) healthyDishes.push(result.dish);
+		}	
+		return healthyDishes;
+	}
+
 }

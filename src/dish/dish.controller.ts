@@ -28,6 +28,12 @@ export class DishController {
 		return this.dishService.create(createDishDto)
 	}
 
+	@Get('list-all/healthy')
+	@ApiOkResponse({type: [DishDto]})
+	async listAllHealthy() {
+  		return this.dishService.listAllHealthyDishes();
+	}
+
 	@Get('dishes-by-ids')
 	@ApiOkResponse({ type: [DishDto] })
 	@ApiQuery({
@@ -94,9 +100,12 @@ export class DishController {
 	}
 
 	@Get(':id/healthy')
+	@ApiOkResponse({type: [DishDto]})
 	async isDishHealthy(
 		@Param('id', ParseIntPipe) id: number
 	): Promise<{ dish: DishDto; healthy: boolean }> {
 		return this.dishService.isDishHealthy(id)
 	}
+
+	
 }

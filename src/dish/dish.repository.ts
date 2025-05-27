@@ -231,6 +231,11 @@ export class DishRepository {
 		})
 	}
 
+	async findAllDishesWithNutritionFacts(): Promise<Dish[]>{
+		return await Dish.findAll({
+			include: [{model: Food, include: [NutritionFacts]}]
+		})
+	}
 
 	async validateFoodIds(foodIds: number[]): Promise<void> {
 		const transaction = await this.sequelize.transaction()
