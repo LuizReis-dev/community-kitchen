@@ -12,23 +12,17 @@ export class DishService {
 	constructor(private readonly dishRepository: DishRepository) {}
 
 	async create(createDishDto: CreateDishDto) {
-		const foods = await Food.findAll({
-			where: {
-				id: {
-					[Op.in]: createDishDto.foodIds,
-				},
-			},
-		})
-		if (foods.length !== createDishDto.foodIds.length) {
-			throw new BadRequestException('Um ou mais foodIds são inválidos.')
-		}
 		const { name, description, foodIds } = createDishDto
-		if (!name || !description || !foodIds) {
+
+		if (!name || !description || !foodIds?.length) {
 			throw new BadRequestException('Insira todos os dados do prato.')
 		}
 
+		await this.dishRepository.validateFoodIds(foodIds)
+
 		return this.dishRepository.create(createDishDto)
 	}
+
 
 	async findAll(): Promise<DishDto[]> {
 		const dishes = this.dishRepository.findAll()
@@ -39,7 +33,13 @@ export class DishService {
 	}
 
 	async findOne(id: number): Promise<DishDto> {
-		return this.dishRepository.findOne(id)
+		const dish = await this.dishRepository.findOne(id)
+
+		if (!dish) {
+			throw new NotFoundException('Prato não encontrado.')
+		}
+
+		return DishDto.fromEntity(dish)
 	}
 
 	async update(id: number, updateDishDto: UpdateDishDto) {
@@ -55,10 +55,12 @@ export class DishService {
 
 	async remove(id: number): Promise<void> {
 		const dish = await this.dishRepository.findOne(id)
+
 		if (!dish) {
 			throw new NotFoundException('Prato não encontrado.')
 		}
-		await this.dishRepository.remove(id)
+
+		await this.dishRepository.remove(dish)
 	}
 
 	async findDishesByIds(ids: number[]): Promise<DishDto[]> {
@@ -81,10 +83,43 @@ export class DishService {
 		if (!name || name.trim() === '') {
 			throw new BadRequestException('name de busca não pode ser vazio')
 		}
-		return this.dishRepository.findDishesByName(name)
+
+		const dishes = await this.dishRepository.findByName(name)
+
+		if (dishes.length === 0) {
+    		throw new NotFoundException(`Nenhum prato encontrado com o nome contendo '${name}'`)
+  		}
+
+		return dishes.map(DishDto.fromEntity)
 	}
 
 	async isDishHealthy(id: number): Promise<{ dish: DishDto; healthy: boolean }> {
-		return this.dishRepository.isDishHealthy(id)
+		const dish = await this.dishRepository.findDishWithNutritionFacts(id)
+
+		if (!dish) {
+			throw new NotFoundException('Prato não encontrado.')
+		}
+
+		const { nutritionFacts } = await this.getDishNutritionFacts(id)
+
+		let score = 0
+
+		if (nutritionFacts.calories <= 600) score += 2
+		else if (nutritionFacts.calories <= 700) score += 1
+
+		if (nutritionFacts.sodium <= 400) score += 2
+		else if (nutritionFacts.sodium <= 500) score += 1
+
+		if (nutritionFacts.proteins >= 15 && nutritionFacts.proteins <= 28) score += 2
+		if (nutritionFacts.carbohydrates <= 80) score += 1
+		if (nutritionFacts.fats <= 25) score += 1
+		if (nutritionFacts.fiber >= 5) score += 1
+
+		const healthy = score >= 6
+
+		return {
+			dish: DishDto.fromEntity(dish),
+			healthy,
+		}
 	}
 }

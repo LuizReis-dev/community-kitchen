@@ -16,35 +16,39 @@ export class DishRepository {
 
 	async create(createDishDto: CreateDishDto): Promise<DishDto> {
 		const transaction = await this.sequelize.transaction()
+		
 		try {
+			const { name, description, foodIds } = createDishDto
+
 			const foods = await Food.findAll({
-				where: {
-					id: {
-						[Op.in]: createDishDto.foodIds,
-					},
+			where: {
+				id: {
+				[Op.in]: foodIds,
 				},
-				transaction,
+			},
+			transaction,
 			})
 
 			const dish = await Dish.create(
-				{
-					name: createDishDto.name,
-					description: createDishDto.description,
-				},
-				{ transaction }
+			{ name, description },
+			{ transaction }
 			)
 
 			await dish.$set('foods', foods, { transaction })
 			dish.foods = foods
+
 			await transaction.commit()
+			
 			return DishDto.fromEntity(dish)
+
 		} catch (error) {
 			await transaction.rollback()
 			throw error instanceof BadRequestException
-				? error
-				: new BadRequestException('Erro ao criar o prato: ' + error.message)
+			? error
+			: new BadRequestException('Erro ao criar o prato: ' + error.message)
 		}
 	}
+
 
 	async findAll(): Promise<DishDto[]> {
 		const dishes = await Dish.findAll({
@@ -53,16 +57,10 @@ export class DishRepository {
 		return dishes.map(dish => DishDto.fromEntity(dish))
 	}
 
-	async findOne(id: number): Promise<DishDto> {
-		const dish = await Dish.findByPk(id, {
+	async findOne(id: number): Promise<Dish | null> {
+		return await Dish.findByPk(id, {
 			include: [Food],
 		})
-
-		if (!dish) {
-			throw new NotFoundException('Prato nao encontrado.')
-		}
-
-		return DishDto.fromEntity(dish)
 	}
 
 	async update(id: number, updateDishDto: UpdateDishDto): Promise<DishDto> {
@@ -142,10 +140,8 @@ export class DishRepository {
 		}
 	}
 
-	async remove(id: number): Promise<void> {
-		const dish = await Dish.findByPk(id)
-		if (!dish) throw new NotFoundException('Prato não encontrado.')
-		await dish.destroy()
+	async remove(dish: Dish): Promise<void> {
+  		await dish.destroy()
 	}
 
 	async findDishesByIds(ids: number[]): Promise<DishDto[]> {
@@ -218,53 +214,38 @@ export class DishRepository {
 		return dishes.map(dish => DishDto.fromEntity(dish))
 	}
 
-	async findDishesByName(name: string): Promise<DishDto[]> {
-		const dishes = await Dish.findAll({
+	async findByName(name: string): Promise<Dish[]> {
+		return await Dish.findAll({
 			include: [Food],
 			where: {
-				name: {
-					[Op.iLike]: `%${name}%`,
-				},
+			name: {
+				[Op.iLike]: `%${name}%`,
+			},
 			},
 		})
-
-		if (dishes.length === 0) {
-			throw new NotFoundException(`Nenhum prato encontrado com o nome contendo '${name}'`)
-		}
-
-		return dishes.map(dish => DishDto.fromEntity(dish))
 	}
 
-	async isDishHealthy(id: number): Promise<{ dish: DishDto; healthy: boolean }> {
-		const dish = await Dish.findByPk(id, {
+	async findDishWithNutritionFacts(id: number): Promise<Dish | null> {
+		return await Dish.findByPk(id, {
 			include: [{ model: Food, include: [NutritionFacts] }],
 		})
+	}
 
-		if (!dish) throw new NotFoundException('Prato não encontrado.')
 
-		const dishNutritionFacts = await this.getDishNutritionFacts(id)
+	async validateFoodIds(foodIds: number[]): Promise<void> {
+		const transaction = await this.sequelize.transaction()
+		const foods = await Food.findAll({
+			where: {
+			id: {
+				[Op.in]: foodIds,
+			},
+			},
+			transaction,
+		})
 
-		let score = 0
-
-		if (dishNutritionFacts.nutritionFacts.calories <= 600) score += 2
-		else if (dishNutritionFacts.nutritionFacts.calories <= 700) score += 1
-
-		if (dishNutritionFacts.nutritionFacts.sodium <= 400) score += 2
-		else if (dishNutritionFacts.nutritionFacts.sodium <= 500) score += 1
-
-		if (
-			dishNutritionFacts.nutritionFacts.proteins >= 15 &&
-			dishNutritionFacts.nutritionFacts.proteins <= 35
-		)
-			score += 2
-		if (dishNutritionFacts.nutritionFacts.carbohydrates <= 80) score += 1
-		if (dishNutritionFacts.nutritionFacts.fats <= 25) score += 1
-		if (dishNutritionFacts.nutritionFacts.fiber >= 5) score += 1
-
-		const healthy = score >= 6
-		return {
-			dish: DishDto.fromEntity(dish),
-			healthy,
+		if (foods.length !== foodIds.length) {
+			throw new BadRequestException('Um ou mais foodIds são inválidos.')
 		}
 	}
+
 }
