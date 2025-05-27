@@ -2,25 +2,47 @@ import { ApiProperty } from '@nestjs/swagger'
 import { NutritionFacts } from '../entities/nutrition-facts.entity'
 
 export class NutritionFactsDto {
-	@ApiProperty()
+	@ApiProperty({
+		description: 'Quantidade de calorias (kcal) — calculada automaticamente, não enviar no POST',
+		example: 111,
+		readOnly: true,  // Indica que é somente leitura no Swagger
+	})
 	calories: number
 
-	@ApiProperty()
+	@ApiProperty({
+		description: 'Quantidade de carboidratos (g) em 100g',
+		example: 23,
+	})
 	carbohydrates: number
 
-	@ApiProperty()
+	@ApiProperty({
+		description: 'Quantidade de proteínas (g) em 100g',
+		example: 2.6,
+	})
 	proteins: number
 
-	@ApiProperty()
+	@ApiProperty({
+		description: 'Quantidade de gorduras totais (g) em 100g',
+		example: 0.9,
+	})
 	fats: number
 
-	@ApiProperty()
+	@ApiProperty({
+		description: 'Quantidade de fibras (g) em 100g',
+		example: 1.8,
+	})
 	fiber: number
 
-	@ApiProperty()
+	@ApiProperty({
+		description: 'Quantidade de açúcares (g) em 100g',
+		example: 0.2,
+	})
 	sugar: number
 
-	@ApiProperty()
+	@ApiProperty({
+		description: 'Quantidade de sódio (mg) em 100g',
+		example: 5,
+	})
 	sodium: number
 
 	constructor(
@@ -44,7 +66,6 @@ export class NutritionFactsDto {
 	static isValid(obj: NutritionFactsDto): boolean {
 		if (!obj) return false
 		const fields = [
-			obj.calories,
 			obj.carbohydrates,
 			obj.proteins,
 			obj.fats,

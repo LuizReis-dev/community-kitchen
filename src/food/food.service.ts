@@ -3,6 +3,7 @@ import { CreateFoodDto } from './dto/create-food.dto'
 import { UpdateFoodDto } from './dto/update-food.dto'
 import { FoodRepository } from './food.repository'
 import { FoodDto } from './dto/food.dto'
+import { NutritionFactsDto } from './dto/nutrition-facts.dto'
 
 @Injectable()
 export class FoodService {
@@ -12,6 +13,8 @@ export class FoodService {
 		if (!CreateFoodDto.isValid(createFoodDto)) {
 			throw new BadRequestException('Todos os campos devem estar preenchidos!')
 		}
+
+		createFoodDto.nutritionFacts.calories = this.calculateCalories(createFoodDto.nutritionFacts);
 		return this.foodRepository.create(createFoodDto)
 	}
 
@@ -28,6 +31,8 @@ export class FoodService {
 			throw new BadRequestException('Todos os campos devem estar preenchidos!')
 		}
 
+		updateFoodDto.nutritionFacts.calories = this.calculateCalories(updateFoodDto.nutritionFacts);
+
 		return this.foodRepository.update(id, updateFoodDto)
 	}
 
@@ -41,5 +46,16 @@ export class FoodService {
 
 	async findFoodsByMinProteinAmount(minProteinAmount: number): Promise<FoodDto[]> {
 		return this.foodRepository.findFoodsByMinProteinAmount(minProteinAmount)
+	}
+
+	async findMostUsedFoods(page: number, limit: number) {
+		return this.foodRepository.findMostUsedFoods(page, limit)
+	}
+
+	private calculateCalories(nutritionFacts: NutritionFactsDto): number {
+		const calories = (nutritionFacts.carbohydrates * 4) + 
+						(nutritionFacts.proteins * 4) + 
+						(nutritionFacts.fats * 9);
+		return parseFloat(calories.toFixed(2));
 	}
 }

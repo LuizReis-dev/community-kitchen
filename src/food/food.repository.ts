@@ -6,6 +6,7 @@ import { FoodDto } from './dto/food.dto'
 import { UpdateFoodDto } from './dto/update-food.dto'
 import { Sequelize } from 'sequelize-typescript'
 import { Op } from 'sequelize'
+import { DishFood } from 'src/dish/entities/dish-food.entity'
 
 @Injectable()
 export class FoodRepository {
@@ -135,5 +136,27 @@ export class FoodRepository {
 			)
 
 		return foods.map(food => FoodDto.fromEntity(food))
+	}
+
+	async findMostUsedFoods(page = 1, limit = 10) {
+		const mostUsedFoods = await DishFood.findAll({
+			attributes: [
+				['food_id', 'foodId'],
+				[Sequelize.fn('COUNT', Sequelize.col('food_id')), 'timesInDishes'],
+			],
+			include: [
+				{
+					model: Food,
+					required: false,
+					where: { deletedAt: null },
+				},
+			],
+			group: ['DishFood.food_id', 'food.id'],
+			order: [[Sequelize.fn('COUNT', Sequelize.col('food_id')), 'DESC']],
+			limit,
+			offset: (page - 1) * limit,
+		})
+
+		return mostUsedFoods
 	}
 }
