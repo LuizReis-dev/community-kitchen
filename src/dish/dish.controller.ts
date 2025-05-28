@@ -127,7 +127,7 @@ export class DishController {
 
 	@Get('order-by/:parameter')
 	@ApiOkResponse({type: [DishDto]})
-		async getOrderedBy(@Param('parameter') parameter: string) {
+		async getOrderedByParameter(@Param('parameter') parameter: string) {
 		return this.dishService.getOrderedDishes(parameter);
 	}
 }

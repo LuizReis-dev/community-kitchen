@@ -262,6 +262,23 @@ export class DishRepository {
 		});
 	}
 
+	async findAllOrderedByNutritionFact(
+			parameter: 'calories' | 'proteins' | 'carbohydrates' | 'fats'
+		): Promise<Dish[]> {
+			return Dish.findAll({
+				include: [{
+					model: Food,
+					include: [{
+						model: NutritionFacts,
+						attributes: ['calories', 'proteins', 'carbohydrates', 'fats']
+					}],
+					attributes: []
+				}],
+				order: [[{ model: Food, as: 'foods' }, { model: NutritionFacts, as: 'nutritionFacts' }, parameter, 'DESC']]
+			});
+	}
+
+
 
 	async validateFoodIds(foodIds: number[]): Promise<void> {
 		const transaction = await this.sequelize.transaction()

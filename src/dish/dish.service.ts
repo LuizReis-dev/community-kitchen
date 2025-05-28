@@ -150,19 +150,25 @@ export class DishService {
 			limit?: number;
 			offset?: number;
 		}): Promise<DishDto[]> {
+			const whereNutritionFacts: any = {};
 
-			const dishes = await this.dishRepository.findAllDishesWithNutritionFacts();
+			if (params.sodium !== undefined) {
+				whereNutritionFacts.sodium = { [Op.lte]: params.sodium };
+			}
+			if (params.calories !== undefined) {
+				whereNutritionFacts.calories = { [Op.lte]: params.calories };
+			}
+			if (params.proteins !== undefined) {
+				whereNutritionFacts.proteins = { [Op.gte]: params.proteins };
+			}
 
-			const filtered = dishes.filter(dish => {
-				if (params.sodium !== undefined && sumNutritionParam(dish, 'sodium') > params.sodium) return false;
-				if (params.calories !== undefined && sumNutritionParam(dish, 'calories') > params.calories) return false;
-				if (params.proteins !== undefined && sumNutritionParam(dish, 'proteins') < params.proteins) return false;
+			const dishes = await this.dishRepository.findWithFilters(
+				whereNutritionFacts,
+				params.limit ?? 10,
+				params.offset ?? 0
+			);
 
-				return true;
-			});
-			return filtered
-				.slice(params.offset ?? 0, (params.offset ?? 0) + (params.limit ?? 10))
-				.map(DishDto.fromEntity);
+			return dishes.map(DishDto.fromEntity);
 	}
 
 
@@ -172,23 +178,11 @@ export class DishService {
 		if (!validParams.includes(parameter))
 			throw new BadRequestException('Parâmetro inválido para ordenação.');
 
-		const dishes = await this.dishRepository.findAllDishesWithNutritionFacts();
+		const dishes = await this.dishRepository.findAllOrderedByNutritionFact(
+			parameter as 'calories' | 'proteins' | 'carbohydrates' | 'fats'
+		);
 
-		return dishes
-			.sort((a, b) => {
-				const aValue = sumNutritionParam(a, parameter);
-				const bValue = sumNutritionParam(b, parameter);
-				return bValue - aValue;
-			})
-			.map(DishDto.fromEntity);
+		return dishes.map(DishDto.fromEntity);
 	}
-}
 
-	function sumNutritionParam(dish: Dish, param: string): number {
-		if (!dish.foods) return 0;
-
-		return dish.foods.reduce((sum, food) => {
-			const value = food.nutritionFacts?.[param] ?? 0;
-			return sum + Number(value);
-		}, 0);
 }
