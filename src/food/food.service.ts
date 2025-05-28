@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
 import { CreateFoodDto } from './dto/create-food.dto'
 import { UpdateFoodDto } from './dto/update-food.dto'
 import { FoodRepository } from './food.repository'
@@ -56,5 +56,9 @@ export class FoodService {
 		const calories =
 			nutritionFacts.carbohydrates * 4 + nutritionFacts.proteins * 4 + nutritionFacts.fats * 9
 		return parseFloat(calories.toFixed(2))
+	}
+
+	async findFoodsByName(name: string): Promise<FoodDto[]> {
+		return this.foodRepository.findFoodsByName(name)
 	}
 }

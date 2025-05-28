@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Param, Delete, Put, Query } from '@nestjs/
 import { FoodService } from './food.service'
 import { CreateFoodDto } from './dto/create-food.dto'
 import { UpdateFoodDto } from './dto/update-food.dto'
-import { ApiOkResponse } from '@nestjs/swagger'
+import { ApiOkResponse, ApiParam, ApiQuery } from '@nestjs/swagger'
 import { FoodDto } from './dto/food.dto'
 
 @Controller('foods')
@@ -50,5 +50,12 @@ export class FoodController {
 	@Get('filter/most-used')
 	async findMostUsedFoods(@Query('page') page: number = 1, @Query('limit') limit: number = 10) {
 		return this.foodService.findMostUsedFoods(page, limit)
+	}
+
+	@Get('foods-by-name/:term')
+	@ApiOkResponse({ type: [FoodDto] })
+	@ApiParam({ name: 'name', type: String, example: 'Tomate' })
+	async findFoodsByName(@Param('name') name: string): Promise<FoodDto[]> {
+		return this.foodService.findFoodsByName(name)
 	}
 }

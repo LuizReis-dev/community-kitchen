@@ -159,4 +159,21 @@ export class FoodRepository {
 
 		return mostUsedFoods
 	}
+
+	async findFoodsByName(name: string): Promise<FoodDto[]> {
+		const foods = await Food.findAll({
+			include: [{ model: NutritionFacts }],
+			where: {
+				name: {
+					[Op.iLike]: `%${name}%`,
+				},
+			},
+		})
+
+		if (foods.length === 0) {
+			throw new NotFoundException(`Nenhuma comida encontrada com o nome: '${name}'`)
+		}
+
+		return foods.map(food => FoodDto.fromEntity(food))
+	}
 }
