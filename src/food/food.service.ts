@@ -61,4 +61,8 @@ export class FoodService {
 	async findFoodsByName(name: string): Promise<FoodDto[]> {
 		return this.foodRepository.findFoodsByName(name)
 	}
+
+	async findMostCaloricFoods(page: number, limit: number = 10): Promise<FoodDto[]> {
+		return this.foodRepository.findMostCaloricFoods(page, limit)
+	}
 }

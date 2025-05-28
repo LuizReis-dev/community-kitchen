@@ -176,4 +176,19 @@ export class FoodRepository {
 
 		return foods.map(food => FoodDto.fromEntity(food))
 	}
+
+	async findMostCaloricFoods(page = 1, limit: number = 10): Promise<FoodDto[]> {
+		const foods = await Food.findAll({
+			include: [{ model: NutritionFacts, as: 'nutritionFacts' }],
+			order: [[{ model: NutritionFacts, as: 'nutritionFacts' }, 'calories', 'DESC']],
+			limit,
+			offset: (page - 1) * limit,
+		})
+
+		if (foods.length === 0) {
+			throw new NotFoundException(`Nenhum alimento encontrado.`)
+		}
+
+		return foods.map(food => FoodDto.fromEntity(food))
+	}
 }
