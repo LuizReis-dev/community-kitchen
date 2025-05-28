@@ -4,6 +4,7 @@ import { DailyEventDto } from './dto/daily-event.dto'
 import { DailyEvent } from './entities/daily-event.entity'
 import { UpdateDailyEventDto } from './dto/update-daily-event.dto'
 import { CreateDailyEventDto } from './dto/create-daily-event.dto'
+import { Op } from 'sequelize'
 
 export class DailyEventRepository {
 	constructor(@Inject('SEQUELIZE') private sequelize: Sequelize) {}
@@ -110,5 +111,19 @@ export class DailyEventRepository {
 		if (!dailyEvent) throw new NotFoundException('Evento diário não encontrado!')
 
 		await dailyEvent.destroy()
+	}
+
+	async findUpcomingEventsToday(): Promise<DailyEventDto[]> {
+		const now = new Date()
+		const currentTime = now.toTimeString().split(' ')[0]
+
+		const dailyEvents = await DailyEvent.findAll({
+			where: {
+				end_time: { [Op.gte]: currentTime },
+			},
+			include: ['menu_requirement'],
+		})
+
+		return dailyEvents.map(event => DailyEventDto.fromEntity(event))
 	}
 }
