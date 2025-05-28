@@ -6,6 +6,8 @@ import { Op } from 'sequelize'
 import { UpdateDishDto } from './dto/update-dish.dto'
 import { DishDto } from './dto/dish.dto'
 import { DishNutritionFactsDto } from './dto/dish-nutritionFacts.dto'
+import { NutritionFactsDto } from 'src/food/dto/nutrition-facts.dto'
+import { Dish } from './entities/dish.entity'
 
 @Injectable()
 export class DishService {
@@ -142,35 +144,51 @@ export class DishService {
 	}
 
 	async getFilteredDishes(params: {
-		sodium?: number;
-		calories?: number;
-		proteins?: number;
-		limit?: number;
-		offset?: number;
+			sodium?: number;
+			calories?: number;
+			proteins?: number;
+			limit?: number;
+			offset?: number;
 		}): Promise<DishDto[]> {
-		const whereNutritionFacts: {
-			sodium?: { [Op.lte]: number };
-			calories?: { [Op.lte]: number };
-			proteins?: { [Op.gte]: number };
-		} = {};
 
-		if (params.sodium !== undefined) {
-			whereNutritionFacts.sodium = { [Op.lte]: params.sodium };
-		}
-		if (params.calories !== undefined) {
-			whereNutritionFacts.calories = { [Op.lte]: params.calories };
-		}
-		if (params.proteins !== undefined) {
-			whereNutritionFacts.proteins = { [Op.gte]: params.proteins };
-		}
+			const dishes = await this.dishRepository.findAllDishesWithNutritionFacts();
 
-		const limit = params.limit ?? 10;
-		const offset = params.offset ?? 0;
+			const filtered = dishes.filter(dish => {
+				if (params.sodium !== undefined && sumNutritionParam(dish, 'sodium') > params.sodium) return false;
+				if (params.calories !== undefined && sumNutritionParam(dish, 'calories') > params.calories) return false;
+				if (params.proteins !== undefined && sumNutritionParam(dish, 'proteins') < params.proteins) return false;
 
-		const dishes = await this.dishRepository.findWithFilters(whereNutritionFacts, limit, offset);
-
-		return dishes.map(DishDto.fromEntity);
+				return true;
+			});
+			return filtered
+				.slice(params.offset ?? 0, (params.offset ?? 0) + (params.limit ?? 10))
+				.map(DishDto.fromEntity);
 	}
 
 
+	async getOrderedDishes(parameter: string): Promise<DishDto[]> {
+		const validParams = ['calories', 'proteins', 'carbohydrates', 'fats'];
+
+		if (!validParams.includes(parameter))
+			throw new BadRequestException('Parâmetro inválido para ordenação.');
+
+		const dishes = await this.dishRepository.findAllDishesWithNutritionFacts();
+
+		return dishes
+			.sort((a, b) => {
+				const aValue = sumNutritionParam(a, parameter);
+				const bValue = sumNutritionParam(b, parameter);
+				return bValue - aValue;
+			})
+			.map(DishDto.fromEntity);
+	}
+}
+
+	function sumNutritionParam(dish: Dish, param: string): number {
+		if (!dish.foods) return 0;
+
+		return dish.foods.reduce((sum, food) => {
+			const value = food.nutritionFacts?.[param] ?? 0;
+			return sum + Number(value);
+		}, 0);
 }
