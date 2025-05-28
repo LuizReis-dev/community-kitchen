@@ -69,4 +69,8 @@ export class DailyEventService {
 	async remove(id: number): Promise<void> {
 		return this.dailyEventRepository.remove(id)
 	}
+
+	async findUpcomingEventsToday(): Promise<DailyEventDto[]> {
+		return this.dailyEventRepository.findUpcomingEventsToday()
+	}
 }
