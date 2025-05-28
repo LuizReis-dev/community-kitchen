@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
 import { CreateFoodDto } from './dto/create-food.dto'
 import { UpdateFoodDto } from './dto/update-food.dto'
 import { FoodRepository } from './food.repository'
@@ -14,7 +14,7 @@ export class FoodService {
 			throw new BadRequestException('Todos os campos devem estar preenchidos!')
 		}
 
-		createFoodDto.nutritionFacts.calories = this.calculateCalories(createFoodDto.nutritionFacts);
+		createFoodDto.nutritionFacts.calories = this.calculateCalories(createFoodDto.nutritionFacts)
 		return this.foodRepository.create(createFoodDto)
 	}
 
@@ -31,7 +31,7 @@ export class FoodService {
 			throw new BadRequestException('Todos os campos devem estar preenchidos!')
 		}
 
-		updateFoodDto.nutritionFacts.calories = this.calculateCalories(updateFoodDto.nutritionFacts);
+		updateFoodDto.nutritionFacts.calories = this.calculateCalories(updateFoodDto.nutritionFacts)
 
 		return this.foodRepository.update(id, updateFoodDto)
 	}
@@ -53,9 +53,16 @@ export class FoodService {
 	}
 
 	private calculateCalories(nutritionFacts: NutritionFactsDto): number {
-		const calories = (nutritionFacts.carbohydrates * 4) + 
-						(nutritionFacts.proteins * 4) + 
-						(nutritionFacts.fats * 9);
-		return parseFloat(calories.toFixed(2));
+		const calories =
+			nutritionFacts.carbohydrates * 4 + nutritionFacts.proteins * 4 + nutritionFacts.fats * 9
+		return parseFloat(calories.toFixed(2))
+	}
+
+	async findFoodsByName(name: string): Promise<FoodDto[]> {
+		return this.foodRepository.findFoodsByName(name)
+	}
+
+	async findMostCaloricFoods(page: number, limit: number = 10): Promise<FoodDto[]> {
+		return this.foodRepository.findMostCaloricFoods(page, limit)
 	}
 }

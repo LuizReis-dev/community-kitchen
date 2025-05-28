@@ -44,4 +44,10 @@ export class DailyEventController {
 	async remove(@Param('id') id: string) {
 		return this.dailyEventService.remove(+id)
 	}
+
+	@Get('upcoming/daily-events')
+	@ApiOkResponse({ type: [DailyEventDto] })
+	async findUpcomingEventsToday() {
+		return this.dailyEventService.findUpcomingEventsToday()
+	}
 }
