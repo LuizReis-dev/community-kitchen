@@ -6,29 +6,25 @@ import { Op } from 'sequelize'
 import { UpdateDishDto } from './dto/update-dish.dto'
 import { DishDto } from './dto/dish.dto'
 import { DishNutritionFactsDto } from './dto/dish-nutritionFacts.dto'
+import { NutritionFactsDto } from 'src/food/dto/nutrition-facts.dto'
+import { Dish } from './entities/dish.entity'
 
 @Injectable()
 export class DishService {
 	constructor(private readonly dishRepository: DishRepository) {}
 
 	async create(createDishDto: CreateDishDto) {
-		const foods = await Food.findAll({
-			where: {
-				id: {
-					[Op.in]: createDishDto.foodIds,
-				},
-			},
-		})
-		if (foods.length !== createDishDto.foodIds.length) {
-			throw new BadRequestException('Um ou mais foodIds são inválidos.')
-		}
 		const { name, description, foodIds } = createDishDto
-		if (!name || !description || !foodIds) {
+
+		if (!name || !description || !foodIds?.length) {
 			throw new BadRequestException('Insira todos os dados do prato.')
 		}
 
+		await this.dishRepository.validateFoodIds(foodIds)
+
 		return this.dishRepository.create(createDishDto)
 	}
+
 
 	async findAll(): Promise<DishDto[]> {
 		const dishes = this.dishRepository.findAll()
@@ -39,7 +35,13 @@ export class DishService {
 	}
 
 	async findOne(id: number): Promise<DishDto> {
-		return this.dishRepository.findOne(id)
+		const dish = await this.dishRepository.findOne(id)
+
+		if (!dish) {
+			throw new NotFoundException('Prato não encontrado.')
+		}
+
+		return DishDto.fromEntity(dish)
 	}
 
 	async update(id: number, updateDishDto: UpdateDishDto) {
@@ -55,10 +57,12 @@ export class DishService {
 
 	async remove(id: number): Promise<void> {
 		const dish = await this.dishRepository.findOne(id)
+
 		if (!dish) {
 			throw new NotFoundException('Prato não encontrado.')
 		}
-		await this.dishRepository.remove(id)
+
+		await this.dishRepository.remove(dish)
 	}
 
 	async findDishesByIds(ids: number[]): Promise<DishDto[]> {
@@ -81,10 +85,104 @@ export class DishService {
 		if (!name || name.trim() === '') {
 			throw new BadRequestException('name de busca não pode ser vazio')
 		}
-		return this.dishRepository.findDishesByName(name)
+
+		const dishes = await this.dishRepository.findByName(name)
+
+		if (dishes.length === 0) {
+    		throw new NotFoundException(`Nenhum prato encontrado com o nome contendo '${name}'`)
+  		}
+
+		return dishes.map(DishDto.fromEntity)
 	}
 
 	async isDishHealthy(id: number): Promise<{ dish: DishDto; healthy: boolean }> {
-		return this.dishRepository.isDishHealthy(id)
+		const dish = await this.dishRepository.findDishWithNutritionFacts(id)
+
+		if (!dish) {
+			throw new NotFoundException('Prato não encontrado.')
+		}
+
+		const { nutritionFacts } = await this.getDishNutritionFacts(id)
+
+		let score = 0
+
+		if (nutritionFacts.calories <= 250) score += 2;
+		else if (nutritionFacts.calories <= 350) score += 1;
+
+		if (nutritionFacts.sodium <= 200) score += 2;
+		else if (nutritionFacts.sodium <= 300) score += 1;
+
+		if (nutritionFacts.proteins >= 10) score += 2;
+		else if (nutritionFacts.proteins >= 5) score += 1;
+
+		if (nutritionFacts.carbohydrates <= 30) score += 2;
+		else if (nutritionFacts.carbohydrates <= 60) score += 1;
+
+		if (nutritionFacts.fats <= 10) score += 2;
+		else if (nutritionFacts.fats <= 20) score += 1;
+
+		if (nutritionFacts.fiber >= 3) score += 2;
+		else if (nutritionFacts.fiber >= 1.5) score += 1;
+
+		const healthy = score >= 8
+
+		return {
+			dish: DishDto.fromEntity(dish),
+			healthy,
+		}
 	}
+
+	async listAllHealthyDishes(): Promise<DishDto[]> {
+		const dishes = await this.dishRepository.findAllDishesWithNutritionFacts();
+		const healthyDishes: DishDto[] = [];
+
+		for (const dish of dishes) {
+			const result = await this.isDishHealthy(dish.id);
+			if (result.healthy) healthyDishes.push(result.dish);
+		}	
+		return healthyDishes;
+	}
+
+	async getFilteredDishes(params: {
+			sodium?: number;
+			calories?: number;
+			proteins?: number;
+			limit?: number;
+			offset?: number;
+		}): Promise<DishDto[]> {
+			const whereNutritionFacts: any = {};
+
+			if (params.sodium !== undefined) {
+				whereNutritionFacts.sodium = { [Op.lte]: params.sodium };
+			}
+			if (params.calories !== undefined) {
+				whereNutritionFacts.calories = { [Op.lte]: params.calories };
+			}
+			if (params.proteins !== undefined) {
+				whereNutritionFacts.proteins = { [Op.gte]: params.proteins };
+			}
+
+			const dishes = await this.dishRepository.findWithFilters(
+				whereNutritionFacts,
+				params.limit ?? 10,
+				params.offset ?? 0
+			);
+
+			return dishes.map(DishDto.fromEntity);
+	}
+
+
+	async getOrderedDishes(parameter: string): Promise<DishDto[]> {
+		const validParams = ['calories', 'proteins', 'carbohydrates', 'fats'];
+
+		if (!validParams.includes(parameter))
+			throw new BadRequestException('Parâmetro inválido para ordenação.');
+
+		const dishes = await this.dishRepository.findAllOrderedByNutritionFact(
+			parameter as 'calories' | 'proteins' | 'carbohydrates' | 'fats'
+		);
+
+		return dishes.map(DishDto.fromEntity);
+	}
+
 }

@@ -28,6 +28,12 @@ export class DishController {
 		return this.dishService.create(createDishDto)
 	}
 
+	@Get('list-all/healthy')
+	@ApiOkResponse({type: [DishDto]})
+	async listAllHealthy() {
+  		return this.dishService.listAllHealthyDishes();
+	}
+
 	@Get('dishes-by-ids')
 	@ApiOkResponse({ type: [DishDto] })
 	@ApiQuery({
@@ -94,9 +100,34 @@ export class DishController {
 	}
 
 	@Get(':id/healthy')
+	@ApiOkResponse({type: [DishDto]})
 	async isDishHealthy(
 		@Param('id', ParseIntPipe) id: number
 	): Promise<{ dish: DishDto; healthy: boolean }> {
 		return this.dishService.isDishHealthy(id)
+	}
+
+	@Get('filtered/by-parameter')
+	@ApiOkResponse({type: [DishDto]})
+	async getFilteredDishes(
+	@Query('sodium') sodium?: string,
+	@Query('calories') calories?: string,
+	@Query('proteins') proteins?: string,
+	@Query('limit') limit = '10',
+	@Query('offset') offset = '0'
+	) {
+	return this.dishService.getFilteredDishes({
+		sodium: sodium ? Number(sodium) : undefined,
+		calories: calories ? Number(calories) : undefined,
+		proteins: proteins ? Number(proteins) : undefined,
+		limit: Number(limit),
+		offset: Number(offset),
+	});
+	}
+
+	@Get('order-by/:parameter')
+	@ApiOkResponse({type: [DishDto]})
+		async getOrderedByParameter(@Param('parameter') parameter: string) {
+		return this.dishService.getOrderedDishes(parameter);
 	}
 }
