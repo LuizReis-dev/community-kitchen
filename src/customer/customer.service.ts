@@ -19,8 +19,8 @@ export class CustomerService {
 		return this.customerRepository.create(createCustomerDto);
 	}
 
-	findAll() {
-		return `This action returns all customer`
+	async findAll(): Promise<CustomerDto[]> {
+		return this.customerRepository.findAll();
 	}
 
 	findOne(id: number) {

@@ -16,8 +16,9 @@ export class CustomerController {
 	}
 
 	@Get()
-	findAll() {
-		return this.customerService.findAll()
+	@ApiOkResponse({ type: [CustomerDto] })
+	async findAll() {
+		return this.customerService.findAll();
 	}
 
 	@Get(':id')

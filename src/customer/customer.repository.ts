@@ -29,6 +29,12 @@ export class CustomerRepository {
         }
     }
 
+    async findAll(): Promise<CustomerDto[]> {
+        const customers = await Customer.findAll();
+
+        return customers.map(customer => CustomerDto.fromEntity(customer));
+    }
+    
     async findCustomerByTaxId(taxId: string): Promise<CustomerDto | null> {
         let customer = await Customer.findOne({
             where: {
