@@ -44,8 +44,21 @@ export class CustomerService {
 		return customer;
 	}
 
-	update(id: number, updateCustomerDto: UpdateCustomerDto) {
-		return `This action updates a #${id} customer`
+	async update(id: number, updateCustomerDto: UpdateCustomerDto) {
+
+		let customer = await this.customerRepository.findOne(id);
+
+		if(customer == null) {
+			throw new NotFoundException("Customer not found!");
+		}
+
+		let customerAlreadyExists = customer.taxId != updateCustomerDto.taxId && await this.customerRepository.findCustomerByTaxId(updateCustomerDto.taxId) != null;
+
+		if(customerAlreadyExists) {
+			throw new BadRequestException("Já existe um cliente com este CPF");
+		}
+
+		return this.customerRepository.update(id, updateCustomerDto);
 	}
 
 	remove(id: number) {
