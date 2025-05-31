@@ -22,10 +22,17 @@ export class CustomerController {
 	}
 
 	@Get(':id')
+	@ApiOkResponse({ type: CustomerDto })
 	async findOne(@Param('id') id: string) {
 		return this.customerService.findOne(+id)
 	}
 
+	@Get('/taxid/:taxId')
+	@ApiOkResponse({ type: CustomerDto })
+	async findByTaxId(@Param('taxId') taxId: string) {
+		return this.customerService.findByTaxId(taxId);
+	}
+	
 	@Patch(':id')
 	update(@Param('id') id: string, @Body() updateCustomerDto: UpdateCustomerDto) {
 		return this.customerService.update(+id, updateCustomerDto)

@@ -34,6 +34,16 @@ export class CustomerService {
 		return customer;
 	}
 
+	async findByTaxId(taxId: string): Promise<CustomerDto|null> {
+		const customer = await this.customerRepository.findCustomerByTaxId(taxId);
+
+		if(!customer) {
+			throw new NotFoundException("Customer not found!");
+		}
+
+		return customer;
+	}
+
 	update(id: number, updateCustomerDto: UpdateCustomerDto) {
 		return `This action updates a #${id} customer`
 	}
