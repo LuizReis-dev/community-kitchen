@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common'
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put, HttpCode, HttpStatus } from '@nestjs/common'
 import { CustomerService } from './customer.service'
 import { CreateCustomerDto } from './dto/create-customer.dto'
 import { UpdateCustomerDto } from './dto/update-customer.dto'
@@ -40,7 +40,7 @@ export class CustomerController {
 	}
 
 	@Delete(':id')
-	@HttpCode(HttpStatus.NO_CONTENT) // Define status 204
+	@HttpCode(HttpStatus.NO_CONTENT)
 	async remove(@Param('id') id: string) {
 		return this.customerService.remove(+id)
 	}
