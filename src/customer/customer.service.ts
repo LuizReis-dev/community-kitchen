@@ -61,7 +61,7 @@ export class CustomerService {
 		return this.customerRepository.update(id, updateCustomerDto);
 	}
 
-	remove(id: number) {
-		return `This action removes a #${id} customer`
+	async remove(id: number) {
+		return this.customerRepository.remove(id);
 	}
 }

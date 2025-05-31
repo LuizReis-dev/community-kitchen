@@ -40,7 +40,8 @@ export class CustomerController {
 	}
 
 	@Delete(':id')
-	remove(@Param('id') id: string) {
+	@HttpCode(HttpStatus.NO_CONTENT) // Define status 204
+	async remove(@Param('id') id: string) {
 		return this.customerService.remove(+id)
 	}
 }

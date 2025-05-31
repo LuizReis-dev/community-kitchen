@@ -78,4 +78,12 @@ export class CustomerRepository {
             throw new BadRequestException('Erro ao atualizar o alimento!')
         }
     }
+
+    async remove(id: number) {
+        await Customer.destroy({
+            where: {
+                id: id
+            }
+        })
+    }
 }
