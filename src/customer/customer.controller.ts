@@ -11,6 +11,7 @@ export class CustomerController {
 
 	@Post()
 	@ApiOkResponse({ type: CustomerDto })
+	@HttpCode(HttpStatus.CREATED)
 	async create(@Body() createCustomerDto: CreateCustomerDto) {
 		return this.customerService.create(createCustomerDto)
 	}
