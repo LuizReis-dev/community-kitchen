@@ -28,7 +28,7 @@ export class CustomerService {
 		const customer = await this.customerRepository.findOne(id);
 
 		if(!customer) {
-			throw new NotFoundException("Customer not found!");
+			throw new NotFoundException("Cliente não encontrado!");
 		}
 
 		return customer;
@@ -38,7 +38,7 @@ export class CustomerService {
 		const customer = await this.customerRepository.findCustomerByTaxId(taxId);
 
 		if(!customer) {
-			throw new NotFoundException("Customer not found!");
+			throw new NotFoundException("Cliente não encontrado!");
 		}
 
 		return customer;
@@ -49,7 +49,7 @@ export class CustomerService {
 		let customer = await this.customerRepository.findOne(id);
 
 		if(customer == null) {
-			throw new NotFoundException("Customer not found!");
+			throw new NotFoundException("Cliente não encontrado!");
 		}
 
 		let customerAlreadyExists = customer.taxId != updateCustomerDto.taxId && await this.customerRepository.findCustomerByTaxId(updateCustomerDto.taxId) != null;
