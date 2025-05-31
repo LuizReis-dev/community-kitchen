@@ -22,7 +22,7 @@ export class CustomerController {
 	}
 
 	@Get(':id')
-	findOne(@Param('id') id: string) {
+	async findOne(@Param('id') id: string) {
 		return this.customerService.findOne(+id)
 	}
 

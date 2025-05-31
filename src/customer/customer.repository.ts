@@ -34,7 +34,15 @@ export class CustomerRepository {
 
         return customers.map(customer => CustomerDto.fromEntity(customer));
     }
-    
+
+    async findOne(id: number): Promise<CustomerDto|null> {
+        const customer = await Customer.findByPk(id);
+        
+        if(!customer) return null;
+
+        return CustomerDto.fromEntity(customer);
+    }
+
     async findCustomerByTaxId(taxId: string): Promise<CustomerDto | null> {
         let customer = await Customer.findOne({
             where: {

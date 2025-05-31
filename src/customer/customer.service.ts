@@ -1,8 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
 import { CreateCustomerDto } from './dto/create-customer.dto'
 import { UpdateCustomerDto } from './dto/update-customer.dto'
 import { CustomerRepository } from './customer.repository'
 import { CustomerDto } from './dto/customer.dto';
+import { NotFoundError } from 'rxjs';
 
 @Injectable()
 export class CustomerService {
@@ -23,8 +24,14 @@ export class CustomerService {
 		return this.customerRepository.findAll();
 	}
 
-	findOne(id: number) {
-		return `This action returns a #${id} customer`
+	async findOne(id: number): Promise<CustomerDto|null> {
+		const customer = await this.customerRepository.findOne(id);
+
+		if(!customer) {
+			throw new NotFoundException("Customer not found!");
+		}
+
+		return customer;
 	}
 
 	update(id: number, updateCustomerDto: UpdateCustomerDto) {
