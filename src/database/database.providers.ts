@@ -8,6 +8,7 @@ import { Menu } from 'src/menu/entities/menu.entity'
 import { MenuRequirement } from 'src/menu-requirement/entities/menu-requirement.entity'
 import { DailyEvent } from 'src/daily-event/entities/daily-event.entity'
 import { Customer } from 'src/customer/entities/customer.entity'
+import { MenuAttendance } from 'src/menu-attendance/entities/menu-attendance.entity'
 const dotenv = require('dotenv')
 
 dotenv.config()
@@ -33,7 +34,8 @@ export const databaseProviders = [
 				Menu,
 				DishMenu,
 				DailyEvent,
-				Customer
+				Customer,
+				MenuAttendance
 			])
 			await sequelize.sync()
 			return sequelize

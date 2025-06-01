@@ -8,6 +8,7 @@ import { MenuModule } from './menu/menu.module'
 import { MenuRequirementModule } from './menu-requirement/menu-requirement.module'
 import { DailyEventModule } from './daily-event/daily-event.module'
 import { CustomerModule } from './customer/customer.module'
+import { MenuAttendanceModule } from './menu-attendance/menu-attendance.module';
 
 @Module({
 	imports: [
@@ -17,7 +18,8 @@ import { CustomerModule } from './customer/customer.module'
 		MenuModule,
 		MenuRequirementModule,
 		DailyEventModule,
-		CustomerModule
+		CustomerModule,
+		MenuAttendanceModule
 	],
 	controllers: [AppController],
 	providers: [AppService],

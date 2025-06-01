@@ -1,4 +1,4 @@
-import { Model } from 'sequelize-typescript'
+import { HasMany, Model } from 'sequelize-typescript'
 import {
 	AutoIncrement,
 	Column,
@@ -9,6 +9,7 @@ import {
 	Table,
 	UpdatedAt,
 } from 'sequelize-typescript'
+import { MenuAttendance } from 'src/menu-attendance/entities/menu-attendance.entity'
 
 @Table({
 	tableName: 'tb_customer',
@@ -42,6 +43,9 @@ export class Customer extends Model {
 	})
 	declare birthDate: Date
 
+	@HasMany(() => MenuAttendance)
+  	declare menuAttendances: MenuAttendance[];
+	
 	@CreatedAt
 	@Column({
 		field: 'created_at',

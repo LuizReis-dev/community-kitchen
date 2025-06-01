@@ -24,7 +24,7 @@ export class CustomerService {
 		return this.customerRepository.findAll();
 	}
 
-	async findOne(id: number): Promise<CustomerDto|null> {
+	async findOne(id: number): Promise<CustomerDto> {
 		const customer = await this.customerRepository.findOne(id);
 
 		if(!customer) {
