@@ -52,4 +52,5 @@ export class Food extends Model {
 
 	@BelongsToMany(() => Dish, () => DishFood)
 	declare dishes?: Dish[]
+	DishFood: any
 }

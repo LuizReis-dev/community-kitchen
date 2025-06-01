@@ -217,17 +217,51 @@ export class DishService {
     }
 
 
-	async getOrderedDishes(parameter: string): Promise<DishDto[]> {
-		const validParams = ['calories', 'proteins', 'carbohydrates', 'fats'];
+	async getOrderedDishes(parameter: string): Promise<DishNutritionSummaryDto[]> {
+    const validParams = ['calories', 'proteins', 'carbohydrates', 'fats'];
 
-		if (!validParams.includes(parameter))
-			throw new BadRequestException('Parâmetro inválido para ordenação.');
+    if (!validParams.includes(parameter)) {
+        throw new BadRequestException('Parâmetro inválido para ordenação.');
+    }
 
-		const dishes = await this.dishRepository.findAllOrderedByNutritionFact(
-			parameter as 'calories' | 'proteins' | 'carbohydrates' | 'fats'
-		);
+    const dishes = await this.dishRepository.findAllOrderedByNutricionalParameter();
 
-		return dishes.map(DishDto.fromEntity);
-	}
+    const summaryDtos: DishNutritionSummaryDto[] = dishes.map(dish => {
+        const totalNutritionFacts = new NutritionFactsDto(0, 0, 0, 0, 0, 0, 0);
+
+        if (dish.foods?.length) {
+            dish.foods.forEach(food => {
+                const nf = food.nutritionFacts;
+                if (!nf) return;
+
+                const quantity = food.DishFood?.quantity ?? 100;
+                const factor = quantity / 100;
+
+                totalNutritionFacts.calories += Number(nf.calories) * factor;
+                totalNutritionFacts.proteins += Number(nf.proteins) * factor;
+                totalNutritionFacts.carbohydrates += Number(nf.carbohydrates) * factor;
+                totalNutritionFacts.fats += Number(nf.fats) * factor;
+                totalNutritionFacts.fiber += Number(nf.fiber) * factor;
+                totalNutritionFacts.sugar += Number(nf.sugar) * factor;
+                totalNutritionFacts.sodium += Number(nf.sodium) * factor;
+            });
+        }
+
+        return new DishNutritionSummaryDto(
+            dish.id,
+            dish.name,
+            dish.description,
+            totalNutritionFacts
+        );
+    });
+    summaryDtos.sort((a, b) => {
+        const aValue = (a.nutritionFacts as any)[parameter];
+        const bValue = (b.nutritionFacts as any)[parameter];
+        return bValue - aValue; 
+    });
+
+    return summaryDtos;
+}
+
 
 }
