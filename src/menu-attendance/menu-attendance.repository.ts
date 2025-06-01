@@ -49,7 +49,19 @@ export class MenuAttendanceRepository {
 
         return menuAttendances.map(menuAttendance => MenuAttendanceDto.fromEntity(menuAttendance));
     }
-    
+
+    async findOne(id: number): Promise<MenuAttendanceDto | null> {
+        const menuAttendance = await MenuAttendance.findByPk(id, {
+            include: [
+                { model: Menu },
+                { model: Customer }
+            ]
+        });
+
+        if (!menuAttendance) return null;
+
+        return MenuAttendanceDto.fromEntity(menuAttendance);
+    }
     async findByCustomerIdAndDate(customerId: number, date: Date): Promise<MenuAttendance | null> {
         const startOfDay = new Date(date);
         startOfDay.setHours(0, 0, 0, 0);

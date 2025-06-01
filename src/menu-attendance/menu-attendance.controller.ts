@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Param, HttpCode, HttpStatus } from '@nestjs/common';
 import { MenuAttendanceService } from './menu-attendance.service';
 import { CreateMenuAttendanceDto } from './dto/create-menu-attendance.dto';
-import { ApiCreatedResponse } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
 import { MenuAttendanceDto } from './dto/menu-attendance.dto';
 
 @Controller('menu-attendance')
@@ -16,12 +16,13 @@ export class MenuAttendanceController {
   }
 
   @Get()
-  @ApiCreatedResponse({ type: [MenuAttendanceDto] })
+  @ApiOkResponse({ type: [MenuAttendanceDto] })
   async findAll() {
     return this.menuAttendanceService.findAll();
   }
 
   @Get(':id')
+  @ApiOkResponse({ type: MenuAttendanceDto })
   findOne(@Param('id') id: string) {
     return this.menuAttendanceService.findOne(+id);
   }

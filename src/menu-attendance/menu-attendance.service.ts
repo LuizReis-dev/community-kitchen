@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateMenuAttendanceDto } from './dto/create-menu-attendance.dto';
 import { WEEK_DAYS } from 'src/common/enums/week-days';
 import { MenuService } from 'src/menu/menu.service';
@@ -33,7 +33,7 @@ export class MenuAttendanceService {
     if (customerAlreadyServed) {
       throw new BadRequestException('Este cliente já possui atendimento registrado hoje.');
     }
-    
+
     return this.menuAttendanceRepository.create(createMenuAttendanceDto);
   }
 
@@ -41,8 +41,14 @@ export class MenuAttendanceService {
     return this.menuAttendanceRepository.findAll();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} menuAttendance`;
+  async findOne(id: number): Promise<MenuAttendanceDto> {
+    const menuAttendanceDto = await this.menuAttendanceRepository.findOne(id);
+
+    if(!menuAttendanceDto) {
+      throw new NotFoundException("Atendimento não encontrado!");
+    }
+
+    return menuAttendanceDto;
   }
 
   private getTodayWeekDay(): WEEK_DAYS {
