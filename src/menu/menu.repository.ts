@@ -48,7 +48,7 @@ export class MenuRepository {
 
 	async findOne(id: number) {
 		const menu = await Menu.findByPk(id, {
-			include: ['dishes'],
+			include: ['dishes', 'dailyEvent'],
 		})
 
 		if (!menu) throw new NotFoundException('Menu not found')

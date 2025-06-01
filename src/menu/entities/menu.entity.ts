@@ -11,10 +11,12 @@ import {
 	BelongsToMany,
 	ForeignKey,
 	BelongsTo,
+	HasMany,
 } from 'sequelize-typescript'
 import { Dish } from 'src/dish/entities/dish.entity'
 import { DishMenu } from './dish-menu'
 import { DailyEvent } from 'src/daily-event/entities/daily-event.entity'
+import { MenuAttendance } from 'src/menu-attendance/entities/menu-attendance.entity'
 
 @Table({
 	tableName: 'tb_menu',
@@ -48,6 +50,9 @@ export class Menu extends Model {
 
 	@BelongsTo(() => DailyEvent)
 	declare dailyEvent: DailyEvent
+
+	@HasMany(() => MenuAttendance)
+  	declare menuAttendances: MenuAttendance[];
 
 	@CreatedAt
 	@Column({
