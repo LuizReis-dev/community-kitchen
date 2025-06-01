@@ -10,8 +10,10 @@ import {
 	MaxLength,
 	ArrayUnique,
 	isString,
+	ValidateNested,
 } from 'class-validator'
 import { Type } from 'class-transformer'
+import { DishFoodQuantityDto } from './dish-food-quantity.dto'
 
 export class CreateDishDto {
 	@ApiProperty({
@@ -33,18 +35,18 @@ export class CreateDishDto {
 	description: string
 
 	@ApiProperty({
-		description: 'Array de FoodIds utilizado no prato.',
-		type: [Number],
-		example: [1, 2, 3],
+		description: 'Array de ingredientes com suas quantidades.',
+		type: [DishFoodQuantityDto],
+		example: [
+			{ foodId: 1, quantity: 200 },
+			{ foodId: 2, quantity: 100 },
+		],
 	})
-	@IsArray({ message: 'Deve ser um Array.' })
-	@ArrayNotEmpty({ message: 'O array nao pode ser vazio.' })
-	@ArrayMaxSize(50, { message: 'O array nao pode exceder 50 ingredientes.' })
-	@IsNumber(
-		{ allowNaN: false, allowInfinity: false },
-		{ each: true, message: 'Cada FoodId precisa ser um numero.' }
-	)
-	@ArrayUnique({ message: 'FoodIds precisam ser unicos.' })
-	@Type(() => Number)
-	foodIds: number[]
+	@IsArray({ message: 'Foods deve ser um array.' })
+	@ArrayNotEmpty({ message: 'Foods nao pode ser vazio.' })
+	@ArrayMaxSize(50, { message: 'Foods nao pode conter mais de 50 ingredientes.' })
+	@ValidateNested({ each: true })
+	@ArrayUnique((item) => item.foodId, { message: 'FoodIds precisam ser únicos.' })
+	@Type(() => DishFoodQuantityDto)
+	foods: DishFoodQuantityDto[];
 }

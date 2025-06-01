@@ -14,16 +14,18 @@ export class DishService {
 	constructor(private readonly dishRepository: DishRepository) {}
 
 	async create(createDishDto: CreateDishDto) {
-		const { name, description, foodIds } = createDishDto
+	const { name, description, foods } = createDishDto;
 
-		if (!name || !description || !foodIds?.length) {
-			throw new BadRequestException('Insira todos os dados do prato.')
-		}
-
-		await this.dishRepository.validateFoodIds(foodIds)
-
-		return this.dishRepository.create(createDishDto)
+	if (!name || !description || !foods?.length) {
+		throw new BadRequestException('Insira todos os dados do prato.');
 	}
+
+	const foodIds = foods.map(f => f.foodId);
+
+	await this.dishRepository.validateFoodIds(foodIds);
+
+	return this.dishRepository.create(createDishDto);
+}
 
 
 	async findAll(): Promise<DishDto[]> {
@@ -49,8 +51,8 @@ export class DishService {
 	}
 
 	async patch(id: number, updateDishDto: UpdateDishDto) {
-		if (updateDishDto.foodIds !== undefined) {
-			throw new BadRequestException('Não é permitido alterar os ingredientes do prato.')
+		if (updateDishDto.foods !== undefined) {
+			throw new BadRequestException('Não é permitido alterar os ingredientes nem a quantidade do prato.')
 		}
 		return this.dishRepository.patch(id, updateDishDto)
 	}
