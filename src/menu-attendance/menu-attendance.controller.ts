@@ -23,13 +23,19 @@ export class MenuAttendanceController {
 
   @Get(':id')
   @ApiOkResponse({ type: MenuAttendanceDto })
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     return this.menuAttendanceService.findOne(+id);
   }
 
   @Get('/customer/:customerId')
   @ApiOkResponse({ type: [MenuAttendanceDto] })
-  findAllByCustomer(@Param('customerId') customerId: string) {
+  async findAllByCustomer(@Param('customerId') customerId: string) {
     return this.menuAttendanceService.findAllByCustomer(+customerId);
+  }
+
+  @Get('/menu/:menuId')
+  @ApiOkResponse({ type: [MenuAttendanceDto] })
+  async findAllByMenu(@Param('menuId') menuId: string) {
+    return this.menuAttendanceService.findAllByMenu(+menuId);
   }
 }
