@@ -50,6 +50,20 @@ export class MenuAttendanceRepository {
         return menuAttendances.map(menuAttendance => MenuAttendanceDto.fromEntity(menuAttendance));
     }
 
+    async findAllByCustomer(customerId: number): Promise<MenuAttendanceDto[]> {
+        const menuAttendances = await MenuAttendance.findAll({
+            where: {
+                customerId
+            },
+            include: [
+                { model: Menu },
+                { model: Customer }
+            ]
+        });
+
+        return menuAttendances.map(menuAttendance => MenuAttendanceDto.fromEntity(menuAttendance));
+    }
+
     async findOne(id: number): Promise<MenuAttendanceDto | null> {
         const menuAttendance = await MenuAttendance.findByPk(id, {
             include: [

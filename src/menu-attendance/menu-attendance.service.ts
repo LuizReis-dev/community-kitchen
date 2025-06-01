@@ -51,6 +51,10 @@ export class MenuAttendanceService {
     return menuAttendanceDto;
   }
 
+  async findAllByCustomer(customerId: number): Promise<MenuAttendanceDto[]> {
+    console.log(customerId)
+    return this.menuAttendanceRepository.findAllByCustomer(customerId);
+  }
   private getTodayWeekDay(): WEEK_DAYS {
     const todayIndex = new Date().getDay();
     const days = [

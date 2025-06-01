@@ -26,4 +26,10 @@ export class MenuAttendanceController {
   findOne(@Param('id') id: string) {
     return this.menuAttendanceService.findOne(+id);
   }
+
+  @Get('/customer/:customerId')
+  @ApiOkResponse({ type: [MenuAttendanceDto] })
+  findAllByCustomer(@Param('customerId') customerId: string) {
+    return this.menuAttendanceService.findAllByCustomer(+customerId);
+  }
 }
