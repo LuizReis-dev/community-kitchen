@@ -37,8 +37,8 @@ export class MenuAttendanceService {
     return this.menuAttendanceRepository.create(createMenuAttendanceDto);
   }
 
-  findAll() {
-    return `This action returns all menuAttendance`;
+  async findAll(): Promise<MenuAttendanceDto[]> {
+    return this.menuAttendanceRepository.findAll();
   }
 
   findOne(id: number) {

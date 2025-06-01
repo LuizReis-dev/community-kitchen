@@ -9,6 +9,7 @@ import { CreateMenuAttendanceDto } from './dto/create-menu-attendance.dto';
 
 @Injectable()
 export class MenuAttendanceRepository {
+
     constructor(@Inject('SEQUELIZE') private sequelize: Sequelize) { }
 
     async create(createMenuAttendanceDto: CreateMenuAttendanceDto): Promise<MenuAttendanceDto> {
@@ -29,8 +30,8 @@ export class MenuAttendanceRepository {
                     { model: Customer }
                 ]
             });
-            
-            if(!menuAttendanceWithRelations) throw new Error('Ocorreu um erro inesperado');
+
+            if (!menuAttendanceWithRelations) throw new Error('Ocorreu um erro inesperado');
             return MenuAttendanceDto.fromEntity(menuAttendanceWithRelations);
         } catch (e) {
             console.log(e)
@@ -38,6 +39,17 @@ export class MenuAttendanceRepository {
         }
     }
 
+    async findAll(): Promise<MenuAttendanceDto[]> {
+        const menuAttendances = await MenuAttendance.findAll({
+            include: [
+                { model: Menu },
+                { model: Customer }
+            ]
+        });
+
+        return menuAttendances.map(menuAttendance => MenuAttendanceDto.fromEntity(menuAttendance));
+    }
+    
     async findByCustomerIdAndDate(customerId: number, date: Date): Promise<MenuAttendance | null> {
         const startOfDay = new Date(date);
         startOfDay.setHours(0, 0, 0, 0);

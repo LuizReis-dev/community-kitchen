@@ -16,7 +16,8 @@ export class MenuAttendanceController {
   }
 
   @Get()
-  findAll() {
+  @ApiCreatedResponse({ type: [MenuAttendanceDto] })
+  async findAll() {
     return this.menuAttendanceService.findAll();
   }
 
