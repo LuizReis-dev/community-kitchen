@@ -22,7 +22,15 @@ export class MenuAttendanceRepository {
             )
 
             await transaction.commit()
-            return MenuAttendanceDto.fromEntity(menuAttendance);
+            const menuAttendanceWithRelations = await MenuAttendance.findByPk(menuAttendance.id, {
+                include: [
+                    { model: Menu },
+                    { model: Customer }
+                ]
+            });
+            
+            if(!menuAttendanceWithRelations) throw new Error('Ocorreu um erro inesperado');
+            return MenuAttendanceDto.fromEntity(menuAttendanceWithRelations);
         } catch (e) {
             console.log(e)
             throw new BadRequestException('Erro ao registrar atendimento!')
