@@ -275,47 +275,6 @@ export class DishRepository {
     return dishes.map(dish => DishDto.fromEntity(dish));
 	}
 
-	async getDishNutritionFacts(id: number): Promise<DishNutritionFactsDto> {
-		const dish = await Dish.findByPk(id, {
-			include: [
-				{
-					model: Food,
-					include: [{ model: NutritionFacts }],
-					through: { attributes: ['quantity'] },
-				},
-			],
-		});
-
-		if (!dish) {
-			throw new NotFoundException('Prato não encontrado.');
-		}
-
-		if (!dish.foods) {
-			throw new NotFoundException('O prato está incompleto');
-		}
-
-		const totalNutritionFacts = new NutritionFactsDto(0, 0, 0, 0, 0, 0, 0);
-
-		for (const food of dish.foods) {
-			const nf = food.nutritionFacts;
-			if (!nf) continue;
-
-			const dishFood = (food as any).DishFood;
-			const quantity = dishFood?.quantity ?? 100;
-			const factor = quantity / 100;
-
-			totalNutritionFacts.calories += Number(nf.calories) * factor;
-			totalNutritionFacts.carbohydrates += Number(nf.carbohydrates) * factor;
-			totalNutritionFacts.proteins += Number(nf.proteins) * factor;
-			totalNutritionFacts.fats += Number(nf.fats) * factor;
-			totalNutritionFacts.fiber += Number(nf.fiber) * factor;
-			totalNutritionFacts.sugar += Number(nf.sugar) * factor;
-			totalNutritionFacts.sodium += Number(nf.sodium) * factor;
-		}
-
-		return DishNutritionFactsDto.fromEntity(dish, totalNutritionFacts);
-	}
-
 	async findDishesByDescription(term: string): Promise<DishDto[]> {
     const dishes = await Dish.findAll({
         include: [
@@ -358,40 +317,43 @@ export class DishRepository {
 
 	async findDishWithNutritionFacts(id: number): Promise<Dish | null> {
 		return await Dish.findByPk(id, {
-			include: [{ model: Food, include: [NutritionFacts] }],
-		})
+        include: [
+            {
+                model: Food,
+                include: [{ model: NutritionFacts }],
+                through: { attributes: ['quantity'] },
+            },
+        ],
+    });
 	}
 
 	async findAllDishesWithNutritionFacts(): Promise<Dish[]>{
 		return await Dish.findAll({
-			include: [{model: Food, include: [NutritionFacts]}]
-		})
+        include: [
+            {
+                model: Food,
+                include: [{ model: NutritionFacts }],
+                through: { attributes: ['quantity'] },
+            },
+        ],
+    });
 	}
 
-	async findWithFilters(
-		whereNutritionFacts: {
-			sodium?: { [Op.lte]: number };
-			calories?: { [Op.lte]: number };
-			proteins?: { [Op.gte]: number };
-		},
-		limit: number,
-		offset: number
-		): Promise<Dish[]> {
-		return Dish.findAll({
-			limit,
-			offset,
-			include: [{
-			model: Food,
-			include: [{
-				model: NutritionFacts,
-				where: whereNutritionFacts,
-				attributes: ['sodium', 'calories', 'proteins']
-			}],
-			attributes: []
-			}],
-			order: [[{ model: Food, as: 'foods' }, { model: NutritionFacts, as: 'nutritionFacts' }, 'sodium', 'ASC']]
-		});
-	}
+	async findWithNutritionFacts(limit: number, offset: number): Promise<Dish[]> {
+        return Dish.findAll({
+            limit,
+            offset,
+            include: [
+                {
+                    model: Food,
+                    include: [{ model: NutritionFacts }],
+                    through: { attributes: ['quantity'] },
+                    attributes: ['id', 'name'],
+                },
+            ],
+            order: [['id', 'DESC']],
+        });
+    }
 
 	async findAllOrderedByNutritionFact(
 			parameter: 'calories' | 'proteins' | 'carbohydrates' | 'fats'

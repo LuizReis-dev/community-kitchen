@@ -8,6 +8,7 @@ import { DishDto } from './dto/dish.dto'
 import { DishNutritionFactsDto } from './dto/dish-nutritionFacts.dto'
 import { NutritionFactsDto } from 'src/food/dto/nutrition-facts.dto'
 import { Dish } from './entities/dish.entity'
+import { DishNutritionSummaryDto } from './dto/dish-nutrition-sumary.dto'
 
 @Injectable()
 export class DishService {
@@ -71,9 +72,15 @@ export class DishService {
 		return await this.dishRepository.findDishesByIds(ids)
 	}
 
-	async getDishNutritionFacts(id: number): Promise<DishNutritionFactsDto> {
-		return await this.dishRepository.getDishNutritionFacts(id)
-	}
+	async getDishNutritionFacts(id: number): Promise<DishNutritionSummaryDto> {
+        const dish = await this.dishRepository.findDishWithNutritionFacts(id);
+
+        if (!dish) {
+            throw new NotFoundException('Prato não encontrado.');
+        }
+
+        return DishNutritionSummaryDto.fromEntity(dish);
+    }
 
 	async findDishesByDescription(term: string): Promise<DishDto[]> {
 		if (!term || term.trim() === '') {
@@ -146,32 +153,68 @@ export class DishService {
 	}
 
 	async getFilteredDishes(params: {
-			sodium?: number;
-			calories?: number;
-			proteins?: number;
-			limit?: number;
-			offset?: number;
-		}): Promise<DishDto[]> {
-			const whereNutritionFacts: any = {};
+		carbohydrates?: number;
+        sodium?: number;
+        calories?: number;
+        proteins?: number;
+        limit?: number;
+        offset?: number;
+    }): Promise<DishNutritionSummaryDto[]> {
+        const { carbohydrates, sodium, calories, proteins, limit = 10, offset = 0 } = params;
 
-			if (params.sodium !== undefined) {
-				whereNutritionFacts.sodium = { [Op.lte]: params.sodium };
-			}
-			if (params.calories !== undefined) {
-				whereNutritionFacts.calories = { [Op.lte]: params.calories };
-			}
-			if (params.proteins !== undefined) {
-				whereNutritionFacts.proteins = { [Op.gte]: params.proteins };
-			}
+        const dishes = await this.dishRepository.findWithNutritionFacts(limit, offset);
 
-			const dishes = await this.dishRepository.findWithFilters(
-				whereNutritionFacts,
-				params.limit ?? 10,
-				params.offset ?? 0
-			);
+        const filteredDishes: DishNutritionSummaryDto[] = [];
 
-			return dishes.map(DishDto.fromEntity);
-	}
+        for (const dish of dishes) {
+            if (!dish.foods) continue;
+
+            const totalNutritionFacts = new NutritionFactsDto(0, 0, 0, 0, 0, 0, 0);
+
+            for (const food of dish.foods as any[]) {
+                const nf = food.nutritionFacts;
+                if (!nf) continue;
+
+                const quantity = food.DishFood?.quantity ?? 100;
+                const factor = quantity / 100;
+
+                totalNutritionFacts.calories += Number(nf.calories) * factor;
+                totalNutritionFacts.proteins += Number(nf.proteins) * factor;
+                totalNutritionFacts.carbohydrates += Number(nf.carbohydrates) * factor;
+                totalNutritionFacts.fats += Number(nf.fats) * factor;
+                totalNutritionFacts.fiber += Number(nf.fiber) * factor;
+                totalNutritionFacts.sugar += Number(nf.sugar) * factor;
+                totalNutritionFacts.sodium += Number(nf.sodium) * factor;
+            }
+            let include = true;
+            if (calories !== undefined && totalNutritionFacts.calories > calories) {
+                include = false;
+            }
+
+			if (carbohydrates !== undefined && totalNutritionFacts.carbohydrates > carbohydrates) {
+                include = false;
+            }
+
+            if (sodium !== undefined && totalNutritionFacts.sodium > sodium) {
+                include = false;
+            }
+            if (proteins !== undefined && totalNutritionFacts.proteins < proteins) {
+                include = false;
+            }
+
+            if (include) {
+                filteredDishes.push(
+                    new DishNutritionSummaryDto(
+                        dish.id,
+                        dish.name,
+                        dish.description,
+                        totalNutritionFacts,
+                    ),
+                );
+            }
+        }
+        return filteredDishes;
+    }
 
 
 	async getOrderedDishes(parameter: string): Promise<DishDto[]> {
