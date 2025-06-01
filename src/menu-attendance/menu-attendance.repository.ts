@@ -5,12 +5,13 @@ import { Customer } from 'src/customer/entities/customer.entity';
 import { MenuAttendance } from './entities/menu-attendance.entity';
 import { MenuAttendanceDto } from './dto/menu-attendance.dto';
 import { Op } from 'sequelize';
+import { CreateMenuAttendanceDto } from './dto/create-menu-attendance.dto';
 
 @Injectable()
 export class MenuAttendanceRepository {
     constructor(@Inject('SEQUELIZE') private sequelize: Sequelize) { }
 
-    async create(createMenuAttendanceDto): Promise<MenuAttendanceDto> {
+    async create(createMenuAttendanceDto: CreateMenuAttendanceDto): Promise<MenuAttendanceDto> {
         const transaction = await this.sequelize.transaction()
         try {
             const menuAttendance = await MenuAttendance.create(
