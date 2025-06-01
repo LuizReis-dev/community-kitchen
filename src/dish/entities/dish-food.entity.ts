@@ -1,5 +1,4 @@
-import { Table, Model, Column, ForeignKey, DataType, BelongsTo } from 'sequelize-typescript'
-
+import { Table, Model, Column, ForeignKey, DataType, BelongsTo, AllowNull } from 'sequelize-typescript'
 import { Dish } from './dish.entity'
 import { Food } from 'src/food/entities/food.entity'
 @Table({
@@ -22,6 +21,12 @@ export class DishFood extends Model {
 		field: 'food_id',
 	})
 	declare foodId: number
+
+	@Column({
+		type: DataType.INTEGER,
+		allowNull: false,
+	})
+	declare quantity: number
 
 	@BelongsTo(() => Dish)
 	dish: Dish
