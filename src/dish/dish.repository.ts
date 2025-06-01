@@ -9,134 +9,247 @@ import { Sequelize } from 'sequelize-typescript'
 import { NutritionFacts } from 'src/food/entities/nutrition-facts.entity'
 import { DishNutritionFactsDto } from './dto/dish-nutritionFacts.dto'
 import { NutritionFactsDto } from 'src/food/dto/nutrition-facts.dto'
+import { DishFood } from './entities/dish-food.entity'
 
+@Injectable()
 @Injectable()
 export class DishRepository {
 	constructor(@Inject('SEQUELIZE') private sequelize: Sequelize) {}
 
 	async create(createDishDto: CreateDishDto): Promise<DishDto> {
-		const transaction = await this.sequelize.transaction()
-		
-		try {
-			const { name, description, foodIds } = createDishDto
+	const transaction = await this.sequelize.transaction();
 
-			const foods = await Food.findAll({
-			where: {
-				id: {
-				[Op.in]: foodIds,
-				},
-			},
-			transaction,
-			})
+	try {
+		const { name, description, foods } = createDishDto;
 
-			const dish = await Dish.create(
+		const foodIds = foods.map(f => f.foodId);
+
+		const foundFoods = await Food.findAll({
+            where: {
+                id: {
+                    [Op.in]: foodIds,
+                },
+            },
+            include: [{ model: NutritionFacts }],
+            transaction,
+        });
+
+		const dish = await Dish.create(
 			{ name, description },
 			{ transaction }
-			)
+		);
 
-			await dish.$set('foods', foods, { transaction })
-			dish.foods = foods
-
-			await transaction.commit()
-			
-			return DishDto.fromEntity(dish)
-
-		} catch (error) {
-			await transaction.rollback()
-			throw error instanceof BadRequestException
-			? error
-			: new BadRequestException('Erro ao criar o prato: ' + error.message)
+		for (const { foodId, quantity } of foods) {
+			await DishFood.create(
+				{
+					dishId: dish.id,
+					foodId,
+					quantity,
+				},
+				{ transaction }
+			);
 		}
+		dish.foods = foundFoods;
+
+		await transaction.commit();
+
+		return DishDto.fromEntity(dish);
+	} catch (error) {
+		await transaction.rollback();
+		throw error instanceof BadRequestException
+			? error
+			: new BadRequestException('Erro ao criar o prato: ' + error.message);
 	}
+}
 
 
 	async findAll(): Promise<DishDto[]> {
-		const dishes = await Dish.findAll({
-			include: [Food],
-		})
-		return dishes.map(dish => DishDto.fromEntity(dish))
-	}
+    const dishes = await Dish.findAll({
+        include: [
+            {
+                model: Food,
+                include: [{ model: NutritionFacts }],
+                through: { attributes: ['quantity'] },
+            },
+        ],
+    });
+    return dishes.map(dish => DishDto.fromEntity(dish));
+}
 
 	async findOne(id: number): Promise<Dish | null> {
-		return await Dish.findByPk(id, {
-			include: [Food],
-		})
-	}
+    return await Dish.findByPk(id, {
+        include: [
+            {
+                model: Food,
+                include: [{ model: NutritionFacts }],
+                through: { attributes: ['quantity'] },
+            },
+        ],
+    });
+}
 
 	async update(id: number, updateDishDto: UpdateDishDto): Promise<DishDto> {
-		const transaction = await this.sequelize.transaction()
-		try {
-			const dish = await Dish.findByPk(id, {
-				include: [Food],
-				transaction,
-			})
+        const transaction = await this.sequelize.transaction();
+        try {
+            const dish = await Dish.findByPk(id, {
+                include: [
+                    {
+                        model: Food,
+                        include: [{ model: NutritionFacts }],
+                        through: { attributes: ['quantity'] },
+                    },
+                ],
+                transaction,
+            });
 
-			if (!dish) {
-				throw new NotFoundException('Prato não encontrado!')
-			}
+            if (!dish) {
+                throw new NotFoundException('Prato não encontrado!');
+            }
 
-			await dish.update(
-				{
-					name: updateDishDto.name,
-					description: updateDishDto.description,
-				},
-				{ transaction }
-			)
+            if (updateDishDto.name !== undefined) {
+                dish.name = updateDishDto.name;
+            }
+            if (updateDishDto.description !== undefined) {
+                dish.description = updateDishDto.description;
+            }
+            await dish.save({ transaction });
 
-			if (updateDishDto.foodIds !== undefined) {
-				const newFoods = await Food.findAll({
-					where: { id: updateDishDto.foodIds },
-					transaction,
-				})
+            if (updateDishDto.foods !== undefined) {
+                const foodIds = updateDishDto.foods.map(f => f.foodId);
+                const newFoods = await Food.findAll({
+                    where: { id: { [Op.in]: foodIds } },
+                    include: [{ model: NutritionFacts }],
+                    transaction,
+                });
 
-				await dish.$set('foods', newFoods, { transaction })
-				dish.foods = newFoods
-			}
+                if (newFoods.length !== foodIds.length) {
+                    throw new BadRequestException('Um ou mais foodIds fornecidos não existem.');
+                }
 
-			const updatedDish = await Dish.findByPk(id, {
-				include: [Food],
-				transaction,
-			})
+                if (newFoods.some(food => !food.nutritionFacts)) {
+                    throw new BadRequestException('Um ou mais alimentos não possuem informações nutricionais.');
+                }
+                await DishFood.destroy({
+                    where: { dishId: id },
+                    transaction,
+                });
+                for (const { foodId, quantity } of updateDishDto.foods) {
+                    await DishFood.create(
+                        {
+                            dishId: id,
+                            foodId,
+                            quantity,
+                        },
+                        { transaction }
+                    );
+                }
+            }
+            const updatedDish = await Dish.findByPk(id, {
+                include: [
+                    {
+                        model: Food,
+                        include: [{ model: NutritionFacts }],
+                        through: { attributes: ['quantity'] },
+                    },
+                ],
+                transaction,
+            });
 
-			if (!updatedDish) {
-				throw new NotFoundException('Erro ao atualizar: prato não encontrado.')
-			}
-			await transaction.commit()
-			return DishDto.fromEntity(dish)
-		} catch (error) {
-			await transaction.rollback()
-			throw error instanceof NotFoundException || error instanceof BadRequestException
-				? error
-				: new BadRequestException('Erro ao atualizar o prato: ' + error.message)
-		}
-	}
+            if (!updatedDish) {
+                throw new NotFoundException('Erro ao atualizar: prato não encontrado.');
+            }
+
+            await transaction.commit();
+            return DishDto.fromEntity(updatedDish);
+        } catch (error) {
+            await transaction.rollback();
+            throw error instanceof NotFoundException || error instanceof BadRequestException
+                ? error
+                : new BadRequestException('Erro ao atualizar o prato: ' + error.message);
+        }
+    }
 
 	async patch(id: number, updateDishDto: UpdateDishDto): Promise<DishDto> {
-		const transaction = await this.sequelize.transaction()
+		const transaction = await this.sequelize.transaction();
 		try {
 			const dish = await Dish.findByPk(id, {
-				include: [Food],
+				include: [
+					{
+						model: Food,
+						include: [{ model: NutritionFacts }],
+						through: { attributes: ['quantity'] },
+					},
+				],
 				transaction,
-			})
+			});
 
 			if (!dish) {
-				throw new NotFoundException('Prato não encontrado!')
-			}
-			if (updateDishDto.name !== undefined) {
-				dish.name = updateDishDto.name
-			}
-			if (updateDishDto.description !== undefined) {
-				dish.description = updateDishDto.description
+				throw new NotFoundException('Prato não encontrado!');
 			}
 
-			await dish.save({ transaction })
-			await transaction.commit()
-			return DishDto.fromEntity(dish)
+			if (updateDishDto.name !== undefined) {
+				dish.name = updateDishDto.name;
+			}
+			if (updateDishDto.description !== undefined) {
+				dish.description = updateDishDto.description;
+			}
+			if (updateDishDto.foods !== undefined) {
+				const foodIds = updateDishDto.foods.map(f => f.foodId);
+				const newFoods = await Food.findAll({
+					where: { id: { [Op.in]: foodIds } },
+					include: [{ model: NutritionFacts }],
+					transaction,
+				});
+
+				if (newFoods.length !== foodIds.length) {
+					throw new BadRequestException('Um ou mais foodIds fornecidos não existem.');
+				}
+
+				if (newFoods.some(food => !food.nutritionFacts)) {
+					throw new BadRequestException('Um ou mais alimentos não possuem informações nutricionais.');
+				}
+
+				await DishFood.destroy({
+					where: { dishId: id },
+					transaction,
+				});
+
+				for (const { foodId, quantity } of updateDishDto.foods) {
+					await DishFood.create(
+						{
+							dishId: id,
+							foodId,
+							quantity,
+						},
+						{ transaction }
+					);
+				}
+			}
+
+			await dish.save({ transaction });
+
+			const updatedDish = await Dish.findByPk(id, {
+				include: [
+					{
+						model: Food,
+						include: [{ model: NutritionFacts }],
+						through: { attributes: ['quantity'] },
+					},
+				],
+				transaction,
+			});
+
+			if (!updatedDish) {
+				throw new NotFoundException('Erro ao atualizar: prato não encontrado.');
+			}
+
+			await transaction.commit();
+			return DishDto.fromEntity(updatedDish);
 		} catch (error) {
-			await transaction.rollback()
+			await transaction.rollback();
 			throw error instanceof NotFoundException
 				? error
-				: new BadRequestException('Erro ao atualizar o prato: ' + error.message)
+				: new BadRequestException('Erro ao atualizar o prato: ' + error.message);
 		}
 	}
 
@@ -145,140 +258,115 @@ export class DishRepository {
 	}
 
 	async findDishesByIds(ids: number[]): Promise<DishDto[]> {
-		const dishes = await Dish.findAll({
-			where: {
-				id: {
-					[Op.in]: ids,
-				},
-			},
-			include: [
-				{
-					model: Food,
-					include: [NutritionFacts],
-				},
-			],
-		})
-
-		return dishes.map(dish => DishDto.fromEntity(dish))
-	}
-
-	async getDishNutritionFacts(id: number): Promise<DishNutritionFactsDto> {
-		const dish = await Dish.findByPk(id, {
-			include: [{ model: Food, include: [NutritionFacts] }],
-		})
-
-		if (!dish) {
-			throw new NotFoundException('Prato não encontrado.')
-		}
-
-		if (!dish.foods) {
-			throw new NotFoundException('O prato está incompleto')
-		}
-
-		const totalNutritionFacts = new NutritionFactsDto(0, 0, 0, 0, 0, 0, 0)
-
-		for (const food of dish.foods) {
-			const nf = food.nutritionFacts
-			if (!nf) continue
-
-			totalNutritionFacts.calories += Number(nf.calories)
-			totalNutritionFacts.carbohydrates += Number(nf.carbohydrates)
-			totalNutritionFacts.proteins += Number(nf.proteins)
-			totalNutritionFacts.fats += Number(nf.fats)
-			totalNutritionFacts.fiber += Number(nf.fiber)
-			totalNutritionFacts.sugar += Number(nf.sugar)
-			totalNutritionFacts.sodium += Number(nf.sodium)
-		}
-
-		return DishNutritionFactsDto.fromEntity(dish, totalNutritionFacts)
+    const dishes = await Dish.findAll({
+        where: {
+            id: {
+                [Op.in]: ids,
+            },
+        },
+        include: [
+            {
+                model: Food,
+                include: [{ model: NutritionFacts }],
+                through: { attributes: ['quantity'] },
+            },
+        ],
+    });
+    return dishes.map(dish => DishDto.fromEntity(dish));
 	}
 
 	async findDishesByDescription(term: string): Promise<DishDto[]> {
-		const dishes = await Dish.findAll({
-			include: [
-				{
-					model: Food,
-				},
-			],
-			where: {
-				description: {
-					[Op.iLike]: `%${term}%`,
-				},
-			},
-		})
+    const dishes = await Dish.findAll({
+        include: [
+            {
+                model: Food,
+                include: [{ model: NutritionFacts }],
+                through: { attributes: ['quantity'] },
+            },
+        ],
+        where: {
+            description: {
+                [Op.iLike]: `%${term}%`,
+            },
+        },
+    });
 
-		if (dishes.length === 0) {
-			throw new NotFoundException(`Nenhum prato encontrado com o termo '${term}'`)
-		}
+    if (dishes.length === 0) {
+        throw new NotFoundException(`Nenhum prato encontrado com o termo '${term}'`);
+    }
 
-		return dishes.map(dish => DishDto.fromEntity(dish))
-	}
+    return dishes.map(dish => DishDto.fromEntity(dish));
+}
 
 	async findByName(name: string): Promise<Dish[]> {
-		return await Dish.findAll({
-			include: [Food],
-			where: {
-			name: {
-				[Op.iLike]: `%${name}%`,
-			},
-			},
-		})
-	}
+    return await Dish.findAll({
+        include: [
+            {
+                model: Food,
+                include: [{ model: NutritionFacts }],
+                through: { attributes: ['quantity'] },
+            },
+        ],
+        where: {
+            name: {
+                [Op.iLike]: `%${name}%`,
+            },
+        },
+    });
+}
 
 	async findDishWithNutritionFacts(id: number): Promise<Dish | null> {
 		return await Dish.findByPk(id, {
-			include: [{ model: Food, include: [NutritionFacts] }],
-		})
+        include: [
+            {
+                model: Food,
+                include: [{ model: NutritionFacts }],
+                through: { attributes: ['quantity'] },
+            },
+        ],
+    });
 	}
 
 	async findAllDishesWithNutritionFacts(): Promise<Dish[]>{
 		return await Dish.findAll({
-			include: [{model: Food, include: [NutritionFacts]}]
-		})
+        include: [
+            {
+                model: Food,
+                include: [{ model: NutritionFacts }],
+                through: { attributes: ['quantity'] },
+            },
+        ],
+    });
 	}
 
-	async findWithFilters(
-		whereNutritionFacts: {
-			sodium?: { [Op.lte]: number };
-			calories?: { [Op.lte]: number };
-			proteins?: { [Op.gte]: number };
-		},
-		limit: number,
-		offset: number
-		): Promise<Dish[]> {
-		return Dish.findAll({
-			limit,
-			offset,
-			include: [{
-			model: Food,
-			include: [{
-				model: NutritionFacts,
-				where: whereNutritionFacts,
-				attributes: ['sodium', 'calories', 'proteins']
-			}],
-			attributes: []
-			}],
-			order: [[{ model: Food, as: 'foods' }, { model: NutritionFacts, as: 'nutritionFacts' }, 'sodium', 'ASC']]
-		});
-	}
+	async findWithNutritionFacts(limit: number, offset: number): Promise<Dish[]> {
+        return Dish.findAll({
+            limit,
+            offset,
+            include: [
+                {
+                    model: Food,
+                    include: [{ model: NutritionFacts }],
+                    through: { attributes: ['quantity'] },
+                    attributes: ['id', 'name'],
+                },
+            ],
+            order: [['id', 'DESC']],
+        });
+    }
 
-	async findAllOrderedByNutritionFact(
-			parameter: 'calories' | 'proteins' | 'carbohydrates' | 'fats'
-		): Promise<Dish[]> {
-			return Dish.findAll({
-				include: [{
-					model: Food,
-					include: [{
-						model: NutritionFacts,
-						attributes: ['calories', 'proteins', 'carbohydrates', 'fats']
-					}],
-					attributes: []
-				}],
-				order: [[{ model: Food, as: 'foods' }, { model: NutritionFacts, as: 'nutritionFacts' }, parameter, 'DESC']]
-			});
-	}
-
-
+	async findAllOrderedByNutricionalParameter(): Promise<Dish[]> {
+        return Dish.findAll({
+        include: [{
+            model: Food,
+            include: [{
+                model: NutritionFacts,
+                attributes: ['calories', 'proteins', 'carbohydrates', 'fats', 'fiber', 'sugar', 'sodium']
+            }],
+            through: { attributes: ['quantity'] },
+        }],
+    });
+    }
 
 	async validateFoodIds(foodIds: number[]): Promise<void> {
 		const transaction = await this.sequelize.transaction()
