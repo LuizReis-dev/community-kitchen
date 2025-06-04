@@ -1,7 +1,7 @@
 import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common'
 import { CreateMenuDto } from './dto/create-menu.dto'
 import { UpdateMenuDto } from './dto/update-menu.dto'
-import { Sequelize } from 'sequelize'
+import { Op, Sequelize } from 'sequelize'
 import { Menu } from './entities/menu.entity'
 import { MenuDto } from './dto/menu.dto'
 import { DailyEvent } from 'src/daily-event/entities/daily-event.entity'
@@ -105,5 +105,19 @@ export class MenuRepository {
 		})
 
 		return menuCount > 0
+	}
+
+	async findUsedDailyEventIds(): Promise<number[]> {
+		const usedMenus = await Menu.findAll({
+			attributes: ['dailyEventId'],
+			where: {
+				availableDay: {
+					[Op.not]: null,
+				},
+			},
+			group: ['dailyEventId'],
+			raw: true,
+		})
+		return usedMenus.map(m => m.dailyEventId)
 	}
 }

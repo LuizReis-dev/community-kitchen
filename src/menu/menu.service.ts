@@ -7,10 +7,14 @@ import { NutritionFactsDto } from 'src/food/dto/nutrition-facts.dto'
 import { MenuRequirementDto } from 'src/menu-requirement/dto/menu-requirement.dto'
 import { DailyEventService } from 'src/daily-event/daily-event.service'
 import { DishDto } from 'src/dish/dto/dish.dto'
+import { DailyEventRepository } from 'src/daily-event/daily-event.repository'
+import { DailyEventDto } from 'src/daily-event/dto/daily-event.dto'
+import { UnassignedDailyEventDto } from 'src/daily-event/dto/unassigned-daily-event.dto'
 
 @Injectable()
 export class MenuService {
 	constructor(
+		private readonly dailyEventRepository: DailyEventRepository,
 		private readonly menuRepository: MenuRepository,
 		private readonly dishService: DishService,
 		private readonly dailyEventService: DailyEventService
@@ -134,5 +138,13 @@ export class MenuService {
 		)
 
 		return menuNutritionFacts
+	}
+
+	async findDailyEventsWithoutAnyDay(): Promise<UnassignedDailyEventDto[]> {
+		const allEvents = await this.dailyEventRepository.findAll()
+		const usedEventIds = await this.menuRepository.findUsedDailyEventIds()
+
+		const unassigned = allEvents.filter(event => !usedEventIds.includes(event.id))
+		return unassigned.map(UnassignedDailyEventDto.fromDto)
 	}
 }
