@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
 import { CreateMenuDto } from './dto/create-menu.dto'
 import { UpdateMenuDto } from './dto/update-menu.dto'
 import { MenuRepository } from './menu.repository'
@@ -7,6 +7,7 @@ import { NutritionFactsDto } from 'src/food/dto/nutrition-facts.dto'
 import { MenuRequirementDto } from 'src/menu-requirement/dto/menu-requirement.dto'
 import { DailyEventService } from 'src/daily-event/daily-event.service'
 import { DishDto } from 'src/dish/dto/dish.dto'
+import { WEEK_DAYS } from 'src/common/enums/week-days'
 
 @Injectable()
 export class MenuService {
@@ -134,5 +135,30 @@ export class MenuService {
 		)
 
 		return menuNutritionFacts
+	}
+
+	async deactivateMenu(id: number) {
+		const result = await this.menuRepository.deactivateMenu(id)
+
+		if (!result) {
+			throw new NotFoundException('Menu not found.')
+		}
+
+		return result
+	}
+	async listWeeklyMenus() {
+		const result = await this.menuRepository.listWeeklyMenus()
+
+		if (result.length === 0) return new NotFoundException('Menu not found.')
+
+		return result
+	}
+
+	async listMenuByWeekDay(weekDay: WEEK_DAYS) {
+		const result = await this.menuRepository.listMenuByWeekDay(weekDay)
+
+		if (!result) return new NotFoundException('Menu not found.')
+
+		return result
 	}
 }
