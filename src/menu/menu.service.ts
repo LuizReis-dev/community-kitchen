@@ -10,6 +10,8 @@ import { DishDto } from 'src/dish/dto/dish.dto'
 import { DailyEventRepository } from 'src/daily-event/daily-event.repository'
 import { DailyEventDto } from 'src/daily-event/dto/daily-event.dto'
 import { UnassignedDailyEventDto } from 'src/daily-event/dto/unassigned-daily-event.dto'
+import { WEEK_DAYS } from 'src/common/enums/week-days'
+import { DailyEventsVacant } from 'src/daily-event/dto/daily-events-vacant-week.dto'
 
 @Injectable()
 export class MenuService {
@@ -146,5 +148,30 @@ export class MenuService {
 
 		const unassigned = allEvents.filter(event => !usedEventIds.includes(event.id))
 		return unassigned.map(UnassignedDailyEventDto.fromDto)
+	}
+
+	async findDailyEventsWithAvailableDays(): Promise<DailyEventsVacant[]> {
+		const allEvents = await this.dailyEventRepository.findAll();
+		const assignedDays = await this.menuRepository.findAssignedDaysByDailyEvent();
+		const allWeekDays = Object.values(WEEK_DAYS) as WEEK_DAYS[];
+
+		const assignedDaysMap = assignedDays.reduce((map, item) => {
+		if (!map[item.dailyEventId]) {
+			map[item.dailyEventId] = [];
+		}
+		map[item.dailyEventId].push(item.availableDay);
+		return map;
+		}, {} as Record<number, WEEK_DAYS[]>);
+
+		const result: DailyEventsVacant[] = [];
+
+		for (const event of allEvents) {
+		const eventAssignedDays = assignedDaysMap[event.id] || [];
+		const availableDays = allWeekDays.filter(day => !eventAssignedDays.includes(day));
+		if (availableDays.length > 0) {
+			result.push(DailyEventsVacant.fromDto(event, availableDays));
+		}
+		}
+		return result;
 	}
 }

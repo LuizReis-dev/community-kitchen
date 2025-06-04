@@ -5,6 +5,7 @@ import { UpdateMenuDto } from './dto/update-menu.dto'
 import { MenuDto } from './dto/menu.dto'
 import { ApiOkResponse } from '@nestjs/swagger'
 import { UnassignedDailyEventDto } from 'src/daily-event/dto/unassigned-daily-event.dto'
+import { DailyEventsVacant } from 'src/daily-event/dto/daily-events-vacant-week.dto'
 
 @Controller('menu')
 export class MenuController {
@@ -45,4 +46,10 @@ export class MenuController {
 	async findUnassignedDailyEvents(): Promise<UnassignedDailyEventDto[]> {
 		return this.menuService.findDailyEventsWithoutAnyDay()
   	}
+
+	@Get('daily-events/vacant-days')
+	@ApiOkResponse({ type: [DailyEventsVacant] })
+	async getDailyEventsVacantDays(): Promise<DailyEventsVacant[]> {
+		return this.menuService.findDailyEventsWithAvailableDays();
+	}
 }
