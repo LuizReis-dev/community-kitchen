@@ -7,6 +7,7 @@ import { NutritionFactsDto } from 'src/food/dto/nutrition-facts.dto'
 import { MenuRequirementDto } from 'src/menu-requirement/dto/menu-requirement.dto'
 import { DailyEventService } from 'src/daily-event/daily-event.service'
 import { DishDto } from 'src/dish/dto/dish.dto'
+import { WEEK_DAYS } from 'src/common/enums/week-days'
 
 @Injectable()
 export class MenuService {
@@ -149,6 +150,14 @@ export class MenuService {
 		const result = await this.menuRepository.listWeeklyMenus()
 
 		if (result.length === 0) return new NotFoundException('Menu not found.')
+
+		return result
+	}
+
+	async listMenuByWeekDay(weekDay: WEEK_DAYS) {
+		const result = await this.menuRepository.listMenuByWeekDay(weekDay)
+
+		if (!result) return new NotFoundException('Menu not found.')
 
 		return result
 	}

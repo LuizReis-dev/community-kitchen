@@ -144,4 +144,17 @@ export class MenuRepository {
 		})
 		return menus.map(menu => MenuDto.fromEntity(menu))
 	}
+
+	async listMenuByWeekDay(weekDay: WEEK_DAYS): Promise<MenuDto | null> {
+		const menu = await Menu.findOne({
+			include: ['dishes', 'dailyEvent'],
+			where: {
+				availableDay: weekDay,
+				deactivationDate: {
+					[Op.eq]: null,
+				},
+			},
+		})
+		return menu ? MenuDto.fromEntity(menu) : menu
+	}
 }
