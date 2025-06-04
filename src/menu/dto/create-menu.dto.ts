@@ -10,7 +10,7 @@ export class CreateMenuDto {
 
 	@IsEnum(WEEK_DAYS, {
 		message:
-			'availableDay must be a valid week day (Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday)',
+			'availableDay must be a valid week day (Segunda-feira, Terça-feira, Quarta-feira, Quinta-feira, Sexta-feira, Sábado, Domingo)',
 	})
 	@ApiProperty()
 	availableDay: WEEK_DAYS

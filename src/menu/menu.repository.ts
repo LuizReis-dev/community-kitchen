@@ -41,7 +41,7 @@ export class MenuRepository {
 
 	async findAll() {
 		const menus = await Menu.findAll({
-			include: ['dishes'],
+			include: ['dishes', 'dailyEvent'],
 		})
 		return menus.map(menu => MenuDto.fromEntity(menu))
 	}
@@ -105,5 +105,27 @@ export class MenuRepository {
 		})
 
 		return menuCount > 0
+	}
+
+	async deactivateMenu(id: number): Promise<string | null> {
+		const menu = await Menu.findByPk(id)
+
+		if (!menu) return menu
+
+		const transaction = await this.sequelize.transaction()
+		try {
+			await menu.update(
+				{
+					deactivationDate: new Date(),
+				},
+				{ transaction }
+			)
+
+			await transaction.commit()
+			return 'Menu successfully deactivated'
+		} catch {
+			await transaction.rollback()
+			throw new BadRequestException('Error updating menu')
+		}
 	}
 }

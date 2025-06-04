@@ -135,4 +135,14 @@ export class MenuService {
 
 		return menuNutritionFacts
 	}
+
+	async deactivateMenu(id: number) {
+		const result = await this.menuRepository.deactivateMenu(id)
+
+		if (!result) {
+			throw new BadRequestException('Menu not found.')
+		}
+
+		return result
+	}
 }
