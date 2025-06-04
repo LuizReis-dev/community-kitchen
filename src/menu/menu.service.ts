@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
 import { CreateMenuDto } from './dto/create-menu.dto'
 import { UpdateMenuDto } from './dto/update-menu.dto'
 import { MenuRepository } from './menu.repository'
@@ -140,8 +140,15 @@ export class MenuService {
 		const result = await this.menuRepository.deactivateMenu(id)
 
 		if (!result) {
-			throw new BadRequestException('Menu not found.')
+			throw new NotFoundException('Menu not found.')
 		}
+
+		return result
+	}
+	async listWeeklyMenus() {
+		const result = await this.menuRepository.listWeeklyMenus()
+
+		if (result.length === 0) return new NotFoundException('Menu not found.')
 
 		return result
 	}

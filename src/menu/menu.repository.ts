@@ -6,6 +6,7 @@ import { Menu } from './entities/menu.entity'
 import { MenuDto } from './dto/menu.dto'
 import { DailyEvent } from 'src/daily-event/entities/daily-event.entity'
 import { WEEK_DAYS } from 'src/common/enums/week-days'
+import { Op } from 'sequelize'
 
 @Injectable()
 export class MenuRepository {
@@ -101,6 +102,9 @@ export class MenuRepository {
 			where: {
 				dailyEventId,
 				availableDay,
+				deactivationDate: {
+					[Op.eq]: null,
+				},
 			},
 		})
 
@@ -127,5 +131,17 @@ export class MenuRepository {
 			await transaction.rollback()
 			throw new BadRequestException('Error updating menu')
 		}
+	}
+
+	async listWeeklyMenus(): Promise<MenuDto[]> {
+		const menus = await Menu.findAll({
+			include: ['dishes', 'dailyEvent'],
+			where: {
+				deactivationDate: {
+					[Op.eq]: null,
+				},
+			},
+		})
+		return menus.map(menu => MenuDto.fromEntity(menu))
 	}
 }

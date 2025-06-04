@@ -16,6 +16,13 @@ export class MenuController {
 		return this.menuService.create(createMenuDto)
 	}
 
+	@Public()
+	@ApiOkResponse({ type: [MenuDto] })
+	@Get('list-weekly-menus')
+	async listWeeklyMenus() {
+		return this.menuService.listWeeklyMenus()
+	}
+
 	@Get()
 	@ApiOkResponse({ type: [MenuDto] })
 	async findAll() {
@@ -40,9 +47,8 @@ export class MenuController {
 		return this.menuService.remove(+id)
 	}
 
-	@Public()
 	@Patch(':id')
-	@ApiOkResponse({ type: MenuDto })
+	@ApiOkResponse({ type: String })
 	async deactivateMenu(@Param('id') id: string) {
 		return this.menuService.deactivateMenu(+id)
 	}
