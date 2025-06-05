@@ -138,28 +138,6 @@ export class FoodRepository {
 		return foods.map(food => FoodDto.fromEntity(food))
 	}
 
-	async findMostUsedFoods(page = 1, limit = 10) {
-		const mostUsedFoods = await DishFood.findAll({
-			attributes: [
-				['food_id', 'foodId'],
-				[Sequelize.fn('COUNT', Sequelize.col('food_id')), 'timesInDishes'],
-			],
-			include: [
-				{
-					model: Food,
-					required: false,
-					where: { deletedAt: null },
-				},
-			],
-			group: ['DishFood.food_id', 'food.id'],
-			order: [[Sequelize.fn('COUNT', Sequelize.col('food_id')), 'DESC']],
-			limit,
-			offset: (page - 1) * limit,
-		})
-
-		return mostUsedFoods
-	}
-
 	async findFoodsByName(name: string): Promise<FoodDto[]> {
 		const foods = await Food.findAll({
 			include: [{ model: NutritionFacts }],
@@ -169,10 +147,6 @@ export class FoodRepository {
 				},
 			},
 		})
-
-		if (foods.length === 0) {
-			throw new NotFoundException(`Nenhuma comida encontrada com o nome: '${name}'`)
-		}
 
 		return foods.map(food => FoodDto.fromEntity(food))
 	}

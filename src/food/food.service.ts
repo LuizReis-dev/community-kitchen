@@ -48,10 +48,6 @@ export class FoodService {
 		return this.foodRepository.findFoodsByMinProteinAmount(minProteinAmount)
 	}
 
-	async findMostUsedFoods(page: number, limit: number) {
-		return this.foodRepository.findMostUsedFoods(page, limit)
-	}
-
 	private calculateCalories(nutritionFacts: NutritionFactsDto): number {
 		const calories =
 			nutritionFacts.carbohydrates * 4 + nutritionFacts.proteins * 4 + nutritionFacts.fats * 9
@@ -59,10 +55,25 @@ export class FoodService {
 	}
 
 	async findFoodsByName(name: string): Promise<FoodDto[]> {
-		return this.foodRepository.findFoodsByName(name)
+        if (!name?.trim()) {
+        throw new BadRequestException('O nome para busca deve ser informado.')
+        }
+
+        const foods = await this.foodRepository.findFoodsByName(name)
+
+        if (!foods || foods.length === 0) {
+        throw new NotFoundException(`Nenhuma comida encontrada com o nome: '${name}'`)
+        }
+
+    	return foods
 	}
 
 	async findMostCaloricFoods(page: number, limit: number = 10): Promise<FoodDto[]> {
-		return this.foodRepository.findMostCaloricFoods(page, limit)
+        const foods = await this.foodRepository.findMostCaloricFoods(page, limit)
+
+        if (!foods || foods.length === 0) {
+            throw new NotFoundException('Nenhum alimento encontrado.')
+        }
+        return foods
 	}
 }

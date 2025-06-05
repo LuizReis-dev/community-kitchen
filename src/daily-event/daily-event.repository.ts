@@ -38,20 +38,20 @@ export class DailyEventRepository {
 		return dailyEvents.map(event => DailyEventDto.fromEntity(event))
 	}
 
-	async findOne(id: number): Promise<DailyEventDto> {
+	async findOne(id: number): Promise<DailyEventDto | null> {
 		const dailyEvent = await DailyEvent.findByPk(id, {
 			include: ['menu_requirement'],
 		})
 
-		if (!dailyEvent) throw new NotFoundException('Evento diário nao encontrado!')
+		if (!dailyEvent) return null
 
 		return DailyEventDto.fromEntity(dailyEvent)
 	}
 
-	async update(id: number, updateDailyEventDto: UpdateDailyEventDto): Promise<DailyEventDto> {
+	async update(id: number, updateDailyEventDto: UpdateDailyEventDto): Promise<DailyEventDto | null> {
 		const dailyEvent = await DailyEvent.findByPk(id)
 
-		if (!dailyEvent) throw new NotFoundException('Evento diário não encontrado!')
+		if (!dailyEvent) return null
 
 		const transaction = await this.sequelize.transaction()
 		try {
@@ -107,10 +107,11 @@ export class DailyEventRepository {
 	}
 
 	async remove(id: number): Promise<void> {
-		const dailyEvent = await DailyEvent.findByPk(id)
-		if (!dailyEvent) throw new NotFoundException('Evento diário não encontrado!')
-
-		await dailyEvent.destroy()
+        await DailyEvent.destroy({
+            where: {
+                id: id
+            }
+        })
 	}
 
 	async findUpcomingEventsToday(): Promise<DailyEventDto[]> {
