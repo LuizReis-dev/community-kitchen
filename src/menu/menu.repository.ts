@@ -1,12 +1,11 @@
 import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common'
 import { CreateMenuDto } from './dto/create-menu.dto'
 import { UpdateMenuDto } from './dto/update-menu.dto'
-import { Sequelize } from 'sequelize'
+import { Op, Sequelize } from 'sequelize'
 import { Menu } from './entities/menu.entity'
 import { MenuDto } from './dto/menu.dto'
 import { DailyEvent } from 'src/daily-event/entities/daily-event.entity'
 import { WEEK_DAYS } from 'src/common/enums/week-days'
-import { Op } from 'sequelize'
 
 @Injectable()
 export class MenuRepository {
@@ -156,5 +155,38 @@ export class MenuRepository {
 			},
 		})
 		return menu ? MenuDto.fromEntity(menu) : menu
+	}
+
+	async findUsedDailyEventIds(): Promise<number[]> {
+		const usedMenus = await Menu.findAll({
+			attributes: ['dailyEventId'],
+			where: {
+				availableDay: {
+					[Op.not]: null,
+				},
+			},
+			group: ['dailyEventId'],
+			raw: true,
+		})
+		return usedMenus.map(m => m.dailyEventId)
+	}
+
+	async findAssignedDaysByDailyEvent(): Promise<{ dailyEventId: number; availableDay: WEEK_DAYS }[]> {
+		const assignedDays = await Menu.findAll({
+			attributes: ['dailyEventId', 'availableDay'],
+			where: {
+				dailyEventId: { [Op.not]: null },
+				availableDay: { 
+				[Op.not]: null,
+				[Op.in]: Object.values(WEEK_DAYS)
+				},
+			},
+			group: ['dailyEventId', 'availableDay'],
+			raw: true,
+		});
+		return assignedDays.map(item => ({
+			dailyEventId: item.dailyEventId,
+			availableDay: item.availableDay as WEEK_DAYS,
+		}));
 	}
 }

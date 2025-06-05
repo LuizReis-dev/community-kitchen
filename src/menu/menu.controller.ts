@@ -3,6 +3,7 @@ import { MenuService } from './menu.service'
 import { CreateMenuDto } from './dto/create-menu.dto'
 import { UpdateMenuDto } from './dto/update-menu.dto'
 import { MenuDto } from './dto/menu.dto'
+import { DailyEventsVacant } from 'src/daily-event/dto/daily-events-vacant-week.dto'
 import { ApiOkResponse, ApiParam } from '@nestjs/swagger'
 import { Public } from 'src/common/decorators/public'
 import { WEEK_DAYS } from 'src/common/enums/week-days'
@@ -61,6 +62,12 @@ export class MenuController {
 		return this.menuService.remove(+id)
 	}
 
+	@Get('daily-events/vacant-days')
+	@ApiOkResponse({ type: [DailyEventsVacant] })
+	async getDailyEventsVacantDays(): Promise<DailyEventsVacant[]> {
+		return this.menuService.findDailyEventsWithAvailableDays();
+	}
+	
 	@Patch(':id')
 	@ApiOkResponse({ type: String })
 	async deactivateMenu(@Param('id') id: string) {
