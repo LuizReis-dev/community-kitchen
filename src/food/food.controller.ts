@@ -52,7 +52,7 @@ export class FoodController {
 		return this.foodService.findMostUsedFoods(page, limit)
 	}
 
-	@Get('foods-by-name/:term')
+	@Get('foods-by-name/:name')
 	@ApiOkResponse({ type: [FoodDto] })
 	@ApiParam({ name: 'name', type: String, example: 'Tomate' })
 	async findFoodsByName(@Param('name') name: string): Promise<FoodDto[]> {

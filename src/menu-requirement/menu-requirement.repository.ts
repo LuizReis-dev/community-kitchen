@@ -26,11 +26,10 @@ export class MenuRequirementRepository {
 		}
 	}
 
-	async findOne(id: number): Promise<MenuRequirementDto> {
+	async findOne(id: number): Promise<MenuRequirementDto | null> {
 		const menuRequirement = await MenuRequirement.findByPk(id)
 
-		if (!menuRequirement)
-			throw new NotFoundException('Especificações do menu não foram encontradas!')
+		if (!menuRequirement) return null
 
 		return MenuRequirementDto.fromEntity(menuRequirement)
 	}
@@ -47,11 +46,10 @@ export class MenuRequirementRepository {
 	async update(
 		id: number,
 		updateMenuRequirement: UpdateMenuRequirementDto
-	): Promise<MenuRequirementDto> {
+	): Promise<MenuRequirementDto | null> {
 		const menuRequirement = await MenuRequirement.findByPk(id)
 
-		if (!menuRequirement)
-			throw new NotFoundException('Especificações do menu não foram encontradas!')
+		if (!menuRequirement) return null
 
 		const transaction = await this.sequelize.transaction()
 		try {
@@ -66,11 +64,11 @@ export class MenuRequirementRepository {
 	}
 
 	async remove(id: number): Promise<void> {
-		const menuRequirement = await MenuRequirement.findByPk(id)
-		if (!menuRequirement)
-			throw new NotFoundException('As especifiações do menu não foram encontrado!')
-
-		await menuRequirement.destroy()
+        await MenuRequirement.destroy({
+            where: {
+                id: id
+            }
+        })
 	}
 
 	async findActiveMenuRequirements(): Promise<MenuRequirementDto[]> {

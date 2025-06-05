@@ -170,10 +170,6 @@ export class FoodRepository {
 			},
 		})
 
-		if (foods.length === 0) {
-			throw new NotFoundException(`Nenhuma comida encontrada com o nome: '${name}'`)
-		}
-
 		return foods.map(food => FoodDto.fromEntity(food))
 	}
 
