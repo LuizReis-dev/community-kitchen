@@ -9,7 +9,6 @@ import { DailyEventService } from 'src/daily-event/daily-event.service'
 import { DishDto } from 'src/dish/dto/dish.dto'
 import { DailyEventRepository } from 'src/daily-event/daily-event.repository'
 import { DailyEventDto } from 'src/daily-event/dto/daily-event.dto'
-import { UnassignedDailyEventDto } from 'src/daily-event/dto/unassigned-daily-event.dto'
 import { WEEK_DAYS } from 'src/common/enums/week-days'
 import { DailyEventsVacant } from 'src/daily-event/dto/daily-events-vacant-week.dto'
 
@@ -140,14 +139,6 @@ export class MenuService {
 		)
 
 		return menuNutritionFacts
-	}
-
-	async findDailyEventsWithoutAnyDay(): Promise<UnassignedDailyEventDto[]> {
-		const allEvents = await this.dailyEventRepository.findAll()
-		const usedEventIds = await this.menuRepository.findUsedDailyEventIds()
-
-		const unassigned = allEvents.filter(event => !usedEventIds.includes(event.id))
-		return unassigned.map(UnassignedDailyEventDto.fromDto)
 	}
 
 	async findDailyEventsWithAvailableDays(): Promise<DailyEventsVacant[]> {
