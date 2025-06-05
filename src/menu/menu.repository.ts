@@ -41,7 +41,7 @@ export class MenuRepository {
 
 	async findAll() {
 		const menus = await Menu.findAll({
-			include: ['dishes'],
+			include: ['dishes', 'dailyEvent'],
 		})
 		return menus.map(menu => MenuDto.fromEntity(menu))
 	}
@@ -101,10 +101,60 @@ export class MenuRepository {
 			where: {
 				dailyEventId,
 				availableDay,
+				deactivationDate: {
+					[Op.eq]: null,
+				},
 			},
 		})
 
 		return menuCount > 0
+	}
+
+	async deactivateMenu(id: number): Promise<string | null> {
+		const menu = await Menu.findByPk(id)
+
+		if (!menu) return menu
+
+		const transaction = await this.sequelize.transaction()
+		try {
+			await menu.update(
+				{
+					deactivationDate: new Date(),
+				},
+				{ transaction }
+			)
+
+			await transaction.commit()
+			return 'Menu successfully deactivated'
+		} catch {
+			await transaction.rollback()
+			throw new BadRequestException('Error updating menu')
+		}
+	}
+
+	async listWeeklyMenus(): Promise<MenuDto[]> {
+		const menus = await Menu.findAll({
+			include: ['dishes', 'dailyEvent'],
+			where: {
+				deactivationDate: {
+					[Op.eq]: null,
+				},
+			},
+		})
+		return menus.map(menu => MenuDto.fromEntity(menu))
+	}
+
+	async listMenuByWeekDay(weekDay: WEEK_DAYS): Promise<MenuDto | null> {
+		const menu = await Menu.findOne({
+			include: ['dishes', 'dailyEvent'],
+			where: {
+				availableDay: weekDay,
+				deactivationDate: {
+					[Op.eq]: null,
+				},
+			},
+		})
+		return menu ? MenuDto.fromEntity(menu) : menu
 	}
 
 	async findUsedDailyEventIds(): Promise<number[]> {
