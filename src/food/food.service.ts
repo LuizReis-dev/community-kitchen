@@ -48,10 +48,6 @@ export class FoodService {
 		return this.foodRepository.findFoodsByMinProteinAmount(minProteinAmount)
 	}
 
-	async findMostUsedFoods(page: number, limit: number) {
-		return this.foodRepository.findMostUsedFoods(page, limit)
-	}
-
 	private calculateCalories(nutritionFacts: NutritionFactsDto): number {
 		const calories =
 			nutritionFacts.carbohydrates * 4 + nutritionFacts.proteins * 4 + nutritionFacts.fats * 9

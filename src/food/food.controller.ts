@@ -46,12 +46,6 @@ export class FoodController {
 		return this.foodService.findFoodsByMinProteinAmount(minProteinAmount)
 	}
 
-	@ApiOkResponse()
-	@Get('filter/most-used')
-	async findMostUsedFoods(@Query('page') page: number = 1, @Query('limit') limit: number = 10) {
-		return this.foodService.findMostUsedFoods(page, limit)
-	}
-
 	@Get('foods-by-name/:name')
 	@ApiOkResponse({ type: [FoodDto] })
 	@ApiParam({ name: 'name', type: String, example: 'Tomate' })
