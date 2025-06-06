@@ -171,22 +171,53 @@ export class MenuRepository {
 		return usedMenus.map(m => m.dailyEventId)
 	}
 
-	async findAssignedDaysByDailyEvent(): Promise<{ dailyEventId: number; availableDay: WEEK_DAYS }[]> {
+	async findAssignedDaysByDailyEvent(): Promise<
+		{ dailyEventId: number; availableDay: WEEK_DAYS }[]
+	> {
 		const assignedDays = await Menu.findAll({
 			attributes: ['dailyEventId', 'availableDay'],
 			where: {
 				dailyEventId: { [Op.not]: null },
-				availableDay: { 
-				[Op.not]: null,
-				[Op.in]: Object.values(WEEK_DAYS)
+				availableDay: {
+					[Op.not]: null,
+					[Op.in]: Object.values(WEEK_DAYS),
 				},
 			},
 			group: ['dailyEventId', 'availableDay'],
 			raw: true,
-		});
+		})
 		return assignedDays.map(item => ({
 			dailyEventId: item.dailyEventId,
 			availableDay: item.availableDay as WEEK_DAYS,
-		}));
+		}))
+	}
+
+	async getMenuByDailyEventAndWeekDay(
+		dailyEventId: number,
+		weekDay: string
+	): Promise<MenuDto | null> {
+		const menu = await Menu.findOne({
+			include: ['dishes', 'dailyEvent'],
+			where: {
+				dailyEventId,
+				availableDay: weekDay as WEEK_DAYS,
+				deactivationDate: {
+					[Op.eq]: null,
+				},
+			},
+		})
+		return menu ? MenuDto.fromEntity(menu) : null
+	}
+	async getMenuByDailyEvent(dailyEventId: number): Promise<MenuDto[] | null> {
+		const menus = await Menu.findAll({
+			include: ['dishes', 'dailyEvent'],
+			where: {
+				dailyEventId,
+				deactivationDate: {
+					[Op.eq]: null,
+				},
+			},
+		})
+		return menus.length > 0 ? menus.map(menu => MenuDto.fromEntity(menu)) : null
 	}
 }
