@@ -10,26 +10,31 @@ export class FoodController {
 	constructor(private readonly foodService: FoodService) {}
 
 	@Post()
+	@ApiOkResponse({ type: [FoodDto] })
 	async create(@Body() createFoodDto: CreateFoodDto) {
 		return this.foodService.create(createFoodDto)
 	}
 
 	@Get()
+	@ApiOkResponse({ type: [FoodDto] })
 	async findAll() {
 		return this.foodService.findAll()
 	}
 
 	@Get(':id')
+	@ApiOkResponse({ type: [FoodDto] })
 	async findOne(@Param('id') id: string) {
 		return this.foodService.findOne(+id)
 	}
 
 	@Put(':id')
+	@ApiOkResponse({ type: [FoodDto] })
 	async update(@Param('id') id: string, @Body() updateFoodDto: UpdateFoodDto) {
 		return this.foodService.update(+id, updateFoodDto)
 	}
 
 	@Delete(':id')
+	@ApiOkResponse({ type: [FoodDto] })
 	async remove(@Param('id') id: string) {
 		return this.foodService.remove(+id)
 	}
@@ -53,7 +58,7 @@ export class FoodController {
 		return this.foodService.findFoodsByName(name)
 	}
 
-	@ApiOkResponse()
+	@ApiOkResponse({ type: [FoodDto] })
 	@Get('filter/most-caloric')
 	async findMostCaloricFoods(@Query('page') page: number = 1, @Query('limit') limit: number = 10) {
 		return this.foodService.findMostCaloricFoods(page, limit)
