@@ -69,4 +69,31 @@ export class CustomerService {
 	async getMostFrequentCustomers(limit: number, offset: number): Promise<MostFrequentCustomerDto[]> {
     return this.customerRepository.getMostFrequentCustomers(limit, offset);
   }
+
+  async getAverageCustomersAge(): Promise<{ averageAge: number }> {
+    const customers = await this.customerRepository.findAll();
+    const total = customers.length;
+
+    if (total === 0) {
+      return { averageAge: 0 };
+    }
+
+    const ages = customers.map(customer => this.calculateAge(new Date(customer.birthDate)));
+    const totalAge = ages.reduce((sum, age) => sum + age, 0);
+    const averageAge = Number((totalAge / total).toFixed(2));
+
+    return { averageAge };
+  }
+
+  private calculateAge(birthDate: Date): number {
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+
+    return age;
+  }
 }

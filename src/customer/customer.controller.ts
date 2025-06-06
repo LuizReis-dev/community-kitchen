@@ -47,9 +47,15 @@ export class CustomerController {
 		return this.customerService.remove(+id)
 	}
 
-	@Get('most/frequent/customers')
+	@Get('filter/mostFrequent')
 	@ApiOkResponse({ type: MostFrequentCustomerDto})
 	async getTopCustomers(@Query('page') page: number = 1, @Query('limit') limit: number = 10){
     	return this.customerService.getMostFrequentCustomers(page, limit);
   	}
+
+	@Get('average/age')
+	@ApiOkResponse()
+	async getAverageAge() {
+    	return await this.customerService.getAverageCustomersAge();
+  }	
 }
