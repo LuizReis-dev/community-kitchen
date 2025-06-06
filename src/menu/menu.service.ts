@@ -8,7 +8,6 @@ import { MenuRequirementDto } from 'src/menu-requirement/dto/menu-requirement.dt
 import { DailyEventService } from 'src/daily-event/daily-event.service'
 import { DishDto } from 'src/dish/dto/dish.dto'
 import { DailyEventRepository } from 'src/daily-event/daily-event.repository'
-import { DailyEventDto } from 'src/daily-event/dto/daily-event.dto'
 import { WEEK_DAYS } from 'src/common/enums/week-days'
 import { DailyEventsVacant } from 'src/daily-event/dto/daily-events-vacant-week.dto'
 
@@ -142,28 +141,31 @@ export class MenuService {
 	}
 
 	async findDailyEventsWithAvailableDays(): Promise<DailyEventsVacant[]> {
-		const allEvents = await this.dailyEventRepository.findAll();
-		const assignedDays = await this.menuRepository.findAssignedDaysByDailyEvent();
-		const allWeekDays = Object.values(WEEK_DAYS) as WEEK_DAYS[];
+		const allEvents = await this.dailyEventRepository.findAll()
+		const assignedDays = await this.menuRepository.findAssignedDaysByDailyEvent()
+		const allWeekDays = Object.values(WEEK_DAYS) as WEEK_DAYS[]
 
-		const assignedDaysMap = assignedDays.reduce((map, item) => {
-		if (!map[item.dailyEventId]) {
-			map[item.dailyEventId] = [];
-		}
-		map[item.dailyEventId].push(item.availableDay);
-		return map;
-		}, {} as Record<number, WEEK_DAYS[]>);
+		const assignedDaysMap = assignedDays.reduce(
+			(map, item) => {
+				if (!map[item.dailyEventId]) {
+					map[item.dailyEventId] = []
+				}
+				map[item.dailyEventId].push(item.availableDay)
+				return map
+			},
+			{} as Record<number, WEEK_DAYS[]>
+		)
 
-		const result: DailyEventsVacant[] = [];
+		const result: DailyEventsVacant[] = []
 
 		for (const event of allEvents) {
-		const eventAssignedDays = assignedDaysMap[event.id] || [];
-		const availableDays = allWeekDays.filter(day => !eventAssignedDays.includes(day));
-		if (availableDays.length > 0) {
-			result.push(DailyEventsVacant.fromDto(event, availableDays));
+			const eventAssignedDays = assignedDaysMap[event.id] || []
+			const availableDays = allWeekDays.filter(day => !eventAssignedDays.includes(day))
+			if (availableDays.length > 0) {
+				result.push(DailyEventsVacant.fromDto(event, availableDays))
+			}
 		}
-		}
-		return result;
+		return result
 	}
 
 	async deactivateMenu(id: number) {
@@ -185,6 +187,16 @@ export class MenuService {
 
 	async listMenuByWeekDay(weekDay: WEEK_DAYS) {
 		const result = await this.menuRepository.listMenuByWeekDay(weekDay)
+
+		if (!result) return new NotFoundException('Menu not found.')
+
+		return result
+	}
+
+	async getMenuByDailyEvent(dailyEventId: number, weekDay?: string) {
+		const result = weekDay
+			? await this.menuRepository.getMenuByDailyEventAndWeekDay(dailyEventId, weekDay)
+			: await this.menuRepository.getMenuByDailyEvent(dailyEventId)
 
 		if (!result) return new NotFoundException('Menu not found.')
 

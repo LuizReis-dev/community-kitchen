@@ -1,10 +1,10 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, Patch } from '@nestjs/common'
+import { Controller, Get, Post, Body, Param, Delete, Put, Patch, Query } from '@nestjs/common'
 import { MenuService } from './menu.service'
 import { CreateMenuDto } from './dto/create-menu.dto'
 import { UpdateMenuDto } from './dto/update-menu.dto'
 import { MenuDto } from './dto/menu.dto'
 import { DailyEventsVacant } from 'src/daily-event/dto/daily-events-vacant-week.dto'
-import { ApiOkResponse, ApiParam } from '@nestjs/swagger'
+import { ApiOkResponse, ApiParam, ApiQuery, getSchemaPath } from '@nestjs/swagger'
 import { Public } from 'src/common/decorators/public'
 import { WEEK_DAYS } from 'src/common/enums/week-days'
 
@@ -65,9 +65,32 @@ export class MenuController {
 	@Get('daily-events/vacant-days')
 	@ApiOkResponse({ type: [DailyEventsVacant] })
 	async getDailyEventsVacantDays(): Promise<DailyEventsVacant[]> {
-		return this.menuService.findDailyEventsWithAvailableDays();
+		return this.menuService.findDailyEventsWithAvailableDays()
 	}
-	
+
+	@Get('menu-by-daily-event/:dailyEventId')
+	@ApiQuery({
+		name: 'weekDay',
+		enum: WEEK_DAYS,
+		required: false,
+		description: 'Dia da semana. Deve ser um dos valores do enum WEEK_DAYS.',
+	})
+	@ApiOkResponse({
+		schema: {
+			oneOf: [
+				{ $ref: getSchemaPath(MenuDto) },
+				{ type: 'array', items: { $ref: getSchemaPath(MenuDto) } },
+			],
+		},
+		description: 'Returns a single MenuDto or an array of MenuDto',
+	})
+	async getMenuByDailyEvent(
+		@Param('dailyEventId') dailyEventId: string,
+		@Query('weekDay') weekDay?: string
+	) {
+		return this.menuService.getMenuByDailyEvent(+dailyEventId, weekDay)
+	}
+
 	@Patch(':id')
 	@ApiOkResponse({ type: String })
 	async deactivateMenu(@Param('id') id: string) {
