@@ -137,7 +137,7 @@ export class DishController {
 
 	@Get('order-by/:parameter')
     @ApiOkResponse({ type: [DishNutritionSummaryDto] })
-    @ApiParam({ name: 'parameter', description: 'Parâmetro nutricional para ordenação (calories, proteins, carbohydrates, fats)', enum: ['calories', 'proteins', 'carbohydrates', 'fats'] })
+    @ApiParam({ name: 'parameter', description: 'Parâmetro nutricional para ordenação (calories, proteins, carbohydrates, fats, fiber, sodium e sugar)'})
     async getOrderedByParameter(@Param('parameter') parameter: string): Promise<DishNutritionSummaryDto[]> {
         return this.dishService.getOrderedDishes(parameter);
     }
