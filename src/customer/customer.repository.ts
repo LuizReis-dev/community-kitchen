@@ -4,6 +4,9 @@ import { CreateCustomerDto } from './dto/create-customer.dto'
 import { CustomerDto } from './dto/customer.dto'
 import { Customer } from './entities/customer.entity'
 import { UpdateCustomerDto } from './dto/update-customer.dto'
+import { col, fn, literal } from 'sequelize'
+import { MostFrequentCustomerDto } from './dto/most-frequent-customers.dto'
+import { MenuAttendance } from 'src/menu-attendance/entities/menu-attendance.entity'
 
 @Injectable()
 export class CustomerRepository {
@@ -86,4 +89,27 @@ export class CustomerRepository {
             }
         })
     }
+
+async getMostFrequentCustomers(page = 1, limit = 10): Promise<MostFrequentCustomerDto[]> {
+  const result = await Customer.findAll({
+    attributes: {
+      include: [
+        [fn('COUNT', col('menuAttendances.id')), 'attendanceCount']
+      ]
+    },
+    include: [
+      {
+        model: MenuAttendance,
+        attributes: []
+      }
+    ],
+    group: ['Customer.id'],
+    order: [[Sequelize.col('attendanceCount'), 'DESC']],
+    limit,
+	offset: (page - 1) * limit,
+    subQuery: false
+  });
+
+  return result.map(customer => MostFrequentCustomerDto.fromEntity(customer));
+  }
 }
