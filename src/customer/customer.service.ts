@@ -4,6 +4,7 @@ import { UpdateCustomerDto } from './dto/update-customer.dto'
 import { CustomerRepository } from './customer.repository'
 import { CustomerDto } from './dto/customer.dto';
 import { NotFoundError } from 'rxjs';
+import { MostFrequentCustomerDto } from './dto/most-frequent-customers.dto';
 
 @Injectable()
 export class CustomerService {
@@ -64,4 +65,8 @@ export class CustomerService {
 	async remove(id: number) {
 		return this.customerRepository.remove(id);
 	}
+
+	async getMostFrequentCustomers(limit: number, offset: number): Promise<MostFrequentCustomerDto[]> {
+    return this.customerRepository.getMostFrequentCustomers(limit, offset);
+  }
 }
