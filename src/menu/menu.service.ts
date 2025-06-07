@@ -65,7 +65,11 @@ export class MenuService {
 	}
 
 	async findOne(id: number) {
-		return this.menuRepository.findOne(id)
+		const result = await this.menuRepository.findOne(id)
+
+		if (!result) throw new NotFoundException('Menu not found.')
+
+		return result
 	}
 
 	async update(id: number, updateMenuDto: UpdateMenuDto) {

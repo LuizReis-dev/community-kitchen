@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common'
+import { BadRequestException, Inject, Injectable } from '@nestjs/common'
 import { CreateMenuDto } from './dto/create-menu.dto'
 import { UpdateMenuDto } from './dto/update-menu.dto'
 import { Op, Sequelize } from 'sequelize'
@@ -81,9 +81,7 @@ export class MenuRepository {
 			],
 		})
 
-		if (!menu) throw new NotFoundException('Menu not found')
-
-		return MenuDto.fromEntity(menu)
+		return menu ? MenuDto.fromEntity(menu) : null
 	}
 
 	async update(id: number, updateMenuDto: UpdateMenuDto) {
@@ -264,7 +262,22 @@ export class MenuRepository {
 		weekDay: string
 	): Promise<MenuDto | null> {
 		const menu = await Menu.findOne({
-			include: ['dishes', 'dailyEvent'],
+			include: [
+				{
+					association: 'dishes',
+					include: [
+						{
+							association: 'foods',
+							include: [
+								{
+									association: 'nutritionFacts',
+								},
+							],
+						},
+					],
+				},
+				'dailyEvent',
+			],
 			where: {
 				dailyEventId,
 				availableDay: weekDay as WEEK_DAYS,
@@ -277,7 +290,22 @@ export class MenuRepository {
 	}
 	async getMenuByDailyEvent(dailyEventId: number): Promise<MenuDto[] | null> {
 		const menus = await Menu.findAll({
-			include: ['dishes', 'dailyEvent'],
+			include: [
+				{
+					association: 'dishes',
+					include: [
+						{
+							association: 'foods',
+							include: [
+								{
+									association: 'nutritionFacts',
+								},
+							],
+						},
+					],
+				},
+				'dailyEvent',
+			],
 			where: {
 				dailyEventId,
 				deactivationDate: {
