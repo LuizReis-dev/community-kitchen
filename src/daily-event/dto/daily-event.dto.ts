@@ -12,33 +12,33 @@ export class DailyEventDto {
 	) {
 		this.id = id
 		this.name = name
-		this.start_time = start_time
-		this.end_time = end_time
+		this.startTime = start_time
+		this.endTime = end_time
 		this.requirement = requirement
 	}
 
-	@ApiProperty()
+	@ApiProperty({description: 'Id do evento diário.', example: 1,})
 	id: number
 
-	@ApiProperty()
+	@ApiProperty({description: 'Especificações do evento diário.', example: 1,})
 	requirement: MenuRequirementDto
 
-	@ApiProperty()
+	@ApiProperty({description: 'Nome do evento diário.', example: 'Almoço',})
 	name: string
 
-	@ApiProperty()
-	start_time: string
+	@ApiProperty({description: 'Horario de inicio do evento diário.', example: '12:00:00',})
+	startTime: string
 
-	@ApiProperty()
-	end_time: string
+	@ApiProperty({description: 'Horario de termino do evento diário.', example: '14:00:00',})
+	endTime: string
 
 	static fromEntity(dailyEvent: DailyEvent): DailyEventDto {
 		const id = dailyEvent.id
 		const name = dailyEvent.name
-		const start_time = dailyEvent.start_time
-		const end_time = dailyEvent.end_time
-		const requirement = dailyEvent.menu_requirement
+		const startTime = dailyEvent.startTime
+		const endTime = dailyEvent.endTime
+		const requirement = dailyEvent.menuRequirement
 
-		return new DailyEventDto(id, name, start_time, end_time, requirement)
+		return new DailyEventDto(id, name, startTime, endTime, requirement)
 	}
 }

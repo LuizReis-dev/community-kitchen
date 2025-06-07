@@ -4,10 +4,10 @@ import { DailyEvent } from '../entities/daily-event.entity';
 import { DailyEventDto } from './daily-event.dto';
 
 export class DailyEventsVacant {
-  @ApiProperty()
+  @ApiProperty({description: 'Id do evento diário.', example: 1,})
   id: number;
 
-  @ApiProperty()
+  @ApiProperty({description: 'Especificações do evento diário.', example: 1,})
   name: string;
 
   @ApiProperty({enum: WEEK_DAYS, isArray: true })

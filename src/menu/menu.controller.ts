@@ -8,7 +8,7 @@ import { ApiOkResponse, ApiParam, ApiQuery, getSchemaPath } from '@nestjs/swagge
 import { Public } from 'src/common/decorators/public'
 import { WEEK_DAYS } from 'src/common/enums/week-days'
 
-@Controller('menu')
+@Controller('menus')
 export class MenuController {
 	constructor(private readonly menuService: MenuService) {}
 

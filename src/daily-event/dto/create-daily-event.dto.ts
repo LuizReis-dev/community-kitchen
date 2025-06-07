@@ -18,7 +18,7 @@ export class CreateDailyEventDto {
 	})
 	@IsString({ message: 'Horário de inicio deve ser uma string.' })
 	@IsNotEmpty({ message: 'Horário de inicio não pode ser vazio.' })
-	start_time: string
+	startTime: string
 
 	@ApiProperty({
 		description: 'Hora a qual o evento encerra.',
@@ -26,7 +26,7 @@ export class CreateDailyEventDto {
 	})
 	@IsString({ message: 'Horário de encerramento deve ser uma string.' })
 	@IsNotEmpty({ message: 'Horário de encerramento não pode ser vazio.' })
-	end_time: string
+	endTime: string
 
 	@ApiProperty({
 		description: 'Id do Menu Requirement referente a esse evento.',
@@ -35,5 +35,5 @@ export class CreateDailyEventDto {
 	@Type(() => Number)
 	@IsNumber({}, { message: 'Deve ser um número.' })
 	@IsNotEmpty({ message: 'O requirement_id não pode ser vazio.' })
-	requirement_id: number
+	requirementId: number
 }

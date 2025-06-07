@@ -25,68 +25,69 @@ export class MenuRequirement extends Model {
 	declare id: number
 
 	@NotNull
-	@Column({ type: DataType.DECIMAL, allowNull: false })
-	declare min_calories: number
+	@Column({ type: DataType.DECIMAL, allowNull: false, field: 'min_calories', })
+	declare minCalories: number
 
 	@NotNull
-	@Column({ type: DataType.DECIMAL, allowNull: false })
-	declare max_calories: number
+	@Column({ type: DataType.DECIMAL, allowNull: false, field: 'max_calories' })
+	declare maxCalories: number
 
 	@NotNull
-	@Column({ type: DataType.DECIMAL, allowNull: false })
-	declare min_carbohydrates: number
+	@Column({ type: DataType.DECIMAL, allowNull: false, field: 'min_carbohydrates' })
+	declare minCarbohydrates: number
 
 	@NotNull
-	@Column({ type: DataType.DECIMAL, allowNull: false })
-	declare max_carbohydrates: number
+	@Column({ type: DataType.DECIMAL, allowNull: false, field: 'max_carbohydrates' })
+	declare maxCarbohydrates: number
 
 	@NotNull
-	@Column({ type: DataType.DECIMAL, allowNull: false })
-	declare min_proteins: number
+	@Column({ type: DataType.DECIMAL, allowNull: false, field: 'min_proteins' })
+	declare minProteins: number
 
 	@NotNull
-	@Column({ type: DataType.DECIMAL, allowNull: false })
-	declare max_proteins: number
+	@Column({ type: DataType.DECIMAL, allowNull: false, field: 'max_proteins' })
+	declare maxProteins: number
 
 	@NotNull
-	@Column({ type: DataType.DECIMAL, allowNull: false })
-	declare min_fats: number
+	@Column({ type: DataType.DECIMAL, allowNull: false, field: 'min_fats' })
+	declare minFats: number
 
 	@NotNull
-	@Column({ type: DataType.DECIMAL, allowNull: false })
-	declare max_fats: number
+	@Column({ type: DataType.DECIMAL, allowNull: false, field: 'max_fats' })
+	declare maxFats: number
 
 	@NotNull
-	@Column({ type: DataType.DECIMAL, allowNull: false })
-	declare min_fiber: number
+	@Column({ type: DataType.DECIMAL, allowNull: false, field: 'min_fiber' })
+	declare minFiber: number
 
 	@NotNull
-	@Column({ type: DataType.DECIMAL, allowNull: false })
-	declare max_fiber: number
+	@Column({ type: DataType.DECIMAL, allowNull: false, field: 'max_fiber' })
+	declare maxFiber: number
 
 	@NotNull
-	@Column({ type: DataType.DECIMAL, allowNull: false })
-	declare min_sugar: number
+	@Column({ type: DataType.DECIMAL, allowNull: false, field: 'min_sugar' })
+	declare minSugar: number
 
 	@NotNull
-	@Column({ type: DataType.DECIMAL, allowNull: false })
-	declare max_sugar: number
+	@Column({ type: DataType.DECIMAL, allowNull: false, field: 'max_sugar' })
+	declare maxSugar: number
 
 	@NotNull
-	@Column({ type: DataType.DECIMAL, allowNull: false })
-	declare min_sodium: number
+	@Column({ type: DataType.DECIMAL, allowNull: false, field: 'min_sodium' })
+	declare minSodium: number
 
 	@NotNull
-	@Column({ type: DataType.DECIMAL, allowNull: false })
-	declare max_sodium: number
+	@Column({ type: DataType.DECIMAL, allowNull: false, field: 'max_sodium' })
+	declare maxSodium: number
 
 	@NotNull
 	@Column({
 		type: DataType.BOOLEAN,
 		allowNull: false,
 		defaultValue: true,
+		field: 'is_active'
 	})
-	declare is_active: boolean
+	declare isActive: boolean
 
 	@CreatedAt
 	@Column({
@@ -107,5 +108,5 @@ export class MenuRequirement extends Model {
 	declare updateAt: Date
 
 	@HasMany(() => DailyEvent)
-	declare daily_event: DailyEvent[]
+	declare dailyEvent: DailyEvent[]
 }
