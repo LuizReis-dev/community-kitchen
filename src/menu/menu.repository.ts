@@ -41,14 +41,44 @@ export class MenuRepository {
 
 	async findAll() {
 		const menus = await Menu.findAll({
-			include: ['dishes', 'dailyEvent'],
+			include: [
+				{
+					association: 'dishes',
+					include: [
+						{
+							association: 'foods',
+							include: [
+								{
+									association: 'nutritionFacts',
+								},
+							],
+						},
+					],
+				},
+				'dailyEvent',
+			],
 		})
 		return menus.map(menu => MenuDto.fromEntity(menu))
 	}
 
 	async findOne(id: number) {
 		const menu = await Menu.findByPk(id, {
-			include: ['dishes', 'dailyEvent'],
+			include: [
+				{
+					association: 'dishes',
+					include: [
+						{
+							association: 'foods',
+							include: [
+								{
+									association: 'nutritionFacts',
+								},
+							],
+						},
+					],
+				},
+				'dailyEvent',
+			],
 		})
 
 		if (!menu) throw new NotFoundException('Menu not found')

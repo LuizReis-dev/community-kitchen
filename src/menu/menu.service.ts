@@ -54,9 +54,9 @@ export class MenuService {
 		if (!areRequirementsFulfilled)
 			throw new BadRequestException('Menu does not meet the nutritional requirements.')
 
-		const user: User = req['user'];
+		const user: User = req['user']
 
-		createMenuDto.createdBy = user.id;
+		createMenuDto.createdBy = user.id
 		return this.menuRepository.create(createMenuDto)
 	}
 
