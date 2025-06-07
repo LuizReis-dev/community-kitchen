@@ -1,5 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { IsCpf, IsPastDate, IsRequiredDate, IsRequiredTypeOf } from 'src/common/decorators/validation'
+import {
+	IsCpf,
+	IsPastDate,
+	IsRequiredDate,
+	IsRequiredTypeOf,
+} from 'src/common/decorators/validation'
 
 export class CreateCustomerDto {
 	@IsRequiredTypeOf('string')

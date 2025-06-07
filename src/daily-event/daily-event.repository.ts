@@ -48,7 +48,10 @@ export class DailyEventRepository {
 		return DailyEventDto.fromEntity(dailyEvent)
 	}
 
-	async update(id: number, updateDailyEventDto: UpdateDailyEventDto): Promise<DailyEventDto | null> {
+	async update(
+		id: number,
+		updateDailyEventDto: UpdateDailyEventDto
+	): Promise<DailyEventDto | null> {
 		const dailyEvent = await DailyEvent.findByPk(id)
 
 		if (!dailyEvent) return null
@@ -107,11 +110,11 @@ export class DailyEventRepository {
 	}
 
 	async remove(id: number): Promise<void> {
-        await DailyEvent.destroy({
-            where: {
-                id: id
-            }
-        })
+		await DailyEvent.destroy({
+			where: {
+				id: id,
+			},
+		})
 	}
 
 	async findUpcomingEventsToday(): Promise<DailyEventDto[]> {

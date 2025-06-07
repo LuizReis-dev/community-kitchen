@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put, HttpCode, HttpStatus, Query } from '@nestjs/common'
+import {
+	Controller,
+	Get,
+	Post,
+	Body,
+	Patch,
+	Param,
+	Delete,
+	Put,
+	HttpCode,
+	HttpStatus,
+	Query,
+} from '@nestjs/common'
 import { CustomerService } from './customer.service'
 import { CreateCustomerDto } from './dto/create-customer.dto'
 import { UpdateCustomerDto } from './dto/update-customer.dto'
@@ -20,7 +32,7 @@ export class CustomerController {
 	@Get()
 	@ApiOkResponse({ type: [CustomerDto] })
 	async findAll() {
-		return this.customerService.findAll();
+		return this.customerService.findAll()
 	}
 
 	@Get(':id')
@@ -32,7 +44,7 @@ export class CustomerController {
 	@Get('/taxid/:taxId')
 	@ApiOkResponse({ type: CustomerDto })
 	async findByTaxId(@Param('taxId') taxId: string) {
-		return this.customerService.findByTaxId(taxId);
+		return this.customerService.findByTaxId(taxId)
 	}
 
 	@Put(':id')
@@ -48,14 +60,14 @@ export class CustomerController {
 	}
 
 	@Get('filter/mostFrequent')
-	@ApiOkResponse({ type: MostFrequentCustomerDto})
-	async getTopCustomers(@Query('page') page: number = 1, @Query('limit') limit: number = 10){
-    	return this.customerService.getMostFrequentCustomers(page, limit);
-  	}
+	@ApiOkResponse({ type: MostFrequentCustomerDto })
+	async getTopCustomers(@Query('page') page: number = 1, @Query('limit') limit: number = 10) {
+		return this.customerService.getMostFrequentCustomers(page, limit)
+	}
 
 	@Get('average/age')
 	@ApiOkResponse()
 	async getAverageAge() {
-    	return await this.customerService.getAverageCustomersAge();
-  }	
+		return await this.customerService.getAverageCustomersAge()
+	}
 }

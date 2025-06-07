@@ -6,7 +6,7 @@ export class UpdateDailyEventDto extends PartialType(CreateDailyEventDto) {
 	@ApiProperty({ example: 1, description: 'Id do MenuRequirement' })
 	@IsOptional()
 	@IsNumber()
-	requirement_id: number
+	requirementId: number
 
 	@ApiProperty({ example: 'Café da Manhã', description: 'Nome do Evento diario' })
 	@IsOptional()
@@ -16,10 +16,10 @@ export class UpdateDailyEventDto extends PartialType(CreateDailyEventDto) {
 	@ApiProperty({ example: '06:00:00', description: 'Horario que começa o evento diário' })
 	@IsOptional()
 	@IsString()
-	start_time: string
+	startTime: string
 
 	@ApiProperty({ example: '10:00:00', description: 'Horario que termina o evento diário' })
 	@IsOptional()
 	@IsString()
-	end_time: string
+	endTime: string
 }

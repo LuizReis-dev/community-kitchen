@@ -21,88 +21,91 @@ export class MenuRequirementDto {
 		is_active: boolean
 	) {
 		this.id = id
-		this.min_calories = min_calories
-		this.max_calories = max_calories
-		this.min_carbohydrates = min_carbohydrates
-		this.max_carbohydrates = max_carbohydrates
-		this.min_proteins = min_proteins
-		this.max_proteins = max_proteins
-		this.min_fats = min_fats
-		this.max_fats = max_fats
-		this.min_fiber = min_fiber
-		this.max_fiber = max_fiber
-		this.min_sugar = min_sugar
-		this.max_sugar = max_sugar
-		this.min_sodium = min_sodium
-		this.max_sodium = max_sodium
-		this.is_active = is_active
+		this.minCalories = min_calories
+		this.maxCalories = max_calories
+		this.minCarbohydrates = min_carbohydrates
+		this.maxCarbohydrates = max_carbohydrates
+		this.minProteins = min_proteins
+		this.maxProteins = max_proteins
+		this.minFats = min_fats
+		this.maxFats = max_fats
+		this.minFiber = min_fiber
+		this.maxFiber = max_fiber
+		this.minSugar = min_sugar
+		this.maxSugar = max_sugar
+		this.minSodium = min_sodium
+		this.maxSodium = max_sodium
+		this.isActive = is_active
 	}
 
 	@ApiProperty()
 	id: number
 
-	@ApiProperty()
-	min_calories: number
+	@ApiProperty({ example: 200, description: 'Mínimo de calorias em kcal' })
+	minCalories: number
 
-	@ApiProperty()
-	max_calories: number
+	@ApiProperty({ example: 800, description: 'Máximo de calorias em kcal' })
+	maxCalories: number
 
-	@ApiProperty()
-	min_carbohydrates: number
+	@ApiProperty({ example: 20, description: 'Mínimo de carboidratos em g' })
+	minCarbohydrates: number
 
-	@ApiProperty()
-	max_carbohydrates: number
+	@ApiProperty({ example: 80, description: 'Máximo de carboidratos em g' })
+	maxCarbohydrates: number
 
-	@ApiProperty()
-	min_proteins: number
+	@ApiProperty({ example: 5, description: 'Mínimo de proteínas em g' })
+	minProteins: number
 
-	@ApiProperty()
-	max_proteins: number
+	@ApiProperty({ example: 30, description: 'Máximo de proteínas em g' })
+	maxProteins: number
 
-	@ApiProperty()
-	min_fiber: number
+	@ApiProperty({ example: 2, description: 'Mínimo de fibras em g' })
+	minFiber: number
 
-	@ApiProperty()
-	max_fiber: number
+	@ApiProperty({ example: 5, description: 'Máximo de fibras em g' })
+	maxFiber: number
 
-	@ApiProperty()
-	min_fats: number
+	@ApiProperty({ example: 5, description: 'Mínimo de gordura em g' })
+	minFats: number
 
-	@ApiProperty()
-	max_fats: number
+	@ApiProperty({ example: 30, description: 'Máximo de gordura em g' })
+	maxFats: number
 
-	@ApiProperty()
-	min_sugar: number
+	@ApiProperty({ example: 0, description: 'Mínimo de açúcar em g' })
+	minSugar: number
 
-	@ApiProperty()
-	max_sugar: number
+	@ApiProperty({ example: 20, description: 'Máximo de açúcar em g' })
+	maxSugar: number
 
-	@ApiProperty()
-	min_sodium: number
+	@ApiProperty({ example: 50, description: 'Mínimo de sódio em mg' })
+	minSodium: number
 
-	@ApiProperty()
-	max_sodium: number
+	@ApiProperty({ example: 500, description: 'Máximo de sódio em mg' })
+	maxSodium: number
 
-	@ApiProperty()
-	is_active: boolean
+	@ApiProperty({
+		example: true,
+		description: 'As especificações devem estar ativas ou desativadas.',
+	})
+	isActive: boolean
 
 	static fromEntity(menuRequirement: MenuRequirement): MenuRequirementDto {
 		const id = menuRequirement.id
-		const min_calories = menuRequirement.min_calories
-		const max_calories = menuRequirement.max_calories
-		const min_carbohydrates = menuRequirement.min_carbohydrates
-		const max_carbohydrates = menuRequirement.max_carbohydrates
-		const min_proteins = menuRequirement.min_proteins
-		const max_proteins = menuRequirement.max_proteins
-		const min_fats = menuRequirement.min_fats
-		const max_fats = menuRequirement.max_fats
-		const min_fiber = menuRequirement.min_fiber
-		const max_fiber = menuRequirement.max_fiber
-		const min_sugar = menuRequirement.min_sugar
-		const max_sugar = menuRequirement.max_sugar
-		const min_sodium = menuRequirement.min_sodium
-		const max_sodium = menuRequirement.max_sodium
-		const is_active = menuRequirement.is_active
+		const min_calories = menuRequirement.minCalories
+		const max_calories = menuRequirement.maxCalories
+		const min_carbohydrates = menuRequirement.minCarbohydrates
+		const max_carbohydrates = menuRequirement.maxCarbohydrates
+		const min_proteins = menuRequirement.minProteins
+		const max_proteins = menuRequirement.maxProteins
+		const min_fats = menuRequirement.minFats
+		const max_fats = menuRequirement.maxFats
+		const min_fiber = menuRequirement.minFiber
+		const max_fiber = menuRequirement.maxFiber
+		const min_sugar = menuRequirement.minSugar
+		const max_sugar = menuRequirement.maxSugar
+		const min_sodium = menuRequirement.minSodium
+		const max_sodium = menuRequirement.maxSodium
+		const is_active = menuRequirement.isActive
 
 		return new MenuRequirementDto(
 			id,

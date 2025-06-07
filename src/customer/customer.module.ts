@@ -9,6 +9,6 @@ import { MenuAttendance } from 'src/menu-attendance/entities/menu-attendance.ent
 	imports: [DatabaseModule, MenuAttendance],
 	controllers: [CustomerController],
 	providers: [CustomerService, CustomerRepository],
-	exports: [CustomerService]
+	exports: [CustomerService],
 })
 export class CustomerModule {}

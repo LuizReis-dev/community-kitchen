@@ -35,7 +35,7 @@ export const databaseProviders = [
 				DishMenu,
 				DailyEvent,
 				Customer,
-				MenuAttendance
+				MenuAttendance,
 			])
 			await sequelize.sync()
 			return sequelize

@@ -12,7 +12,7 @@ import {
 import { MenuAttendance } from 'src/menu-attendance/entities/menu-attendance.entity'
 
 @Table({
-	tableName: 'tb_customer',
+	tableName: 'tb_customers',
 	modelName: 'Customer',
 	timestamps: true,
 })
@@ -44,8 +44,8 @@ export class Customer extends Model {
 	declare birthDate: Date
 
 	@HasMany(() => MenuAttendance)
-  	declare menuAttendances: MenuAttendance[];
-	
+	declare menuAttendances: MenuAttendance[]
+
 	@CreatedAt
 	@Column({
 		field: 'created_at',

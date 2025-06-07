@@ -27,19 +27,19 @@ export class DailyEvent extends Model {
 
 	@ForeignKey(() => MenuRequirement)
 	@Column({ field: 'requirement_id', allowNull: false })
-	declare requirement_id: number
+	declare requirementId: number
 
 	@BelongsTo(() => MenuRequirement)
-	declare menu_requirement: MenuRequirement
+	declare menuRequirement: MenuRequirement
 
 	@Column({ type: DataType.STRING, allowNull: false })
 	declare name: string
 
-	@Column({ type: DataType.TIME, allowNull: false })
-	declare start_time: string
+	@Column({ type: DataType.TIME, allowNull: false, field: 'start_time' })
+	declare startTime: string
 
-	@Column({ type: DataType.TIME, allowNull: false })
-	declare end_time: string
+	@Column({ type: DataType.TIME, allowNull: false, field: 'end_time' })
+	declare endTime: string
 
 	@HasMany(() => Menu)
 	declare menu: Menu[]

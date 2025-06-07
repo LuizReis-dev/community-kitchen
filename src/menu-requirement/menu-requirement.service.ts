@@ -17,34 +17,34 @@ export class MenuRequirementService {
 	}
 
 	async findOne(id: number): Promise<MenuRequirementDto> {
-        const menuRequirement = await this.menuRequirementRepository.findOne(id)
+		const menuRequirement = await this.menuRequirementRepository.findOne(id)
 
-        if (!menuRequirement) throw new NotFoundException('Especificações do menu não foram encontradas!')
+		if (!menuRequirement)
+			throw new NotFoundException('Especificações do menu não foram encontradas!')
 
-        return menuRequirement
+		return menuRequirement
 	}
 
 	async update(id: number, updateMenuRequirementDto: UpdateMenuRequirementDto) {
 		const requirement = await this.menuRequirementRepository.findOne(id)
-        if (!requirement) {
-            throw new NotFoundException('Especificações do menu não foram encontradas!')
-        }
+		if (!requirement) {
+			throw new NotFoundException('Especificações do menu não foram encontradas!')
+		}
 
 		return this.menuRequirementRepository.update(id, updateMenuRequirementDto)
 	}
 
 	async remove(id: number): Promise<void> {
-        const menuRequirement = await this.menuRequirementRepository.findOne(id)
-        if (!menuRequirement)
-            throw new NotFoundException('As especifiações do menu não foram encontrado!')
+		const menuRequirement = await this.menuRequirementRepository.findOne(id)
+		if (!menuRequirement)
+			throw new NotFoundException('As especifiações do menu não foram encontrado!')
 
-        if (menuRequirement.is_active == true) {
-            throw new BadRequestException(
-                'Não é possivel remover essa especificação, pois ela está em uso!'
-            )
-        }
-        return this.menuRequirementRepository.remove(id)
-
+		if (menuRequirement.is_active == true) {
+			throw new BadRequestException(
+				'Não é possivel remover essa especificação, pois ela está em uso!'
+			)
+		}
+		return this.menuRequirementRepository.remove(id)
 	}
 
 	async findActiveMenuRequirements(): Promise<MenuRequirementDto[]> {

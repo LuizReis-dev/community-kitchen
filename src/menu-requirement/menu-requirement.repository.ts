@@ -64,11 +64,11 @@ export class MenuRequirementRepository {
 	}
 
 	async remove(id: number): Promise<void> {
-        await MenuRequirement.destroy({
-            where: {
-                id: id
-            }
-        })
+		await MenuRequirement.destroy({
+			where: {
+				id: id,
+			},
+		})
 	}
 
 	async findActiveMenuRequirements(): Promise<MenuRequirementDto[]> {

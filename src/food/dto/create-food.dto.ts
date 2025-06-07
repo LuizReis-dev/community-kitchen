@@ -10,7 +10,7 @@ export class CreateFoodDto {
 
 	@ApiProperty({
 		type: () => NutritionFactsDto,
-		description: 'Informações nutricionais do alimento'
+		description: 'Informações nutricionais do alimento',
 	})
 	nutritionFacts: NutritionFactsDto
 

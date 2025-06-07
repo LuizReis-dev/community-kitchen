@@ -5,7 +5,7 @@ export class NutritionFactsDto {
 	@ApiProperty({
 		description: 'Quantidade de calorias (kcal) — calculada automaticamente, não enviar no POST',
 		example: 111,
-		readOnly: true,  // Indica que é somente leitura no Swagger
+		readOnly: true, // Indica que é somente leitura no Swagger
 	})
 	calories: number
 
@@ -65,14 +65,7 @@ export class NutritionFactsDto {
 
 	static isValid(obj: NutritionFactsDto): boolean {
 		if (!obj) return false
-		const fields = [
-			obj.carbohydrates,
-			obj.proteins,
-			obj.fats,
-			obj.fiber,
-			obj.sugar,
-			obj.sodium,
-		]
+		const fields = [obj.carbohydrates, obj.proteins, obj.fats, obj.fiber, obj.sugar, obj.sodium]
 
 		return fields.every(v => v !== null && v !== undefined)
 	}
