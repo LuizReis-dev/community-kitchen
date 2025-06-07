@@ -154,68 +154,47 @@ export class DishService {
 
 	async getFilteredDishes(params: {
 		carbohydrates?: number;
-        sodium?: number;
-        calories?: number;
-        proteins?: number;
-        limit?: number;
-        offset?: number;
-    }): Promise<DishNutritionSummaryDto[]> {
-        const { carbohydrates, sodium, calories, proteins, limit = 10, offset = 0 } = params;
+		sodium?: number;
+		calories?: number;
+		proteins?: number;
+		limit?: number;
+		offset?: number;
+	}): Promise<DishNutritionSummaryDto[]> {
 
-        const dishes = await this.dishRepository.findWithNutritionFacts(limit, offset);
+		const { carbohydrates, sodium, calories, proteins, limit = 10, offset = 0 } = params;
+		const dishes = await this.dishRepository.findWithNutritionFacts(limit, offset);
+		const filteredDishes: DishNutritionSummaryDto[] = [];
 
-        const filteredDishes: DishNutritionSummaryDto[] = [];
+		for (const dish of dishes) {
+			if (!dish.foods) continue;
+			
+			let summaryDto: DishNutritionSummaryDto;
+			try {
+				summaryDto = DishNutritionSummaryDto.fromEntity(dish);
+			} catch (error) {
+				continue;
+			}
+			const nf = summaryDto.nutritionFacts;
+			let include = true;
+			if (calories !== undefined && nf.calories > calories) {
+				include = false;
+			}
+			if (carbohydrates !== undefined && nf.carbohydrates > carbohydrates) {
+				include = false;
+			}
+			if (sodium !== undefined && nf.sodium > sodium) {
+				include = false;
+			}
+			if (proteins !== undefined && nf.proteins < proteins) {
+				include = false;
+			}
 
-        for (const dish of dishes) {
-            if (!dish.foods) continue;
-
-            const totalNutritionFacts = new NutritionFactsDto(0, 0, 0, 0, 0, 0, 0);
-
-            for (const food of dish.foods as any[]) {
-                const nf = food.nutritionFacts;
-                if (!nf) continue;
-
-                const quantity = food.DishFood?.quantity ?? 100;
-                const factor = quantity / 100;
-
-                totalNutritionFacts.calories += Number(nf.calories) * factor;
-                totalNutritionFacts.proteins += Number(nf.proteins) * factor;
-                totalNutritionFacts.carbohydrates += Number(nf.carbohydrates) * factor;
-                totalNutritionFacts.fats += Number(nf.fats) * factor;
-                totalNutritionFacts.fiber += Number(nf.fiber) * factor;
-                totalNutritionFacts.sugar += Number(nf.sugar) * factor;
-                totalNutritionFacts.sodium += Number(nf.sodium) * factor;
-            }
-            let include = true;
-            if (calories !== undefined && totalNutritionFacts.calories > calories) {
-                include = false;
-            }
-
-			if (carbohydrates !== undefined && totalNutritionFacts.carbohydrates > carbohydrates) {
-                include = false;
-            }
-
-            if (sodium !== undefined && totalNutritionFacts.sodium > sodium) {
-                include = false;
-            }
-            if (proteins !== undefined && totalNutritionFacts.proteins < proteins) {
-                include = false;
-            }
-
-            if (include) {
-                filteredDishes.push(
-                    new DishNutritionSummaryDto(
-                        dish.id,
-                        dish.name,
-                        dish.description,
-                        totalNutritionFacts,
-                    ),
-                );
-            }
-        }
-        return filteredDishes;
-    }
-
+			if (include) {
+				filteredDishes.push(summaryDto);
+			}
+		}
+		return filteredDishes;
+	}
 
 	async getOrderedDishes(parameter: string): Promise<DishNutritionSummaryDto[]> {
 		const validParams = ['calories', 'proteins', 'carbohydrates', 'fats', 'sodium', 'fiber', 'sugar'];
@@ -223,13 +202,11 @@ export class DishService {
 		if (!validParams.includes(parameter)) {
 			throw new BadRequestException('Parâmetro inválido para ordenação.');
 		}
-
 		const dishes = await this.dishRepository.findAllOrderedByNutricionalParameter();
 
 		if (!dishes || dishes.length === 0) {
 			throw new NotFoundException('Nenhum prato encontrado.');
 		}
-
 		const summaryDtos = dishes.map(DishNutritionSummaryDto.fromEntity);
 
 		summaryDtos.sort((a, b) => {

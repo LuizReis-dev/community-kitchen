@@ -258,61 +258,61 @@ export class DishRepository {
 	}
 
 	async findDishesByIds(ids: number[]): Promise<DishDto[]> {
-    const dishes = await Dish.findAll({
-        where: {
-            id: {
-                [Op.in]: ids,
+        const dishes = await Dish.findAll({
+            where: {
+                id: {
+                    [Op.in]: ids,
+                },
             },
-        },
-        include: [
-            {
-                model: Food,
-                include: [{ model: NutritionFacts }],
-                through: { attributes: ['quantity'] },
-            },
-        ],
-    });
-    return dishes.map(dish => DishDto.fromEntity(dish));
+            include: [
+                {
+                    model: Food,
+                    include: [{ model: NutritionFacts }],
+                    through: { attributes: ['quantity'] },
+                },
+            ],
+        });
+        return dishes.map(dish => DishDto.fromEntity(dish));
 	}
 
 	async findDishesByDescription(term: string): Promise<DishDto[]> {
-    const dishes = await Dish.findAll({
-        include: [
-            {
-                model: Food,
-                include: [{ model: NutritionFacts }],
-                through: { attributes: ['quantity'] },
+        const dishes = await Dish.findAll({
+            include: [
+                {
+                    model: Food,
+                    include: [{ model: NutritionFacts }],
+                    through: { attributes: ['quantity'] },
+                },
+            ],
+            where: {
+                description: {
+                    [Op.iLike]: `%${term}%`,
+                },
             },
-        ],
-        where: {
-            description: {
-                [Op.iLike]: `%${term}%`,
-            },
-        },
-    });
+        });
 
-    if (dishes.length === 0) {
-        throw new NotFoundException(`Nenhum prato encontrado com o termo '${term}'`);
+        if (dishes.length === 0) {
+            throw new NotFoundException(`Nenhum prato encontrado com o termo '${term}'`);
+        }
+
+        return dishes.map(dish => DishDto.fromEntity(dish));
     }
 
-    return dishes.map(dish => DishDto.fromEntity(dish));
-}
-
 	async findByName(name: string): Promise<Dish[]> {
-    return await Dish.findAll({
-        include: [
-            {
-                model: Food,
-                include: [{ model: NutritionFacts }],
-                through: { attributes: ['quantity'] },
+        return await Dish.findAll({
+            include: [
+                {
+                    model: Food,
+                    include: [{ model: NutritionFacts }],
+                    through: { attributes: ['quantity'] },
+                },
+            ],
+            where: {
+                name: {
+                    [Op.iLike]: `%${name}%`,
+                },
             },
-        ],
-        where: {
-            name: {
-                [Op.iLike]: `%${name}%`,
-            },
-        },
-    });
+        });
 }
 
 	async findDishWithNutritionFacts(id: number): Promise<Dish | null> {
