@@ -66,17 +66,17 @@ export class DishDto {
             if (!food.nutritionFacts) {
                 throw new Error(`Informações nutricionais não encontradas para o alimento com ID ${food.id}`);
             }
+            const round1 = (value: number) => Math.round(value * 10) / 10;
 
             const adjustedNutritionFacts = {
-                calories: Number(food.nutritionFacts.calories) * factor,
-                proteins: Number(food.nutritionFacts.proteins) * factor,
-                carbohydrates: Number(food.nutritionFacts.carbohydrates) * factor,
-                fats: Number(food.nutritionFacts.fats) * factor,
-                fiber: Number(food.nutritionFacts.fiber) * factor,
-                sugar: Number(food.nutritionFacts.sugar) * factor,
-                sodium: Number(food.nutritionFacts.sodium) * factor,
+                calories: round1(Number(food.nutritionFacts.calories) * factor),
+                proteins: round1(Number(food.nutritionFacts.proteins) * factor),
+                carbohydrates: round1(Number(food.nutritionFacts.carbohydrates) * factor),
+                fats: round1(Number(food.nutritionFacts.fats) * factor),
+                fiber: round1(Number(food.nutritionFacts.fiber) * factor),
+                sugar: round1(Number(food.nutritionFacts.sugar) * factor),
+                sodium: round1(Number(food.nutritionFacts.sodium) * factor),
             };
-
             return new DishFoodDto(
                 food.id,
                 food.name,
@@ -84,7 +84,6 @@ export class DishDto {
                 quantity
             );
         }) ?? [];
-
         return new DishDto(
             dish.id,
             dish.name,
