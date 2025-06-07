@@ -4,6 +4,7 @@ import { CreateFoodDto } from './dto/create-food.dto'
 import { UpdateFoodDto } from './dto/update-food.dto'
 import { ApiBearerAuth, ApiOkResponse, ApiParam, ApiQuery } from '@nestjs/swagger'
 import { FoodDto } from './dto/food.dto'
+import { NUTRIENTS } from 'src/common/enums/nutrients'
 
 @Controller('foods')
 @ApiBearerAuth('jwt')
@@ -41,15 +42,33 @@ export class FoodController {
 	}
 
 	@ApiOkResponse({ type: [FoodDto] })
-	@Get('foods-by-max-sugar-amount/:maxSugarAmount')
-	async findFoodsByMaxSugarAmount(@Param('maxSugarAmount') maxSugarAmount: number) {
-		return this.foodService.findFoodsByMaxSugarAmount(maxSugarAmount)
+	@ApiQuery({
+		name: 'nutrient',
+		enum: NUTRIENTS,
+		required: false,
+		description: 'Nome do nutriente.',
+	})
+	@Get('foods-by-max-sugar-amount/:maxNutrientAmount')
+	async findFoodsByMaxNutrientAmount(
+		@Param('maxNutrientAmount') maxNutrientAmount: number,
+		@Query('nutrient') nutrient: NUTRIENTS
+	) {
+		return this.foodService.findFoodsByMaxNutrientAmount(maxNutrientAmount, nutrient)
 	}
 
 	@ApiOkResponse({ type: [FoodDto] })
-	@Get('foods-by-min-protein-amount/:minProteinAmount')
-	async findFoodsByMinProteinAmount(@Param('minProteinAmount') minProteinAmount: number) {
-		return this.foodService.findFoodsByMinProteinAmount(minProteinAmount)
+	@ApiQuery({
+		name: 'nutrient',
+		enum: NUTRIENTS,
+		required: false,
+		description: 'Nome do nutriente.',
+	})
+	@Get('foods-by-min-nutrient-amount/:minNutrientAmount')
+	async findFoodsByMinNutrientAmount(
+		@Param('minNutrientAmount') minNutrientAmount: number,
+		@Query('nutrient') nutrient: NUTRIENTS
+	) {
+		return this.foodService.findFoodsByMinNutrientAmount(minNutrientAmount, nutrient)
 	}
 
 	@Get('foods-by-name/:name')

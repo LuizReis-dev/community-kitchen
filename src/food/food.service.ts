@@ -4,6 +4,7 @@ import { UpdateFoodDto } from './dto/update-food.dto'
 import { FoodRepository } from './food.repository'
 import { FoodDto } from './dto/food.dto'
 import { NutritionFactsDto } from './dto/nutrition-facts.dto'
+import { NUTRIENTS } from 'src/common/enums/nutrients'
 
 @Injectable()
 export class FoodService {
@@ -40,12 +41,40 @@ export class FoodService {
 		return this.foodRepository.remove(id)
 	}
 
-	async findFoodsByMaxSugarAmount(maxSugarAmount: number): Promise<FoodDto[]> {
-		return this.foodRepository.findFoodsByMaxSugarAmount(maxSugarAmount)
+	async findFoodsByMaxNutrientAmount(
+		maxNutrientAmount: number,
+		nutrient: NUTRIENTS
+	): Promise<FoodDto[]> {
+		const result = await this.foodRepository.findFoodsByMaxNutrientAmount(
+			maxNutrientAmount,
+			nutrient
+		)
+
+		if (!result) {
+			throw new NotFoundException(
+				`Nenhum alimento encontrado com até ${maxNutrientAmount} do nutriente escolhido!`
+			)
+		}
+
+		return result
 	}
 
-	async findFoodsByMinProteinAmount(minProteinAmount: number): Promise<FoodDto[]> {
-		return this.foodRepository.findFoodsByMinProteinAmount(minProteinAmount)
+	async findFoodsByMinNutrientAmount(
+		minNutrientAmount: number,
+		nutrient: NUTRIENTS
+	): Promise<FoodDto[]> {
+		const result = await this.foodRepository.findFoodsByMinNutrientAmount(
+			minNutrientAmount,
+			nutrient
+		)
+
+		if (!result) {
+			throw new NotFoundException(
+				`Nenhum alimento encontrado com pelo menos ${minNutrientAmount} do nutriente escolhido!`
+			)
+		}
+
+		return result
 	}
 
 	private calculateCalories(nutritionFacts: NutritionFactsDto): number {
