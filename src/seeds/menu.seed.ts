@@ -5,11 +5,7 @@ import { DailyEvent } from 'src/daily-event/entities/daily-event.entity';
 import { Dish } from 'src/dish/entities/dish.entity';
 import { DishMenu } from 'src/menu/entities/dish-menu';
 import { Menu } from 'src/menu/entities/menu.entity';
-/*import { Menu } from '../entities/menu.entity';
-import { DishMenu } from '../entities/dish-menu';
-import { Dish } from '../../dish/entities/dish.entity'; // Para buscar os pratos pelo nome
-import { DailyEvent } from '../../daily-event/entities/daily-event.entity'; // Para buscar os eventos diários
-import { WEEK_DAYS } from '../../common/enums/week-days'; // Importar o enum WEEK_DAYS*/
+
 
 export const createMenus = async (sequelize: Sequelize) => {
   const transaction = await sequelize.transaction();
@@ -46,11 +42,110 @@ export const createMenus = async (sequelize: Sequelize) => {
         activationDate: new Date(),
         availableDay: WEEK_DAYS.WEDNESDAY,
         createdBy: 'admin1',
+        dailyEventName: 'Almoço',
+        dishes: [
+          'PF de Frango Tradicional',
+          'Macarrão à Bolonhesa',
+          'Salada Vegana Proteica',
+        ],
+      },
+      {
+        activationDate: new Date(),
+        availableDay: WEEK_DAYS.FRIDAY,
+        createdBy: 'admin1',
+        dailyEventName: 'Almoço',
+        dishes: [
+          'PF de Frango Tradicional',
+          'Macarrão à Bolonhesa',
+          'Salada Vegana Proteica',
+        ],
+      },
+      {
+        activationDate: new Date(),
+        availableDay: WEEK_DAYS.SATURDAY,
+        createdBy: 'admin1',
+        dailyEventName: 'Almoço',
+        dishes: [
+          'PF de Frango Tradicional',
+          'Macarrão à Bolonhesa',
+          'Salada Vegana Proteica',
+        ],
+      },
+      {
+        activationDate: new Date(),
+        availableDay: WEEK_DAYS.SUNDAY,
+        createdBy: 'admin1',
+        dailyEventName: 'Almoço',
+        dishes: [
+          'PF de Frango Tradicional',
+          'Macarrão à Bolonhesa',
+          'Salada Vegana Proteica',
+        ],
+      },
+      {
+        activationDate: new Date(),
+        availableDay: WEEK_DAYS.TUESDAY,
+        createdBy: 'admin1',
         dailyEventName: 'Jantar',
         dishes: [
           'Omelete com legumes',
           'Quinoa com legumes',
           'Lentilha com arroz e salada',
+        ],
+      },
+      {
+        activationDate: new Date(),
+        availableDay: WEEK_DAYS.THURSDAY,
+        createdBy: 'admin1',
+        dailyEventName: 'Jantar',
+        dishes: [
+          'Omelete com legumes',
+          'Quinoa com legumes',
+          'Lentilha com arroz e salada',
+        ],
+      },
+      {
+        activationDate: new Date(),
+        availableDay: WEEK_DAYS.MONDAY,
+        createdBy: 'admin2',
+        dailyEventName: 'Café da Manhã',
+        dishes: [
+          'Sobremesa de banana da casa',
+          'Sanduiche Leve',
+          'Wrap vegetariano',
+        ],
+      },
+      {
+        activationDate: new Date(),
+        availableDay: WEEK_DAYS.TUESDAY,
+        createdBy: 'admin2',
+        dailyEventName: 'Café da Manhã',
+        dishes: [
+          'Sobremesa de banana da casa',
+          'Sanduiche Leve',
+          'Wrap vegetariano',
+        ],
+      },
+      {
+        activationDate: new Date(),
+        availableDay: WEEK_DAYS.WEDNESDAY,
+        createdBy: 'admin2',
+        dailyEventName: 'Café da Manhã',
+        dishes: [
+          'Sobremesa de banana da casa',
+          'Sanduiche Leve',
+          'Wrap vegetariano',
+        ],
+      },
+      {
+        activationDate: new Date(),
+        availableDay: WEEK_DAYS.THURSDAY,
+        createdBy: 'admin2',
+        dailyEventName: 'Café da Manhã',
+        dishes: [
+          'Sobremesa de banana da casa',
+          'Sanduiche Leve',
+          'Wrap vegetariano',
         ],
       },
       {

@@ -5,6 +5,7 @@ import { createDishes } from './dish.seed';
 import { createMenuRequirements } from './menu-requirement.seed';
 import { createDailyEvents } from './daily-event.seed';
 import { createMenus } from './menu.seed';
+import { createCustomers } from './customer.seed';
 
 async function runSeeds() {
   try {
@@ -16,6 +17,7 @@ async function runSeeds() {
     await createMenuRequirements(sequelize)
     await createDailyEvents(sequelize)
     await createMenus(sequelize)
+    await createCustomers(sequelize)
 
     console.log('Todas as seeds foram executadas com sucesso!');
   } catch (error) {
