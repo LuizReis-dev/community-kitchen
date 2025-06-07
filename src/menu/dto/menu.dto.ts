@@ -45,8 +45,8 @@ export class MenuDto {
 	dailyEvent: DailyEventDto
 
 	static fromEntity(menu: Menu): MenuDto {
-		const dishes = menu.dishes.map(dish => DishDto.fromEntity(dish))
-		const dailyEvent = DailyEventDto.fromEntity(menu.dailyEvent)
+		const dishes = menu.dishes?.map(dish => DishDto.fromEntity(dish))
+		const dailyEvent = menu.dailyEvent && DailyEventDto.fromEntity(menu.dailyEvent)
 		const deactivationDate = menu.deactivationDate
 		const activationDate = menu.activationDate
 		const availableDay = menu.availableDay

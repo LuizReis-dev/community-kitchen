@@ -87,25 +87,27 @@ export class MenuRepository {
 	}
 
 	async update(id: number, updateMenuDto: UpdateMenuDto) {
-		const menu = await Menu.findByPk(id, {
-			include: ['dishes'],
-		})
-
-		if (!menu) throw new NotFoundException('Menu not found')
-
 		const transaction = await this.sequelize.transaction()
 		try {
-			await menu.update(
+			const [_, affectedRows] = await Menu.update(
 				{
 					...updateMenuDto,
 				},
-				{ transaction }
+				{ transaction, where: { id }, returning: true }
 			)
 			const dishesIds = updateMenuDto.dishes ?? null
+			const dailyEventId = updateMenuDto.dailyEventId ?? null
+			const menu = affectedRows[0]
 
-			await menu.$set('dishes', dishesIds, { transaction })
+			if (dishesIds) {
+				await menu.$set('dishes', dishesIds, { transaction })
+				menu.dishes = await menu.$get('dishes', { transaction })
+			}
+			if (dailyEventId) {
+				await menu.$set('dailyEvent', dailyEventId, { transaction })
+				menu.dailyEvent = (await menu.$get('dailyEvent', { transaction })) as DailyEvent
+			}
 
-			menu.dishes = await menu.$get('dishes', { transaction })
 			await transaction.commit()
 			return MenuDto.fromEntity(menu)
 		} catch {
