@@ -162,21 +162,51 @@ export class MenuRepository {
 		}
 	}
 
-	async listWeeklyMenus(): Promise<MenuDto[]> {
+	async listWeeklyMenus(): Promise<Record<WEEK_DAYS, MenuDto[]>> {
 		const menus = await Menu.findAll({
-			include: ['dishes', 'dailyEvent'],
+			include: [
+				{
+					association: 'dishes',
+					include: [
+						{
+							association: 'foods',
+							include: [
+								{
+									association: 'nutritionFacts',
+								},
+							],
+						},
+					],
+				},
+				'dailyEvent',
+			],
 			where: {
 				deactivationDate: {
 					[Op.eq]: null,
 				},
 			},
 		})
-		return menus.map(menu => MenuDto.fromEntity(menu))
+		return MenuDto.fromEntitiesGroupedByDay(menus)
 	}
 
-	async listMenuByWeekDay(weekDay: WEEK_DAYS): Promise<MenuDto | null> {
-		const menu = await Menu.findOne({
-			include: ['dishes', 'dailyEvent'],
+	async listMenuByWeekDay(weekDay: WEEK_DAYS): Promise<MenuDto[] | null> {
+		const menu = await Menu.findAll({
+			include: [
+				{
+					association: 'dishes',
+					include: [
+						{
+							association: 'foods',
+							include: [
+								{
+									association: 'nutritionFacts',
+								},
+							],
+						},
+					],
+				},
+				'dailyEvent',
+			],
 			where: {
 				availableDay: weekDay,
 				deactivationDate: {
@@ -184,7 +214,8 @@ export class MenuRepository {
 				},
 			},
 		})
-		return menu ? MenuDto.fromEntity(menu) : menu
+
+		return menu.length > 0 ? menu.map(menu => MenuDto.fromEntity(menu)) : null
 	}
 
 	async findUsedDailyEventIds(): Promise<number[]> {

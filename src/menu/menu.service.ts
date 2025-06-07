@@ -204,8 +204,6 @@ export class MenuService {
 	async listWeeklyMenus() {
 		const result = await this.menuRepository.listWeeklyMenus()
 
-		if (result.length === 0) return new NotFoundException('Menu not found.')
-
 		return result
 	}
 

@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger'
 import { DishDto } from 'src/dish/dto/dish.dto'
 import { Menu } from '../entities/menu.entity'
 import { DailyEventDto } from 'src/daily-event/dto/daily-event.dto'
+import { WEEK_DAYS } from 'src/common/enums/week-days'
 
 export class MenuDto {
 	constructor(
@@ -61,5 +62,19 @@ export class MenuDto {
 			createdBy,
 			dishes
 		)
+	}
+
+	static fromEntitiesGroupedByDay(menus: Menu[]): Record<WEEK_DAYS, MenuDto[]> {
+		const groupedMenus: Record<WEEK_DAYS, MenuDto[]> = {} as Record<WEEK_DAYS, MenuDto[]>
+
+		for (const menu of menus) {
+			const day = menu.availableDay
+			if (!groupedMenus[day]) {
+				groupedMenus[day] = []
+			}
+			groupedMenus[day].push(MenuDto.fromEntity(menu))
+		}
+
+		return groupedMenus
 	}
 }
