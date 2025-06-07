@@ -1,4 +1,12 @@
-import { Table, Model, Column, ForeignKey, DataType, BelongsTo, AllowNull } from 'sequelize-typescript'
+import {
+	Table,
+	Model,
+	Column,
+	ForeignKey,
+	DataType,
+	BelongsTo,
+	AllowNull,
+} from 'sequelize-typescript'
 import { Dish } from './dish.entity'
 import { Food } from 'src/food/entities/food.entity'
 @Table({

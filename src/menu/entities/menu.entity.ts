@@ -52,7 +52,7 @@ export class Menu extends Model {
 	declare dailyEvent: DailyEvent
 
 	@HasMany(() => MenuAttendance)
-  	declare menuAttendances: MenuAttendance[];
+	declare menuAttendances: MenuAttendance[]
 
 	@CreatedAt
 	@Column({

@@ -45,12 +45,11 @@ export class DailyEventService {
 	}
 
 	async findOne(id: number): Promise<DailyEventDto> {
-        const dailyEvent = await this.dailyEventRepository.findOne(id)
+		const dailyEvent = await this.dailyEventRepository.findOne(id)
 
-        if (!dailyEvent) throw new NotFoundException('Evento diário nao encontrado!')
+		if (!dailyEvent) throw new NotFoundException('Evento diário nao encontrado!')
 
-        return dailyEvent
-
+		return dailyEvent
 	}
 
 	async update(id: number, updateDailyEventDto: UpdateDailyEventDto) {
@@ -73,7 +72,7 @@ export class DailyEventService {
 
 	async remove(id: number): Promise<void> {
 		const dailyEvent = await DailyEvent.findByPk(id)
-        if (!dailyEvent) throw new NotFoundException('Evento diário não encontrado!')
+		if (!dailyEvent) throw new NotFoundException('Evento diário não encontrado!')
 
 		return this.dailyEventRepository.remove(id)
 	}

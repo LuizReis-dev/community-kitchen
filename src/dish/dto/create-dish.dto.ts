@@ -46,7 +46,7 @@ export class CreateDishDto {
 	@ArrayNotEmpty({ message: 'Foods nao pode ser vazio.' })
 	@ArrayMaxSize(50, { message: 'Foods nao pode conter mais de 50 ingredientes.' })
 	@ValidateNested({ each: true })
-	@ArrayUnique((item) => item.foodId, { message: 'FoodIds precisam ser únicos.' })
+	@ArrayUnique(item => item.foodId, { message: 'FoodIds precisam ser únicos.' })
 	@Type(() => DishFoodQuantityDto)
-	foods: DishFoodQuantityDto[];
+	foods: DishFoodQuantityDto[]
 }

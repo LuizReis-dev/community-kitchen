@@ -55,25 +55,25 @@ export class FoodService {
 	}
 
 	async findFoodsByName(name: string): Promise<FoodDto[]> {
-        if (!name?.trim()) {
-        throw new BadRequestException('O nome para busca deve ser informado.')
-        }
+		if (!name?.trim()) {
+			throw new BadRequestException('O nome para busca deve ser informado.')
+		}
 
-        const foods = await this.foodRepository.findFoodsByName(name)
+		const foods = await this.foodRepository.findFoodsByName(name)
 
-        if (!foods || foods.length === 0) {
-        throw new NotFoundException(`Nenhuma comida encontrada com o nome: '${name}'`)
-        }
+		if (!foods || foods.length === 0) {
+			throw new NotFoundException(`Nenhuma comida encontrada com o nome: '${name}'`)
+		}
 
-    	return foods
+		return foods
 	}
 
 	async findMostCaloricFoods(page: number, limit: number = 10): Promise<FoodDto[]> {
-        const foods = await this.foodRepository.findMostCaloricFoods(page, limit)
+		const foods = await this.foodRepository.findMostCaloricFoods(page, limit)
 
-        if (!foods || foods.length === 0) {
-            throw new NotFoundException('Nenhum alimento encontrado.')
-        }
-        return foods
+		if (!foods || foods.length === 0) {
+			throw new NotFoundException('Nenhum alimento encontrado.')
+		}
+		return foods
 	}
 }

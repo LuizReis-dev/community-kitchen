@@ -172,19 +172,19 @@ export class MenuRepository {
 	}
 
 	async findAssignedDaysByDailyEvent(): Promise<
-	{ dailyEventId: number; availableDay: WEEK_DAYS }[]
+		{ dailyEventId: number; availableDay: WEEK_DAYS }[]
 	> {
 		const assignedDays = await Menu.findAll({
 			attributes: ['dailyEventId', 'availableDay'],
 			where: {
-			dailyEventId: { [Op.not]: null },
-			availableDay: {
-				[Op.not]: null,
-				[Op.in]: Object.values(WEEK_DAYS),
-			},
-			deactivationDate: {
-				[Op.eq]: null,
-			},
+				dailyEventId: { [Op.not]: null },
+				availableDay: {
+					[Op.not]: null,
+					[Op.in]: Object.values(WEEK_DAYS),
+				},
+				deactivationDate: {
+					[Op.eq]: null,
+				},
 			},
 			group: ['dailyEventId', 'availableDay'],
 			raw: true,

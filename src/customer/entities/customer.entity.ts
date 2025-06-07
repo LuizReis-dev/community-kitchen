@@ -44,8 +44,8 @@ export class Customer extends Model {
 	declare birthDate: Date
 
 	@HasMany(() => MenuAttendance)
-  	declare menuAttendances: MenuAttendance[];
-	
+	declare menuAttendances: MenuAttendance[]
+
 	@CreatedAt
 	@Column({
 		field: 'created_at',

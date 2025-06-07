@@ -10,106 +10,102 @@ import { MenuAttendance } from 'src/menu-attendance/entities/menu-attendance.ent
 
 @Injectable()
 export class CustomerRepository {
-    constructor(@Inject('SEQUELIZE') private sequelize: Sequelize) { }
+	constructor(@Inject('SEQUELIZE') private sequelize: Sequelize) {}
 
-    async create(createCustomerDto: CreateCustomerDto): Promise<CustomerDto> {
-        const transaction = await this.sequelize.transaction()
-        try {
-            const customer = await Customer.create(
-                {
-                    taxId: createCustomerDto.taxId,
-                    name: createCustomerDto.name,
-                    birthDate: createCustomerDto.birthDate,
+	async create(createCustomerDto: CreateCustomerDto): Promise<CustomerDto> {
+		const transaction = await this.sequelize.transaction()
+		try {
+			const customer = await Customer.create(
+				{
+					taxId: createCustomerDto.taxId,
+					name: createCustomerDto.name,
+					birthDate: createCustomerDto.birthDate,
+				},
+				{ transaction }
+			)
 
-                },
-                { transaction }
-            )
+			await transaction.commit()
+			return CustomerDto.fromEntity(customer)
+		} catch {
+			await transaction.rollback()
+			throw new BadRequestException('Erro ao inserir o cliente!')
+		}
+	}
 
-            await transaction.commit()
-            return CustomerDto.fromEntity(customer);
-        } catch {
-            await transaction.rollback()
-            throw new BadRequestException('Erro ao inserir o cliente!')
-        }
-    }
+	async findAll(): Promise<CustomerDto[]> {
+		const customers = await Customer.findAll()
 
-    async findAll(): Promise<CustomerDto[]> {
-        const customers = await Customer.findAll();
+		return customers.map(customer => CustomerDto.fromEntity(customer))
+	}
 
-        return customers.map(customer => CustomerDto.fromEntity(customer));
-    }
+	async findOne(id: number): Promise<CustomerDto | null> {
+		const customer = await Customer.findByPk(id)
 
-    async findOne(id: number): Promise<CustomerDto | null> {
-        const customer = await Customer.findByPk(id);
+		if (!customer) return null
 
-        if (!customer) return null;
+		return CustomerDto.fromEntity(customer)
+	}
 
-        return CustomerDto.fromEntity(customer);
-    }
+	async findCustomerByTaxId(taxId: string): Promise<CustomerDto | null> {
+		let customer = await Customer.findOne({
+			where: {
+				taxId: taxId,
+			},
+		})
 
-    async findCustomerByTaxId(taxId: string): Promise<CustomerDto | null> {
-        let customer = await Customer.findOne({
-            where: {
-                taxId: taxId
-            }
-        });
+		if (!customer) return null
 
-        if (!customer) return null;
+		return CustomerDto.fromEntity(customer)
+	}
 
-        return CustomerDto.fromEntity(customer);
-    }
+	async update(id: number, updateCustomerDto: UpdateCustomerDto): Promise<CustomerDto> {
+		const customer = await Customer.findByPk(id)
+		const transaction = await this.sequelize.transaction()
+		try {
+			if (customer == null) throw new BadRequestException('Customer not found')
+			await customer.update(
+				{
+					name: updateCustomerDto.name,
+					taxId: updateCustomerDto.taxId,
+					birthDate: updateCustomerDto.birthDate,
+				},
+				{ transaction }
+			)
 
-    async update(id: number, updateCustomerDto: UpdateCustomerDto): Promise<CustomerDto> {
+			await transaction.commit()
+			return CustomerDto.fromEntity(customer)
+		} catch {
+			await transaction.rollback()
+			throw new BadRequestException('Erro ao atualizar o alimento!')
+		}
+	}
 
-        const customer = await Customer.findByPk(id);
-        const transaction = await this.sequelize.transaction()
-        try {
-            if (customer == null) throw new BadRequestException("Customer not found");
-            await customer.update(
-                {
-                    name: updateCustomerDto.name,
-                    taxId: updateCustomerDto.taxId,
-                    birthDate: updateCustomerDto.birthDate
-                },
-                { transaction }
-            )
+	async remove(id: number) {
+		await Customer.destroy({
+			where: {
+				id: id,
+			},
+		})
+	}
 
-            await transaction.commit()
-            return CustomerDto.fromEntity(customer)
-        } catch {
-            await transaction.rollback()
-            throw new BadRequestException('Erro ao atualizar o alimento!')
-        }
-    }
+	async getMostFrequentCustomers(page = 1, limit = 10): Promise<MostFrequentCustomerDto[]> {
+		const result = await Customer.findAll({
+			attributes: {
+				include: [[fn('COUNT', col('menuAttendances.id')), 'attendanceCount']],
+			},
+			include: [
+				{
+					model: MenuAttendance,
+					attributes: [],
+				},
+			],
+			group: ['Customer.id'],
+			order: [[Sequelize.col('attendanceCount'), 'DESC']],
+			limit,
+			offset: (page - 1) * limit,
+			subQuery: false,
+		})
 
-    async remove(id: number) {
-        await Customer.destroy({
-            where: {
-                id: id
-            }
-        })
-    }
-
-async getMostFrequentCustomers(page = 1, limit = 10): Promise<MostFrequentCustomerDto[]> {
-  const result = await Customer.findAll({
-    attributes: {
-      include: [
-        [fn('COUNT', col('menuAttendances.id')), 'attendanceCount']
-      ]
-    },
-    include: [
-      {
-        model: MenuAttendance,
-        attributes: []
-      }
-    ],
-    group: ['Customer.id'],
-    order: [[Sequelize.col('attendanceCount'), 'DESC']],
-    limit,
-	offset: (page - 1) * limit,
-    subQuery: false
-  });
-
-  return result.map(customer => MostFrequentCustomerDto.fromEntity(customer));
-  }
+		return result.map(customer => MostFrequentCustomerDto.fromEntity(customer))
+	}
 }

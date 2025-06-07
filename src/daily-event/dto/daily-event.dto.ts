@@ -17,19 +17,19 @@ export class DailyEventDto {
 		this.requirement = requirement
 	}
 
-	@ApiProperty({description: 'Id do evento diário.', example: 1,})
+	@ApiProperty({ description: 'Id do evento diário.', example: 1 })
 	id: number
 
-	@ApiProperty({description: 'Especificações do evento diário.', example: 1,})
+	@ApiProperty({ description: 'Especificações do evento diário.', example: 1 })
 	requirement: MenuRequirementDto
 
-	@ApiProperty({description: 'Nome do evento diário.', example: 'Almoço',})
+	@ApiProperty({ description: 'Nome do evento diário.', example: 'Almoço' })
 	name: string
 
-	@ApiProperty({description: 'Horario de inicio do evento diário.', example: '12:00:00',})
+	@ApiProperty({ description: 'Horario de inicio do evento diário.', example: '12:00:00' })
 	startTime: string
 
-	@ApiProperty({description: 'Horario de termino do evento diário.', example: '14:00:00',})
+	@ApiProperty({ description: 'Horario de termino do evento diário.', example: '14:00:00' })
 	endTime: string
 
 	static fromEntity(dailyEvent: DailyEvent): DailyEventDto {

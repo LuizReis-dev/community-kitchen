@@ -31,9 +31,9 @@ export class DishController {
 	}
 
 	@Get('list-all/healthy')
-	@ApiOkResponse({type: [DishDto]})
+	@ApiOkResponse({ type: [DishDto] })
 	async listAllHealthy() {
-  		return this.dishService.listAllHealthyDishes();
+		return this.dishService.listAllHealthyDishes()
 	}
 
 	@Get('dishes-by-ids')
@@ -102,7 +102,7 @@ export class DishController {
 	}
 
 	@Get(':id/healthy')
-	@ApiOkResponse({type: [DishDto]})
+	@ApiOkResponse({ type: [DishDto] })
 	async isDishHealthy(
 		@Param('id', ParseIntPipe) id: number
 	): Promise<{ dish: DishDto; healthy: boolean }> {
@@ -110,35 +110,73 @@ export class DishController {
 	}
 
 	@Get('filtered/by-parameter')
-    @ApiOkResponse({ type: [DishNutritionSummaryDto] })
-	@ApiQuery({ name: 'carbohydrates', required: false, type: Number, description: 'Máximo de caiboidratos (g) total do prato.' })
-    @ApiQuery({ name: 'sodium', required: false, type: Number, description: 'Máximo de sódio (mg) total do prato.' })
-    @ApiQuery({ name: 'calories', required: false, type: Number, description: 'Máximo de calorias total do prato.' })
-    @ApiQuery({ name: 'proteins', required: false, type: Number, description: 'Mínimo de proteínas (g) total do prato.' })
-    @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Número máximo de resultados (padrão: 10).', example: 10 })
-    @ApiQuery({ name: 'offset', required: false, type: Number, description: 'Deslocamento para paginação (padrão: 0).', example: 0 })
-    async getFilteredDishes(
+	@ApiOkResponse({ type: [DishNutritionSummaryDto] })
+	@ApiQuery({
+		name: 'carbohydrates',
+		required: false,
+		type: Number,
+		description: 'Máximo de caiboidratos (g) total do prato.',
+	})
+	@ApiQuery({
+		name: 'sodium',
+		required: false,
+		type: Number,
+		description: 'Máximo de sódio (mg) total do prato.',
+	})
+	@ApiQuery({
+		name: 'calories',
+		required: false,
+		type: Number,
+		description: 'Máximo de calorias total do prato.',
+	})
+	@ApiQuery({
+		name: 'proteins',
+		required: false,
+		type: Number,
+		description: 'Mínimo de proteínas (g) total do prato.',
+	})
+	@ApiQuery({
+		name: 'limit',
+		required: false,
+		type: Number,
+		description: 'Número máximo de resultados (padrão: 10).',
+		example: 10,
+	})
+	@ApiQuery({
+		name: 'offset',
+		required: false,
+		type: Number,
+		description: 'Deslocamento para paginação (padrão: 0).',
+		example: 0,
+	})
+	async getFilteredDishes(
 		@Query('carbohydrates', new ParseFloatPipe({ optional: true })) carbohydrates?: number,
-        @Query('sodium', new ParseFloatPipe({ optional: true })) sodium?: number,
-        @Query('calories', new ParseFloatPipe({ optional: true })) calories?: number,
-        @Query('proteins', new ParseFloatPipe({ optional: true })) proteins?: number,
-        @Query('limit', new ParseIntPipe({ optional: true })) limit = 10,
-        @Query('offset', new ParseIntPipe({ optional: true })) offset = 0,
-    ): Promise<DishNutritionSummaryDto[]> {
-        return this.dishService.getFilteredDishes({
+		@Query('sodium', new ParseFloatPipe({ optional: true })) sodium?: number,
+		@Query('calories', new ParseFloatPipe({ optional: true })) calories?: number,
+		@Query('proteins', new ParseFloatPipe({ optional: true })) proteins?: number,
+		@Query('limit', new ParseIntPipe({ optional: true })) limit = 10,
+		@Query('offset', new ParseIntPipe({ optional: true })) offset = 0
+	): Promise<DishNutritionSummaryDto[]> {
+		return this.dishService.getFilteredDishes({
 			carbohydrates,
-            sodium,
-            calories,
-            proteins,
-            limit,
-            offset,
-        });
-    }
+			sodium,
+			calories,
+			proteins,
+			limit,
+			offset,
+		})
+	}
 
 	@Get('order-by/:parameter')
-    @ApiOkResponse({ type: [DishNutritionSummaryDto] })
-    @ApiParam({ name: 'parameter', description: 'Parâmetro nutricional para ordenação (calories, proteins, carbohydrates, fats, fiber, sodium e sugar)'})
-    async getOrderedByParameter(@Param('parameter') parameter: string): Promise<DishNutritionSummaryDto[]> {
-        return this.dishService.getOrderedDishes(parameter);
-    }
+	@ApiOkResponse({ type: [DishNutritionSummaryDto] })
+	@ApiParam({
+		name: 'parameter',
+		description:
+			'Parâmetro nutricional para ordenação (calories, proteins, carbohydrates, fats, fiber, sodium e sugar)',
+	})
+	async getOrderedByParameter(
+		@Param('parameter') parameter: string
+	): Promise<DishNutritionSummaryDto[]> {
+		return this.dishService.getOrderedDishes(parameter)
+	}
 }

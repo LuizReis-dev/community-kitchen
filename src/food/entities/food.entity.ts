@@ -54,6 +54,6 @@ export class Food extends Model {
 	@BelongsToMany(() => Dish, () => DishFood)
 	declare dishes?: Dish[]
 
-  	@HasMany(() => DishFood)
-	declare dishFoods?: DishFood;
+	@HasMany(() => DishFood)
+	declare dishFoods?: DishFood
 }

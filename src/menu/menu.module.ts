@@ -11,6 +11,6 @@ import { MenuAttendance } from 'src/menu-attendance/entities/menu-attendance.ent
 	imports: [DatabaseModule, DishModule, DailyEventModule, MenuAttendance],
 	controllers: [MenuController],
 	providers: [MenuService, MenuRepository],
-	exports: [MenuService]
+	exports: [MenuService],
 })
 export class MenuModule {}

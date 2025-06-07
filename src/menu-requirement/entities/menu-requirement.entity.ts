@@ -25,7 +25,7 @@ export class MenuRequirement extends Model {
 	declare id: number
 
 	@NotNull
-	@Column({ type: DataType.DECIMAL, allowNull: false, field: 'min_calories', })
+	@Column({ type: DataType.DECIMAL, allowNull: false, field: 'min_calories' })
 	declare minCalories: number
 
 	@NotNull
@@ -85,7 +85,7 @@ export class MenuRequirement extends Model {
 		type: DataType.BOOLEAN,
 		allowNull: false,
 		defaultValue: true,
-		field: 'is_active'
+		field: 'is_active',
 	})
 	declare isActive: boolean
 

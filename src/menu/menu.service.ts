@@ -44,7 +44,7 @@ export class MenuService {
 		if (dishes.length === 0) throw new BadRequestException('No dishes found with the provided IDs.')
 
 		const menuNutritionFacts = this.getMenuRequirementsFromDishes(dishes)
-		
+
 		const areRequirementsFulfilled = this.validateMenuRequirements(
 			menuNutritionFacts,
 			menuRequirement
@@ -111,20 +111,22 @@ export class MenuService {
 		)
 	}
 	private getMenuRequirementsFromDishes(dishes: DishDto[]): NutritionFactsDto {
-		const foods = dishes.flatMap(dish => dish.foods);
-		const round1 = (value: number) => Math.round(value * 10) / 10;
-		
+		const foods = dishes.flatMap(dish => dish.foods)
+		const round1 = (value: number) => Math.round(value * 10) / 10
+
 		const menuNutritionFacts = foods.reduce(
 			(acc, food: any) => {
-				const dishFood = food.DishFood;
-				const quantity = dishFood?.quantity ?? 100;
-				const factor = quantity / 100;
+				const dishFood = food.DishFood
+				const quantity = dishFood?.quantity ?? 100
+				const factor = quantity / 100
 
 				if (!food.nutritionFacts) {
-					throw new Error(`Informações nutricionais não encontradas para o alimento com ID ${food.id}`);
+					throw new Error(
+						`Informações nutricionais não encontradas para o alimento com ID ${food.id}`
+					)
 				}
 
-				const nutritionFacts = food.nutritionFacts;
+				const nutritionFacts = food.nutritionFacts
 
 				return {
 					calories: acc.calories + Number(nutritionFacts.calories || 0) * factor,
@@ -134,7 +136,7 @@ export class MenuService {
 					sodium: acc.sodium + Number(nutritionFacts.sodium || 0) * factor,
 					fiber: acc.fiber + Number(nutritionFacts.fiber || 0) * factor,
 					sugar: acc.sugar + Number(nutritionFacts.sugar || 0) * factor,
-				};
+				}
 			},
 			{
 				calories: 0,
@@ -145,7 +147,7 @@ export class MenuService {
 				fiber: 0,
 				sugar: 0,
 			} as NutritionFactsDto
-		);
+		)
 
 		return {
 			calories: round1(menuNutritionFacts.calories),
@@ -155,9 +157,8 @@ export class MenuService {
 			sodium: round1(menuNutritionFacts.sodium),
 			fiber: round1(menuNutritionFacts.fiber),
 			sugar: round1(menuNutritionFacts.sugar),
-		};
+		}
 	}
-
 
 	async findDailyEventsWithAvailableDays(): Promise<DailyEventsVacant[]> {
 		const allEvents = await this.dailyEventRepository.findAll()
