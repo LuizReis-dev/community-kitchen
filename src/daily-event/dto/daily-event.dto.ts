@@ -6,14 +6,14 @@ export class DailyEventDto {
 	constructor(
 		id: number,
 		name: string,
-		start_time: string,
-		end_time: string,
+		startTime: string,
+		endTime: string,
 		requirement: MenuRequirementDto
 	) {
 		this.id = id
 		this.name = name
-		this.startTime = start_time
-		this.endTime = end_time
+		this.startTime = startTime
+		this.endTime = endTime
 		this.requirement = requirement
 	}
 

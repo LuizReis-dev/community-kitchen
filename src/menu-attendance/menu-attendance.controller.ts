@@ -17,7 +17,7 @@ export class MenuAttendanceController {
 		return this.menuAttendanceService.create(createMenuAttendanceDto)
 	}
 
-	@Get('/aggregate-by-menu')
+	@Get('/aggregate/by-menu')
 	@ApiOkResponse({ type: [MenuAttendanceAggregationDto] })
 	async aggregateByMenu() {
 		return this.menuAttendanceService.aggregateByMenu()
