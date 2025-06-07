@@ -15,10 +15,6 @@ export class CreateMenuDto {
 	@ApiProperty()
 	availableDay: WEEK_DAYS
 
-	@IsRequiredTypeOf('string')
-	@ApiProperty()
-	createdBy: string
-
 	@IsRequiredTypeOf('number[]')
 	@ApiProperty({ type: [Number] })
 	dishes: number[]

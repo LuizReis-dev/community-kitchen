@@ -77,37 +77,37 @@ export class MenuService {
 		menuRequirement: MenuRequirementDto
 	) {
 		const {
-			min_calories,
-			max_calories,
-			min_carbohydrates,
-			max_carbohydrates,
-			min_proteins,
-			max_proteins,
-			min_fats,
-			max_fats,
-			min_fiber,
-			max_fiber,
-			min_sugar,
-			max_sugar,
-			min_sodium,
-			max_sodium,
+			minCalories,
+			maxCalories,
+			minCarbohydrates,
+			maxCarbohydrates,
+			minProteins,
+			maxProteins,
+			minFats,
+			maxFats,
+			minFiber,
+			maxFiber,
+			minSugar,
+			maxSugar,
+			minSodium,
+			maxSodium,
 		} = menuRequirement
 
 		return (
-			menuNutritionFacts.calories >= min_calories &&
-			menuNutritionFacts.calories <= max_calories &&
-			menuNutritionFacts.carbohydrates >= min_carbohydrates &&
-			menuNutritionFacts.carbohydrates <= max_carbohydrates &&
-			menuNutritionFacts.proteins >= min_proteins &&
-			menuNutritionFacts.proteins <= max_proteins &&
-			menuNutritionFacts.fats >= min_fats &&
-			menuNutritionFacts.fats <= max_fats &&
-			menuNutritionFacts.fiber >= min_fiber &&
-			menuNutritionFacts.fiber <= max_fiber &&
-			menuNutritionFacts.sugar >= min_sugar &&
-			menuNutritionFacts.sugar <= max_sugar &&
-			menuNutritionFacts.sodium >= min_sodium &&
-			menuNutritionFacts.sodium <= max_sodium
+			menuNutritionFacts.calories >= minCalories &&
+			menuNutritionFacts.calories <= maxCalories &&
+			menuNutritionFacts.carbohydrates >= minCarbohydrates &&
+			menuNutritionFacts.carbohydrates <= maxCarbohydrates &&
+			menuNutritionFacts.proteins >= minProteins &&
+			menuNutritionFacts.proteins <= maxProteins &&
+			menuNutritionFacts.fats >= minFats &&
+			menuNutritionFacts.fats <= maxFats &&
+			menuNutritionFacts.fiber >= minFiber &&
+			menuNutritionFacts.fiber <= maxFiber &&
+			menuNutritionFacts.sugar >= minSugar &&
+			menuNutritionFacts.sugar <= maxSugar &&
+			menuNutritionFacts.sodium >= minSodium &&
+			menuNutritionFacts.sodium <= maxSodium
 		)
 	}
 	private getMenuRequirementsFromDishes(dishes: DishDto[]): NutritionFactsDto {
