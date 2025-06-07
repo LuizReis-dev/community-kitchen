@@ -1,32 +1,27 @@
 import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common'
 import { CreateDishDto } from './dto/create-dish.dto'
 import { DishRepository } from './dish.repository'
-import { Food } from '../food/entities/food.entity'
-import { Op } from 'sequelize'
 import { UpdateDishDto } from './dto/update-dish.dto'
 import { DishDto } from './dto/dish.dto'
-import { DishNutritionFactsDto } from './dto/dish-nutritionFacts.dto'
-import { NutritionFactsDto } from 'src/food/dto/nutrition-facts.dto'
-import { Dish } from './entities/dish.entity'
 import { DishNutritionSummaryDto } from './dto/dish-nutrition-sumary.dto'
 
 @Injectable()
 export class DishService {
-	constructor(private readonly dishRepository: DishRepository) {}
+	constructor(private readonly dishRepository: DishRepository) { }
 
 	async create(createDishDto: CreateDishDto) {
-	const { name, description, foods } = createDishDto;
+		const { name, description, foods } = createDishDto;
 
-	if (!name || !description || !foods?.length) {
-		throw new BadRequestException('Insira todos os dados do prato.');
+		if (!name || !description || !foods?.length) {
+			throw new BadRequestException('Insira todos os dados do prato.');
+		}
+
+		const foodIds = foods.map(f => f.foodId);
+
+		await this.dishRepository.validateFoodIds(foodIds);
+
+		return this.dishRepository.create(createDishDto);
 	}
-
-	const foodIds = foods.map(f => f.foodId);
-
-	await this.dishRepository.validateFoodIds(foodIds);
-
-	return this.dishRepository.create(createDishDto);
-}
 
 
 	async findAll(): Promise<DishDto[]> {
@@ -43,7 +38,9 @@ export class DishService {
 		if (!dish) {
 			throw new NotFoundException('Prato não encontrado.')
 		}
-
+        
+		if(dish.foods == null) throw new NotFoundException('Prato não encontrado.')
+		
 		return DishDto.fromEntity(dish)
 	}
 
@@ -73,14 +70,14 @@ export class DishService {
 	}
 
 	async getDishNutritionFacts(id: number): Promise<DishNutritionSummaryDto> {
-        const dish = await this.dishRepository.findDishWithNutritionFacts(id);
+		const dish = await this.dishRepository.findDishWithNutritionFacts(id);
 
-        if (!dish) {
-            throw new NotFoundException('Prato não encontrado.');
-        }
+		if (!dish) {
+			throw new NotFoundException('Prato não encontrado.');
+		}
 
-        return DishNutritionSummaryDto.fromEntity(dish);
-    }
+		return DishNutritionSummaryDto.fromEntity(dish);
+	}
 
 	async findDishesByDescription(term: string): Promise<DishDto[]> {
 		if (!term || term.trim() === '') {
@@ -98,8 +95,8 @@ export class DishService {
 		const dishes = await this.dishRepository.findByName(name)
 
 		if (dishes.length === 0) {
-    		throw new NotFoundException(`Nenhum prato encontrado com o nome contendo '${name}'`)
-  		}
+			throw new NotFoundException(`Nenhum prato encontrado com o nome contendo '${name}'`)
+		}
 
 		return dishes.map(DishDto.fromEntity)
 	}
@@ -148,7 +145,7 @@ export class DishService {
 		for (const dish of dishes) {
 			const result = await this.isDishHealthy(dish.id);
 			if (result.healthy) healthyDishes.push(result.dish);
-		}	
+		}
 		return healthyDishes;
 	}
 
@@ -167,7 +164,7 @@ export class DishService {
 
 		for (const dish of dishes) {
 			if (!dish.foods) continue;
-			
+
 			let summaryDto: DishNutritionSummaryDto;
 			try {
 				summaryDto = DishNutritionSummaryDto.fromEntity(dish);

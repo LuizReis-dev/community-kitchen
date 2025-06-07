@@ -10,6 +10,7 @@ import {
 	Model,
 	BelongsToMany,
 	UpdatedAt,
+	HasMany,
 } from 'sequelize-typescript'
 import { NutritionFacts } from './nutrition-facts.entity'
 import { Dish } from 'src/dish/entities/dish.entity'
@@ -52,5 +53,7 @@ export class Food extends Model {
 
 	@BelongsToMany(() => Dish, () => DishFood)
 	declare dishes?: Dish[]
-	DishFood: any
+
+  	@HasMany(() => DishFood)
+	declare dishFoods?: DishFood;
 }
