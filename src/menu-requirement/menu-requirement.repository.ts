@@ -74,7 +74,7 @@ export class MenuRequirementRepository {
 	async findActiveMenuRequirements(): Promise<MenuRequirementDto[]> {
 		const menuRequirements = await MenuRequirement.findAll({
 			where: {
-				is_active: true,
+				isActive: true,
 			},
 		})
 

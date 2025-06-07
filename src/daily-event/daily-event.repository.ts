@@ -16,9 +16,9 @@ export class DailyEventRepository {
 			const dailyEvent = await DailyEvent.create(
 				{
 					name: createDailyEventDto.name,
-					start_time: createDailyEventDto.startTime,
-					end_time: createDailyEventDto.endTime,
-					requirement_id: createDailyEventDto.requirementId,
+					startTime: createDailyEventDto.startTime,
+					endTime: createDailyEventDto.endTime,
+					requirementId: createDailyEventDto.requirementId,
 				},
 				{ transaction }
 			)
@@ -60,10 +60,10 @@ export class DailyEventRepository {
 		try {
 			await dailyEvent.update(
 				{
-					requirement_id: updateDailyEventDto.requirementId,
+					requirementId: updateDailyEventDto.requirementId,
 					name: updateDailyEventDto.name,
-					start_time: updateDailyEventDto.startTime,
-					end_time: updateDailyEventDto.endTime,
+					startTime: updateDailyEventDto.startTime,
+					endTime: updateDailyEventDto.endTime,
 				},
 				{ transaction }
 			)
@@ -123,7 +123,7 @@ export class DailyEventRepository {
 
 		const dailyEvents = await DailyEvent.findAll({
 			where: {
-				end_time: { [Op.gte]: currentTime },
+				endTime: { [Op.gte]: currentTime },
 			},
 			include: ['menuRequirement'],
 		})

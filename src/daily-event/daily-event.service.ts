@@ -22,9 +22,9 @@ export class DailyEventService {
 		const existingEvent = await DailyEvent.findOne({
 			where: {
 				name: createDailyEventDto.name,
-				start_time: createDailyEventDto.startTime,
-				end_time: createDailyEventDto.endTime,
-				requirement_id: createDailyEventDto.requirementId,
+				startTime: createDailyEventDto.startTime,
+				endTime: createDailyEventDto.endTime,
+				requirementId: createDailyEventDto.requirementId,
 			},
 		})
 
