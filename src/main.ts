@@ -11,7 +11,17 @@ async function bootstrap() {
 		.setTitle('Community Kitchen')
 		.setDescription('The API is intended to be used to control a the community kitchen')
 		.setVersion('1.0')
-		.build()
+		.addBearerAuth(
+		{
+			type: 'http',
+			scheme: 'bearer',
+			bearerFormat: 'JWT',
+			name: 'Authorization',
+			in: 'header',
+		},
+		'jwt',
+		)
+		.build();
 	const documentFactory = () => SwaggerModule.createDocument(app, config)
 	SwaggerModule.setup('docs', app, documentFactory)
 

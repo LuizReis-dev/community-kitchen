@@ -1,11 +1,12 @@
 import { Controller, Get, Post, Body, Param, HttpCode, HttpStatus } from '@nestjs/common'
 import { MenuAttendanceService } from './menu-attendance.service'
 import { CreateMenuAttendanceDto } from './dto/create-menu-attendance.dto'
-import { ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger'
 import { MenuAttendanceDto } from './dto/menu-attendance.dto'
 import { MenuAttendanceAggregationDto } from './dto/menu-attendance-aggregation.dto'
 
 @Controller('menu-attendance')
+@ApiBearerAuth('jwt')
 export class MenuAttendanceController {
 	constructor(private readonly menuAttendanceService: MenuAttendanceService) {}
 

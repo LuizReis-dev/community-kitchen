@@ -4,11 +4,12 @@ import { CreateMenuDto } from './dto/create-menu.dto'
 import { UpdateMenuDto } from './dto/update-menu.dto'
 import { MenuDto } from './dto/menu.dto'
 import { DailyEventsVacant } from 'src/daily-event/dto/daily-events-vacant-week.dto'
-import { ApiOkResponse, ApiParam, ApiQuery, getSchemaPath } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiOkResponse, ApiParam, ApiQuery, getSchemaPath } from '@nestjs/swagger'
 import { Public } from 'src/common/decorators/public'
 import { WEEK_DAYS } from 'src/common/enums/week-days'
 
 @Controller('menus')
+@ApiBearerAuth('jwt')
 export class MenuController {
 	constructor(private readonly menuService: MenuService) {}
 

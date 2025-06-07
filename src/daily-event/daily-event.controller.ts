@@ -2,10 +2,11 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/
 import { DailyEventService } from './daily-event.service'
 import { CreateDailyEventDto } from './dto/create-daily-event.dto'
 import { UpdateDailyEventDto } from './dto/update-daily-event.dto'
-import { ApiOkResponse } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiOkResponse } from '@nestjs/swagger'
 import { DailyEventDto } from './dto/daily-event.dto'
 
 @Controller('daily-events')
+@ApiBearerAuth('jwt')
 export class DailyEventController {
 	constructor(private readonly dailyEventService: DailyEventService) {}
 

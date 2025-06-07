@@ -16,11 +16,12 @@ import { DishService } from './dish.service'
 import { CreateDishDto } from './dto/create-dish.dto'
 import { UpdateDishDto } from './dto/update-dish.dto'
 import { DishDto } from './dto/dish.dto'
-import { ApiOkResponse, ApiParam, ApiQuery } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiOkResponse, ApiParam, ApiQuery } from '@nestjs/swagger'
 import { DishNutritionFactsDto } from './dto/dish-nutritionFacts.dto'
 import { DishNutritionSummaryDto } from './dto/dish-nutrition-sumary.dto'
 
 @Controller('dishes')
+@ApiBearerAuth('jwt')
 export class DishController {
 	constructor(private readonly dishService: DishService) {}
 
