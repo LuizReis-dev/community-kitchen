@@ -12,7 +12,7 @@ export class DailyEventService {
 
 	async create(createDailyEventDto: CreateDailyEventDto) {
 		const menuRequirement = await MenuRequirement.findOne({
-			where: { id: createDailyEventDto.requirement_id },
+			where: { id: createDailyEventDto.requirementId },
 		})
 
 		if (!menuRequirement) {
@@ -22,9 +22,9 @@ export class DailyEventService {
 		const existingEvent = await DailyEvent.findOne({
 			where: {
 				name: createDailyEventDto.name,
-				start_time: createDailyEventDto.start_time,
-				end_time: createDailyEventDto.end_time,
-				requirement_id: createDailyEventDto.requirement_id,
+				start_time: createDailyEventDto.startTime,
+				end_time: createDailyEventDto.endTime,
+				requirement_id: createDailyEventDto.requirementId,
 			},
 		})
 
@@ -54,7 +54,7 @@ export class DailyEventService {
 
 	async update(id: number, updateDailyEventDto: UpdateDailyEventDto) {
 		const menuRequirement = await MenuRequirement.findOne({
-			where: { id: updateDailyEventDto.requirement_id },
+			where: { id: updateDailyEventDto.requirementId },
 		})
 
 		if (!menuRequirement) {
@@ -64,7 +64,7 @@ export class DailyEventService {
 	}
 
 	async patch(id: number, patchDailyEventDTO: UpdateDailyEventDto) {
-		if (patchDailyEventDTO.requirement_id !== undefined) {
+		if (patchDailyEventDTO.requirementId !== undefined) {
 			throw new BadRequestException('Não é permitido alterar o requirement id.')
 		}
 		return this.dailyEventRepository.patch(id, patchDailyEventDTO)

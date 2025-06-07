@@ -16,9 +16,9 @@ export class DailyEventRepository {
 			const dailyEvent = await DailyEvent.create(
 				{
 					name: createDailyEventDto.name,
-					start_time: createDailyEventDto.start_time,
-					end_time: createDailyEventDto.end_time,
-					requirement_id: createDailyEventDto.requirement_id,
+					start_time: createDailyEventDto.startTime,
+					end_time: createDailyEventDto.endTime,
+					requirement_id: createDailyEventDto.requirementId,
 				},
 				{ transaction }
 			)
@@ -60,10 +60,10 @@ export class DailyEventRepository {
 		try {
 			await dailyEvent.update(
 				{
-					requirement_id: updateDailyEventDto.requirement_id,
+					requirement_id: updateDailyEventDto.requirementId,
 					name: updateDailyEventDto.name,
-					start_time: updateDailyEventDto.start_time,
-					end_time: updateDailyEventDto.end_time,
+					start_time: updateDailyEventDto.startTime,
+					end_time: updateDailyEventDto.endTime,
 				},
 				{ transaction }
 			)
@@ -89,11 +89,11 @@ export class DailyEventRepository {
 			if (patchDailyEventDTO.name !== undefined) {
 				dailyEvent.name = patchDailyEventDTO.name
 			}
-			if (patchDailyEventDTO.start_time !== undefined) {
-				dailyEvent.start_time = patchDailyEventDTO.start_time
+			if (patchDailyEventDTO.startTime !== undefined) {
+				dailyEvent.startTime = patchDailyEventDTO.startTime
 			}
-			if (patchDailyEventDTO.end_time !== undefined) {
-				dailyEvent.end_time = patchDailyEventDTO.end_time
+			if (patchDailyEventDTO.endTime !== undefined) {
+				dailyEvent.endTime = patchDailyEventDTO.endTime
 			}
 			await dailyEvent.save({ transaction })
 			await transaction.commit()

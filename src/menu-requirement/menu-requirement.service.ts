@@ -39,7 +39,7 @@ export class MenuRequirementService {
 		if (!menuRequirement)
 			throw new NotFoundException('As especifiações do menu não foram encontrado!')
 
-		if (menuRequirement.is_active == true) {
+		if (menuRequirement.isActive == true) {
 			throw new BadRequestException(
 				'Não é possivel remover essa especificação, pois ela está em uso!'
 			)
