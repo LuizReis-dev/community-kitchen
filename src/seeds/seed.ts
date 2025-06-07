@@ -2,6 +2,7 @@
 import { sequelize } from './config/sequelize-config.seed';
 import { createFoods } from './food.seed';
 import { createDishes } from './dish.seed'; 
+import { createMenuRequirements } from './menu-requirement.seed';
 
 async function runSeeds() {
   try {
@@ -10,6 +11,7 @@ async function runSeeds() {
 
     await createFoods(sequelize);
     await createDishes(sequelize);
+    await createMenuRequirements(sequelize)
 
     console.log('Todas as seeds foram executadas com sucesso!');
   } catch (error) {
