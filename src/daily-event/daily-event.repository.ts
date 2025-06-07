@@ -33,14 +33,14 @@ export class DailyEventRepository {
 
 	async findAll(): Promise<DailyEventDto[]> {
 		const dailyEvents = await DailyEvent.findAll({
-			include: ['menu_requirement'],
+			include: ['menuRequirement'],
 		})
 		return dailyEvents.map(event => DailyEventDto.fromEntity(event))
 	}
 
 	async findOne(id: number): Promise<DailyEventDto | null> {
 		const dailyEvent = await DailyEvent.findByPk(id, {
-			include: ['menu_requirement'],
+			include: ['menuRequirement'],
 		})
 
 		if (!dailyEvent) return null
@@ -125,7 +125,7 @@ export class DailyEventRepository {
 			where: {
 				end_time: { [Op.gte]: currentTime },
 			},
-			include: ['menu_requirement'],
+			include: ['menuRequirement'],
 		})
 
 		return dailyEvents.map(event => DailyEventDto.fromEntity(event))

@@ -22,4 +22,6 @@ export class CreateMenuDto {
 	@IsRequiredTypeOf('number')
 	@ApiProperty()
 	dailyEventId: number
+
+	createdBy: string;
 }

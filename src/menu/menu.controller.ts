@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, Patch, Query } from '@nestjs/common'
+import { Controller, Get, Post, Body, Param, Delete, Put, Patch, Query, Req } from '@nestjs/common'
 import { MenuService } from './menu.service'
 import { CreateMenuDto } from './dto/create-menu.dto'
 import { UpdateMenuDto } from './dto/update-menu.dto'
@@ -14,8 +14,8 @@ export class MenuController {
 
 	@Post()
 	@ApiOkResponse({ type: MenuDto })
-	async create(@Body() createMenuDto: CreateMenuDto) {
-		return this.menuService.create(createMenuDto)
+	async create(@Body() createMenuDto: CreateMenuDto, @Req() req: Request) {
+		return this.menuService.create(createMenuDto, req)
 	}
 
 	@Public()

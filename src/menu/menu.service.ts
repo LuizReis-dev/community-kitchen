@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
+import { BadRequestException, Injectable, NotFoundException, Req } from '@nestjs/common'
 import { CreateMenuDto } from './dto/create-menu.dto'
 import { UpdateMenuDto } from './dto/update-menu.dto'
 import { MenuRepository } from './menu.repository'
@@ -10,6 +10,7 @@ import { DishDto } from 'src/dish/dto/dish.dto'
 import { DailyEventRepository } from 'src/daily-event/daily-event.repository'
 import { WEEK_DAYS } from 'src/common/enums/week-days'
 import { DailyEventsVacant } from 'src/daily-event/dto/daily-events-vacant-week.dto'
+import { User } from 'src/auth/interfaces/user.interface'
 
 @Injectable()
 export class MenuService {
@@ -19,7 +20,7 @@ export class MenuService {
 		private readonly dishService: DishService,
 		private readonly dailyEventService: DailyEventService
 	) {}
-	async create(createMenuDto: CreateMenuDto) {
+	async create(createMenuDto: CreateMenuDto, @Req() req: Request) {
 		const dailyEventId = createMenuDto.dailyEventId
 		const dailyEvent = await this.dailyEventService.findOne(dailyEventId)
 
@@ -53,6 +54,9 @@ export class MenuService {
 		if (!areRequirementsFulfilled)
 			throw new BadRequestException('Menu does not meet the nutritional requirements.')
 
+		const user: User = req['user'];
+
+		createMenuDto.createdBy = user.id;
 		return this.menuRepository.create(createMenuDto)
 	}
 
