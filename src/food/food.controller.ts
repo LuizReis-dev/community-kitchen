@@ -2,10 +2,11 @@ import { Controller, Get, Post, Body, Param, Delete, Put, Query } from '@nestjs/
 import { FoodService } from './food.service'
 import { CreateFoodDto } from './dto/create-food.dto'
 import { UpdateFoodDto } from './dto/update-food.dto'
-import { ApiOkResponse, ApiParam, ApiQuery } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiOkResponse, ApiParam, ApiQuery } from '@nestjs/swagger'
 import { FoodDto } from './dto/food.dto'
 
 @Controller('foods')
+@ApiBearerAuth('jwt')
 export class FoodController {
 	constructor(private readonly foodService: FoodService) {}
 

@@ -14,11 +14,12 @@ import {
 import { CustomerService } from './customer.service'
 import { CreateCustomerDto } from './dto/create-customer.dto'
 import { UpdateCustomerDto } from './dto/update-customer.dto'
-import { ApiOkResponse } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiOkResponse } from '@nestjs/swagger'
 import { CustomerDto } from './dto/customer.dto'
 import { MostFrequentCustomerDto } from './dto/most-frequent-customers.dto'
 
 @Controller('customers')
+@ApiBearerAuth('jwt')
 export class CustomerController {
 	constructor(private readonly customerService: CustomerService) {}
 

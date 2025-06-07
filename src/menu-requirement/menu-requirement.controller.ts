@@ -2,10 +2,11 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { MenuRequirementService } from './menu-requirement.service'
 import { CreateMenuRequirementDto } from './dto/create-menu-requirement.dto'
 import { UpdateMenuRequirementDto } from './dto/update-menu-requirement.dto'
-import { ApiOkResponse } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiOkResponse } from '@nestjs/swagger'
 import { MenuRequirementDto } from './dto/menu-requirement.dto'
 
 @Controller('menu-requirements')
+@ApiBearerAuth('jwt')
 export class MenuRequirementController {
 	constructor(private readonly menuRequirementService: MenuRequirementService) {}
 
