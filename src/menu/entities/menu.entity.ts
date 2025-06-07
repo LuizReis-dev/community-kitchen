@@ -19,7 +19,7 @@ import { DailyEvent } from 'src/daily-event/entities/daily-event.entity'
 import { MenuAttendance } from 'src/menu-attendance/entities/menu-attendance.entity'
 
 @Table({
-	tableName: 'tb_menu',
+	tableName: 'tb_menus',
 	modelName: 'Menu',
 	timestamps: true,
 })

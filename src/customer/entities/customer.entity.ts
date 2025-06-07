@@ -12,7 +12,7 @@ import {
 import { MenuAttendance } from 'src/menu-attendance/entities/menu-attendance.entity'
 
 @Table({
-	tableName: 'tb_customer',
+	tableName: 'tb_customers',
 	modelName: 'Customer',
 	timestamps: true,
 })

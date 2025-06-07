@@ -14,21 +14,21 @@ export const createDailyEvents = async (sequelize: Sequelize) => {
     const dailyEventsData = [
       {
         name: 'Café da Manhã',
-        start_time: '07:00:00',
-        end_time: '09:00:00',
-        requirement_id: menuRequirements[0]?.id || 1, 
+        startTime: '07:00:00',
+        endTime: '09:00:00',
+        requirementId: menuRequirements[0]?.id || 1, 
       },
       {
         name: 'Almoço',
-        start_time: '12:00:00',
-        end_time: '14:00:00',
-        requirement_id: menuRequirements[1]?.id || 2, 
+        startTime: '12:00:00',
+        endTime: '14:00:00',
+        requirementId: menuRequirements[1]?.id || 2, 
       },
       {
         name: 'Jantar',
-        start_time: '19:00:00',
-        end_time: '21:00:00',
-        requirement_id: menuRequirements[0]?.id || 1, 
+        startTime: '19:00:00',
+        endTime: '21:00:00',
+        requirementId: menuRequirements[0]?.id || 1, 
       },
     ];
 
