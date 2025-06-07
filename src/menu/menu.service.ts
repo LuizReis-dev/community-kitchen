@@ -112,7 +112,8 @@ export class MenuService {
 	}
 	private getMenuRequirementsFromDishes(dishes: DishDto[]): NutritionFactsDto {
 		const foods = dishes.flatMap(dish => dish.foods);
-
+		const round1 = (value: number) => Math.round(value * 10) / 10;
+		
 		const menuNutritionFacts = foods.reduce(
 			(acc, food: any) => {
 				const dishFood = food.DishFood;
@@ -146,7 +147,15 @@ export class MenuService {
 			} as NutritionFactsDto
 		);
 
-		return menuNutritionFacts;
+		return {
+			calories: round1(menuNutritionFacts.calories),
+			proteins: round1(menuNutritionFacts.proteins),
+			carbohydrates: round1(menuNutritionFacts.carbohydrates),
+			fats: round1(menuNutritionFacts.fats),
+			sodium: round1(menuNutritionFacts.sodium),
+			fiber: round1(menuNutritionFacts.fiber),
+			sugar: round1(menuNutritionFacts.sugar),
+		};
 	}
 
 

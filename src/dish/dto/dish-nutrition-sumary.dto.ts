@@ -42,6 +42,7 @@ export class DishNutritionSummaryDto {
         }
 
         const totalNutritionFacts = new NutritionFactsDto(0, 0, 0, 0, 0, 0, 0);
+        const round1 = (value: number) => Math.round(value * 10) / 10;
 
         for (const food of dish.foods) {
             const nf = food.nutritionFacts;
@@ -52,6 +53,7 @@ export class DishNutritionSummaryDto {
             const dishFood = (food as any).DishFood;
             const quantity = dishFood?.quantity ?? 100;
             const factor = quantity / 100;
+            const round1 = (value: number) => Math.round(value * 10) / 10;
 
             totalNutritionFacts.calories += Number(nf.calories) * factor;
             totalNutritionFacts.proteins += Number(nf.proteins) * factor;
@@ -61,6 +63,14 @@ export class DishNutritionSummaryDto {
             totalNutritionFacts.sugar += Number(nf.sugar) * factor;
             totalNutritionFacts.sodium += Number(nf.sodium) * factor;
         }
+
+        totalNutritionFacts.calories = round1(totalNutritionFacts.calories);
+        totalNutritionFacts.proteins = round1(totalNutritionFacts.proteins);
+        totalNutritionFacts.carbohydrates = round1(totalNutritionFacts.carbohydrates);
+        totalNutritionFacts.fats = round1(totalNutritionFacts.fats);
+        totalNutritionFacts.fiber = round1(totalNutritionFacts.fiber);
+        totalNutritionFacts.sugar = round1(totalNutritionFacts.sugar);
+        totalNutritionFacts.sodium = round1(totalNutritionFacts.sodium);
 
         return new DishNutritionSummaryDto(dish.id ,dish.name, dish.description, totalNutritionFacts);
     }
