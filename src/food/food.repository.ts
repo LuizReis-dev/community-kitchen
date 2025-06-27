@@ -6,7 +6,7 @@ import { FoodDto } from './dto/food.dto'
 import { UpdateFoodDto } from './dto/update-food.dto'
 import { Sequelize } from 'sequelize-typescript'
 import { Op } from 'sequelize'
-import { DishFood } from 'src/dish/entities/dish-food.entity'
+import { NUTRIENTS } from 'src/common/enums/nutrients'
 
 @Injectable()
 export class FoodRepository {
@@ -96,44 +96,46 @@ export class FoodRepository {
 		}
 	}
 
-	async findFoodsByMaxSugarAmount(maxSugarAmount: number): Promise<FoodDto[]> {
+	async findFoodsByMaxNutrientAmount(
+		maxNutrientAmount: number,
+		nutrient: NUTRIENTS
+	): Promise<FoodDto[] | null> {
 		const foods = await Food.findAll({
 			include: [
 				{
 					model: NutritionFacts,
 					where: {
-						sugar: {
-							[Op.lte]: maxSugarAmount,
+						[nutrient]: {
+							[Op.lte]: maxNutrientAmount,
 						},
 					},
 				},
 			],
 		})
 
-		if (foods.length === 0)
-			throw new NotFoundException(`Nenhum alimento encontrado com até ${maxSugarAmount} de açúcar!`)
+		if (foods.length === 0) return null
 
 		return foods.map(food => FoodDto.fromEntity(food))
 	}
 
-	async findFoodsByMinProteinAmount(minProteinAmount: number): Promise<FoodDto[]> {
+	async findFoodsByMinNutrientAmount(
+		minNutrientAmount: number,
+		nutrient: NUTRIENTS
+	): Promise<FoodDto[] | null> {
 		const foods = await Food.findAll({
 			include: [
 				{
 					model: NutritionFacts,
 					where: {
-						proteins: {
-							[Op.gte]: minProteinAmount,
+						[nutrient]: {
+							[Op.gte]: minNutrientAmount,
 						},
 					},
 				},
 			],
 		})
 
-		if (foods.length === 0)
-			throw new NotFoundException(
-				`Nenhum alimento encontrado com pelo menos ${minProteinAmount} de proteínas!`
-			)
+		if (foods.length === 0) return null
 
 		return foods.map(food => FoodDto.fromEntity(food))
 	}

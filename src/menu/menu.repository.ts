@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common'
+import { BadRequestException, Inject, Injectable } from '@nestjs/common'
 import { CreateMenuDto } from './dto/create-menu.dto'
 import { UpdateMenuDto } from './dto/update-menu.dto'
 import { Op, Sequelize } from 'sequelize'
@@ -41,41 +41,71 @@ export class MenuRepository {
 
 	async findAll() {
 		const menus = await Menu.findAll({
-			include: ['dishes', 'dailyEvent'],
+			include: [
+				{
+					association: 'dishes',
+					include: [
+						{
+							association: 'foods',
+							include: [
+								{
+									association: 'nutritionFacts',
+								},
+							],
+						},
+					],
+				},
+				'dailyEvent',
+			],
 		})
 		return menus.map(menu => MenuDto.fromEntity(menu))
 	}
 
 	async findOne(id: number) {
 		const menu = await Menu.findByPk(id, {
-			include: ['dishes', 'dailyEvent'],
+			include: [
+				{
+					association: 'dishes',
+					include: [
+						{
+							association: 'foods',
+							include: [
+								{
+									association: 'nutritionFacts',
+								},
+							],
+						},
+					],
+				},
+				'dailyEvent',
+			],
 		})
 
-		if (!menu) throw new NotFoundException('Menu not found')
-
-		return MenuDto.fromEntity(menu)
+		return menu ? MenuDto.fromEntity(menu) : null
 	}
 
 	async update(id: number, updateMenuDto: UpdateMenuDto) {
-		const menu = await Menu.findByPk(id, {
-			include: ['dishes'],
-		})
-
-		if (!menu) throw new NotFoundException('Menu not found')
-
 		const transaction = await this.sequelize.transaction()
 		try {
-			await menu.update(
+			const [_, affectedRows] = await Menu.update(
 				{
 					...updateMenuDto,
 				},
-				{ transaction }
+				{ transaction, where: { id }, returning: true }
 			)
 			const dishesIds = updateMenuDto.dishes ?? null
+			const dailyEventId = updateMenuDto.dailyEventId ?? null
+			const menu = affectedRows[0]
 
-			await menu.$set('dishes', dishesIds, { transaction })
+			if (dishesIds) {
+				await menu.$set('dishes', dishesIds, { transaction })
+				menu.dishes = await menu.$get('dishes', { transaction })
+			}
+			if (dailyEventId) {
+				await menu.$set('dailyEvent', dailyEventId, { transaction })
+				menu.dailyEvent = (await menu.$get('dailyEvent', { transaction })) as DailyEvent
+			}
 
-			menu.dishes = await menu.$get('dishes', { transaction })
 			await transaction.commit()
 			return MenuDto.fromEntity(menu)
 		} catch {
@@ -132,21 +162,51 @@ export class MenuRepository {
 		}
 	}
 
-	async listWeeklyMenus(): Promise<MenuDto[]> {
+	async listWeeklyMenus(): Promise<Record<WEEK_DAYS, MenuDto[]>> {
 		const menus = await Menu.findAll({
-			include: ['dishes', 'dailyEvent'],
+			include: [
+				{
+					association: 'dishes',
+					include: [
+						{
+							association: 'foods',
+							include: [
+								{
+									association: 'nutritionFacts',
+								},
+							],
+						},
+					],
+				},
+				'dailyEvent',
+			],
 			where: {
 				deactivationDate: {
 					[Op.eq]: null,
 				},
 			},
 		})
-		return menus.map(menu => MenuDto.fromEntity(menu))
+		return MenuDto.fromEntitiesGroupedByDay(menus)
 	}
 
-	async listMenuByWeekDay(weekDay: WEEK_DAYS): Promise<MenuDto | null> {
-		const menu = await Menu.findOne({
-			include: ['dishes', 'dailyEvent'],
+	async listMenuByWeekDay(weekDay: WEEK_DAYS): Promise<MenuDto[] | null> {
+		const menu = await Menu.findAll({
+			include: [
+				{
+					association: 'dishes',
+					include: [
+						{
+							association: 'foods',
+							include: [
+								{
+									association: 'nutritionFacts',
+								},
+							],
+						},
+					],
+				},
+				'dailyEvent',
+			],
 			where: {
 				availableDay: weekDay,
 				deactivationDate: {
@@ -154,7 +214,8 @@ export class MenuRepository {
 				},
 			},
 		})
-		return menu ? MenuDto.fromEntity(menu) : menu
+
+		return menu.length > 0 ? menu.map(menu => MenuDto.fromEntity(menu)) : null
 	}
 
 	async findUsedDailyEventIds(): Promise<number[]> {
@@ -201,7 +262,22 @@ export class MenuRepository {
 		weekDay: string
 	): Promise<MenuDto | null> {
 		const menu = await Menu.findOne({
-			include: ['dishes', 'dailyEvent'],
+			include: [
+				{
+					association: 'dishes',
+					include: [
+						{
+							association: 'foods',
+							include: [
+								{
+									association: 'nutritionFacts',
+								},
+							],
+						},
+					],
+				},
+				'dailyEvent',
+			],
 			where: {
 				dailyEventId,
 				availableDay: weekDay as WEEK_DAYS,
@@ -214,7 +290,22 @@ export class MenuRepository {
 	}
 	async getMenuByDailyEvent(dailyEventId: number): Promise<MenuDto[] | null> {
 		const menus = await Menu.findAll({
-			include: ['dishes', 'dailyEvent'],
+			include: [
+				{
+					association: 'dishes',
+					include: [
+						{
+							association: 'foods',
+							include: [
+								{
+									association: 'nutritionFacts',
+								},
+							],
+						},
+					],
+				},
+				'dailyEvent',
+			],
 			where: {
 				dailyEventId,
 				deactivationDate: {

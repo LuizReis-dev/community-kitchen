@@ -54,9 +54,9 @@ export class MenuService {
 		if (!areRequirementsFulfilled)
 			throw new BadRequestException('Menu does not meet the nutritional requirements.')
 
-		const user: User = req['user'];
+		const user: User = req['user']
 
-		createMenuDto.createdBy = user.id;
+		createMenuDto.createdBy = user.id
 		return this.menuRepository.create(createMenuDto)
 	}
 
@@ -65,7 +65,11 @@ export class MenuService {
 	}
 
 	async findOne(id: number) {
-		return this.menuRepository.findOne(id)
+		const result = await this.menuRepository.findOne(id)
+
+		if (!result) throw new NotFoundException('Menu not found.')
+
+		return result
 	}
 
 	async update(id: number, updateMenuDto: UpdateMenuDto) {
@@ -203,8 +207,6 @@ export class MenuService {
 	}
 	async listWeeklyMenus() {
 		const result = await this.menuRepository.listWeeklyMenus()
-
-		if (result.length === 0) return new NotFoundException('Menu not found.')
 
 		return result
 	}
