@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { MenuRequirementService } from './menu-requirement.service'
 import { CreateMenuRequirementDto } from './dto/create-menu-requirement.dto'
 import { UpdateMenuRequirementDto } from './dto/update-menu-requirement.dto'
-import { ApiBearerAuth, ApiOkResponse } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiNotFoundResponse, ApiOkResponse } from '@nestjs/swagger'
 import { MenuRequirementDto } from './dto/menu-requirement.dto'
 
 @Controller('menu-requirements')
@@ -45,4 +45,11 @@ export class MenuRequirementController {
 	remove(@Param('id') id: string) {
 		return this.menuRequirementService.remove(+id)
 	}
+
+	@Patch(':id/deactivate')
+	@ApiOkResponse({ description: 'Especificação desativada com sucesso.' })
+	@ApiNotFoundResponse({ description: 'Especificação não encontrada.' })
+	async deactivate(@Param('id') id: string): Promise<MenuRequirementDto> {
+		return this.menuRequirementService.deactivate(Number(id))
+}
 }

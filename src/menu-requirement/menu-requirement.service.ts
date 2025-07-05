@@ -50,4 +50,9 @@ export class MenuRequirementService {
 	async findActiveMenuRequirements(): Promise<MenuRequirementDto[]> {
 		return await this.menuRequirementRepository.findActiveMenuRequirements()
 	}
+
+	async deactivate(id: number): Promise<MenuRequirementDto> {
+	return this.menuRequirementRepository.deactivate(id)
+}
+
 }
