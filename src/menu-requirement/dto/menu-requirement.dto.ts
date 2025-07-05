@@ -18,7 +18,10 @@ export class MenuRequirementDto {
 		maxSugar: number,
 		minSodium: number,
 		maxSodium: number,
-		isActive: boolean
+		isActive: boolean,
+		createdAt: Date,
+		updatedAt: Date,
+		deletedAt: Date | null
 	) {
 		this.id = id
 		this.minCalories = minCalories
@@ -36,6 +39,10 @@ export class MenuRequirementDto {
 		this.minSodium = minSodium
 		this.maxSodium = maxSodium
 		this.isActive = isActive
+		this.createdAt = createdAt
+		this.updatedAt = updatedAt
+		this.deletedAt = deletedAt
+
 	}
 
 	@ApiProperty()
@@ -89,6 +96,24 @@ export class MenuRequirementDto {
 	})
 	isActive: boolean
 
+	@ApiProperty({
+		description: 'Data de criação das especificações.',
+		example: '2025-06-01T14:00:00.000Z',
+	})
+	createdAt: Date
+
+	@ApiProperty({
+		description: 'Data de atualização das especificações.',
+		example: '2025-06-01T14:00:00.000Z',
+	})
+	updatedAt: Date
+
+	@ApiProperty({
+		description: 'Data de exclusão das especificações.',
+		example: '2025-06-01T14:00:00.000Z',
+	})
+	deletedAt: Date | null
+
 	static fromEntity(menuRequirement: MenuRequirement): MenuRequirementDto {
 		const id = menuRequirement.id
 		const minCalories = menuRequirement.minCalories
@@ -106,6 +131,9 @@ export class MenuRequirementDto {
 		const minSodium = menuRequirement.minSodium
 		const maxSodium = menuRequirement.maxSodium
 		const isActive = menuRequirement.isActive
+    	const createdAt = menuRequirement.createdAt;
+    	const updatedAt = menuRequirement.updatedAt;
+    	const deletedAt = menuRequirement.deletedAt;
 
 		return new MenuRequirementDto(
 			id,
@@ -123,7 +151,10 @@ export class MenuRequirementDto {
 			maxSugar,
 			minSodium,
 			maxSodium,
-			isActive
+			isActive,
+			createdAt,
+			updatedAt,
+			deletedAt
 		)
 	}
 }

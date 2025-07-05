@@ -97,15 +97,17 @@ export class MenuRequirement extends Model {
 
 	@DeletedAt
 	@Column({
+		type: DataType.DATE,
 		field: 'deleted_at',
+		allowNull: true
 	})
-	declare deletedAt: Date
+	declare deletedAt: Date | null
 
 	@UpdatedAt
 	@Column({
 		field: 'updated_at',
 	})
-	declare updateAt: Date
+	declare updatedAt: Date
 
 	@HasMany(() => DailyEvent)
 	declare dailyEvent: DailyEvent[]
