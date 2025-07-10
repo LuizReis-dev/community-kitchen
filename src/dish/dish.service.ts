@@ -4,6 +4,10 @@ import { DishRepository } from './dish.repository'
 import { UpdateDishDto } from './dto/update-dish.dto'
 import { DishDto } from './dto/dish.dto'
 import { DishNutritionSummaryDto } from './dto/dish-nutrition-sumary.dto'
+import { DishSummaryDto } from './dto/dish-summary-dto'
+import { NutritionFactsDto } from 'src/food/dto/nutrition-facts.dto'
+import { DishFoodDto } from './dto/dishFood.dto'
+import { Dish } from './entities/dish.entity'
 
 @Injectable()
 export class DishService {
@@ -157,69 +161,141 @@ export class DishService {
 		proteins?: number
 		limit?: number
 		offset?: number
-	}): Promise<DishNutritionSummaryDto[]> {
+		}): Promise<DishSummaryDto[]> {
 		const { carbohydrates, sodium, calories, proteins, limit = 10, offset = 0 } = params
 		const dishes = await this.dishRepository.findWithNutritionFacts(limit, offset)
-		const filteredDishes: DishNutritionSummaryDto[] = []
+		const filteredDishes: DishSummaryDto[] = []
 
 		for (const dish of dishes) {
-			if (!dish.foods) continue
+			const nutritionData = this.calculateDishNutrition(dish)
+			if (!nutritionData) continue
 
-			let summaryDto: DishNutritionSummaryDto
-			try {
-				summaryDto = DishNutritionSummaryDto.fromEntity(dish)
-			} catch (error) {
-				continue
-			}
-			const nf = summaryDto.nutritionFacts
+			const { foods, totalNutritionFacts } = nutritionData
+
 			let include = true
-			if (calories !== undefined && nf.calories > calories) {
-				include = false
+			if (calories !== undefined && totalNutritionFacts.calories > calories) {
+			include = false
 			}
-			if (carbohydrates !== undefined && nf.carbohydrates > carbohydrates) {
-				include = false
+			if (carbohydrates !== undefined && totalNutritionFacts.carbohydrates > carbohydrates) {
+			include = false
 			}
-			if (sodium !== undefined && nf.sodium > sodium) {
-				include = false
+			if (sodium !== undefined && totalNutritionFacts.sodium > sodium) {
+			include = false
 			}
-			if (proteins !== undefined && nf.proteins < proteins) {
-				include = false
+			if (proteins !== undefined && totalNutritionFacts.proteins < proteins) {
+			include = false
 			}
 
 			if (include) {
+			try {
+				const summaryDto = DishSummaryDto.fromEntity(dish, foods)
 				filteredDishes.push(summaryDto)
+			} catch (error) {
+				console.error(`Erro ao processar prato ID ${dish.id}:`, error)
+				continue
+			}
 			}
 		}
-		return filteredDishes
+			return filteredDishes
+		}
+
+	async getOrderedDishes(parameter: string): Promise<DishSummaryDto[]> {
+	const validParams = [
+		'calories',
+		'proteins',
+		'carbohydrates',
+		'fats',
+		'fiber',
+		'sugar',
+		'sodium',
+	]
+
+	if (!validParams.includes(parameter)) {
+		throw new BadRequestException('Parâmetro inválido para ordenação.')
 	}
 
-	async getOrderedDishes(parameter: string): Promise<DishNutritionSummaryDto[]> {
-		const validParams = [
-			'calories',
-			'proteins',
-			'carbohydrates',
-			'fats',
-			'sodium',
-			'fiber',
-			'sugar',
-		]
+	const dishes = await this.dishRepository.findAllOrderedByNutricionalParameter()
 
-		if (!validParams.includes(parameter)) {
-			throw new BadRequestException('Parâmetro inválido para ordenação.')
+	if (!dishes || dishes.length === 0) {
+		throw new NotFoundException('Nenhum prato encontrado.')
+	}
+
+	const summaryDtos: DishSummaryDto[] = []
+
+	for (const dish of dishes) {
+		const nutritionData = this.calculateDishNutrition(dish)
+		if (!nutritionData) continue
+
+		const { foods, totalNutritionFacts } = nutritionData
+
+		try {
+		const summaryDto = DishSummaryDto.fromEntity(dish, foods);
+		(summaryDto as any).totalNutritionFacts = totalNutritionFacts
+		summaryDtos.push(summaryDto)
+		} catch (error) {
+		console.error(`Erro ao processar prato ID ${dish.id}:`, error)
+		continue
 		}
-		const dishes = await this.dishRepository.findAllOrderedByNutricionalParameter()
+	}
 
-		if (!dishes || dishes.length === 0) {
-			throw new NotFoundException('Nenhum prato encontrado.')
+	summaryDtos.sort((a, b) => {
+		const aValue = (a as any).totalNutritionFacts[parameter]
+		const bValue = (b as any).totalNutritionFacts[parameter]
+		return bValue - aValue
+	})
+
+	const finalDtos = summaryDtos.map(dto => {
+		const { totalNutritionFacts, ...cleanDto } = dto as any
+		return cleanDto as DishSummaryDto
+	})
+
+	return finalDtos
+	}
+
+	private calculateDishNutrition(dish: Dish): { foods: DishFoodDto[], totalNutritionFacts: NutritionFactsDto } | null {
+	if (!dish.foods) return null
+
+	const foods: DishFoodDto[] = []
+	const totalNutritionFacts = new NutritionFactsDto(0, 0, 0, 0, 0, 0, 0)
+	const round1 = (value: number) => Math.round(value * 10) / 10
+
+	for (const food of dish.foods) {
+		const nf = food.nutritionFacts
+		if (!nf) continue
+
+		const dishFood = (food as any).DishFood
+		const quantity = dishFood?.quantity ?? 100
+		const factor = quantity / 100
+
+		const adjustedNutritionFacts = {
+		calories: round1(Number(nf.calories) * factor),
+		proteins: round1(Number(nf.proteins) * factor),
+		carbohydrates: round1(Number(nf.carbohydrates) * factor),
+		fats: round1(Number(nf.fats) * factor),
+		fiber: round1(Number(nf.fiber) * factor),
+		sugar: round1(Number(nf.sugar) * factor),
+		sodium: round1(Number(nf.sodium) * factor),
 		}
-		const summaryDtos = dishes.map(DishNutritionSummaryDto.fromEntity)
 
-		summaryDtos.sort((a, b) => {
-			const aValue = (a.nutritionFacts as any)[parameter]
-			const bValue = (b.nutritionFacts as any)[parameter]
-			return bValue - aValue
-		})
+		totalNutritionFacts.calories += adjustedNutritionFacts.calories
+		totalNutritionFacts.proteins += adjustedNutritionFacts.proteins
+		totalNutritionFacts.carbohydrates += adjustedNutritionFacts.carbohydrates
+		totalNutritionFacts.fats += adjustedNutritionFacts.fats
+		totalNutritionFacts.fiber += adjustedNutritionFacts.fiber
+		totalNutritionFacts.sugar += adjustedNutritionFacts.sugar
+		totalNutritionFacts.sodium += adjustedNutritionFacts.sodium
 
-		return summaryDtos
+		foods.push(new DishFoodDto(food.id, food.name, adjustedNutritionFacts, quantity))
+	}
+
+	totalNutritionFacts.calories = round1(totalNutritionFacts.calories)
+	totalNutritionFacts.proteins = round1(totalNutritionFacts.proteins)
+	totalNutritionFacts.carbohydrates = round1(totalNutritionFacts.carbohydrates)
+	totalNutritionFacts.fats = round1(totalNutritionFacts.fats)
+	totalNutritionFacts.fiber = round1(totalNutritionFacts.fiber)
+	totalNutritionFacts.sugar = round1(totalNutritionFacts.sugar)
+	totalNutritionFacts.sodium = round1(totalNutritionFacts.sodium)
+
+	return { foods, totalNutritionFacts }
 	}
 }

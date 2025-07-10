@@ -19,6 +19,7 @@ import { DishDto } from './dto/dish.dto'
 import { ApiBearerAuth, ApiOkResponse, ApiParam, ApiQuery } from '@nestjs/swagger'
 import { DishNutritionFactsDto } from './dto/dish-nutritionFacts.dto'
 import { DishNutritionSummaryDto } from './dto/dish-nutrition-sumary.dto'
+import { DishSummaryDto } from './dto/dish-summary-dto'
 
 @Controller('dishes')
 @ApiBearerAuth('jwt')
@@ -111,73 +112,73 @@ export class DishController {
 	}
 
 	@Get('filtered/by-parameter')
-	@ApiOkResponse({ type: [DishNutritionSummaryDto] })
+	@ApiOkResponse({ type: [DishSummaryDto] })
 	@ApiQuery({
-		name: 'carbohydrates',
-		required: false,
-		type: Number,
-		description: 'Máximo de caiboidratos (g) total do prato.',
+	name: 'carbohydrates',
+	required: false,
+	type: Number,
+	description: 'Máximo de carboidratos (g) total do prato.',
 	})
 	@ApiQuery({
-		name: 'sodium',
-		required: false,
-		type: Number,
-		description: 'Máximo de sódio (mg) total do prato.',
+	name: 'sodium',
+	required: false,
+	type: Number,
+	description: 'Máximo de sódio (mg) total do prato.',
 	})
 	@ApiQuery({
-		name: 'calories',
-		required: false,
-		type: Number,
-		description: 'Máximo de calorias total do prato.',
+	name: 'calories',
+	required: false,
+	type: Number,
+	description: 'Máximo de calorias total do prato.',
 	})
 	@ApiQuery({
-		name: 'proteins',
-		required: false,
-		type: Number,
-		description: 'Mínimo de proteínas (g) total do prato.',
+	name: 'proteins',
+	required: false,
+	type: Number,
+	description: 'Mínimo de proteínas (g) total do prato.',
 	})
 	@ApiQuery({
-		name: 'limit',
-		required: false,
-		type: Number,
-		description: 'Número máximo de resultados (padrão: 10).',
-		example: 10,
+	name: 'limit',
+	required: false,
+	type: Number,
+	description: 'Número máximo de resultados (padrão: 10).',
+	example: 10,
 	})
 	@ApiQuery({
-		name: 'offset',
-		required: false,
-		type: Number,
-		description: 'Deslocamento para paginação (padrão: 0).',
-		example: 0,
+	name: 'offset',
+	required: false,
+	type: Number,
+	description: 'Deslocamento para paginação (padrão: 0).',
+	example: 0,
 	})
 	async getFilteredDishes(
-		@Query('carbohydrates', new ParseFloatPipe({ optional: true })) carbohydrates?: number,
-		@Query('sodium', new ParseFloatPipe({ optional: true })) sodium?: number,
-		@Query('calories', new ParseFloatPipe({ optional: true })) calories?: number,
-		@Query('proteins', new ParseFloatPipe({ optional: true })) proteins?: number,
-		@Query('limit', new ParseIntPipe({ optional: true })) limit = 10,
-		@Query('offset', new ParseIntPipe({ optional: true })) offset = 0
-	): Promise<DishNutritionSummaryDto[]> {
-		return this.dishService.getFilteredDishes({
-			carbohydrates,
-			sodium,
-			calories,
-			proteins,
-			limit,
-			offset,
-		})
+	@Query('carbohydrates', new ParseFloatPipe({ optional: true })) carbohydrates?: number,
+	@Query('sodium', new ParseFloatPipe({ optional: true })) sodium?: number,
+	@Query('calories', new ParseFloatPipe({ optional: true })) calories?: number,
+	@Query('proteins', new ParseFloatPipe({ optional: true })) proteins?: number,
+	@Query('limit', new ParseIntPipe({ optional: true })) limit = 10,
+	@Query('offset', new ParseIntPipe({ optional: true })) offset = 0
+	): Promise<DishSummaryDto[]> {
+	return this.dishService.getFilteredDishes({
+		carbohydrates,
+		sodium,
+		calories,
+		proteins,
+		limit,
+		offset,
+	})
 	}
 
 	@Get('order-by/:parameter')
-	@ApiOkResponse({ type: [DishNutritionSummaryDto] })
+	@ApiOkResponse({ type: [DishSummaryDto] })
 	@ApiParam({
-		name: 'parameter',
-		description:
-			'Parâmetro nutricional para ordenação (calories, proteins, carbohydrates, fats, fiber, sodium e sugar)',
+	name: 'parameter',
+	description:
+		'Parâmetro nutricional para ordenação (calories, proteins, carbohydrates, fats, fiber, sodium e sugar)',
 	})
 	async getOrderedByParameter(
-		@Param('parameter') parameter: string
-	): Promise<DishNutritionSummaryDto[]> {
-		return this.dishService.getOrderedDishes(parameter)
+	@Param('parameter') parameter: string
+	): Promise<DishSummaryDto[]> {
+	return this.dishService.getOrderedDishes(parameter)
 	}
 }
