@@ -84,8 +84,8 @@ export class DishController {
 	}
 
 	@Get(':id/nutrition-facts')
-	@ApiOkResponse({ type: DishNutritionFactsDto })
-	async getDishNutritionFacts(@Param('id') id: number): Promise<DishNutritionFactsDto> {
+	@ApiOkResponse({ type: DishNutritionSummaryDto })
+	async getDishNutritionFacts(@Param('id') id: number): Promise<DishNutritionSummaryDto> {
 		return this.dishService.getDishNutritionFacts(id)
 	}
 
