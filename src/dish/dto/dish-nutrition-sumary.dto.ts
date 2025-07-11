@@ -46,7 +46,7 @@ export class DishNutritionSummaryDto {
     nutritionFacts: NutritionFactsDto,
     //createdAt: Date,
     //updatedAt: Date,
-    //foods: DishFoodDto[]
+    foods: DishFoodDto[]
   ) {
     this.id = id
     this.name = name
@@ -54,7 +54,7 @@ export class DishNutritionSummaryDto {
     this.nutritionFacts = nutritionFacts
     //this.createdAt = createdAt
     //this.updatedAt = updatedAt
-    //this.foods = foods
+    this.foods = foods
   }
 
   static fromEntity(dish: Dish): DishNutritionSummaryDto {
@@ -109,7 +109,7 @@ export class DishNutritionSummaryDto {
       totalNutritionFacts,
       //dish.createdAt,
       //dish.updatedAt,
-      //foods
+      foods
     )
   }
 }
