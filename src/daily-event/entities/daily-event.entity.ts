@@ -60,5 +60,5 @@ export class DailyEvent extends Model {
 	@Column({
 		field: 'updated_at',
 	})
-	declare updateAt: Date
+	declare updatedAt: Date
 }
