@@ -38,6 +38,12 @@ export class DishController {
 		return this.dishService.listAllHealthyDishes()
 	}
 
+	@Get('list-all/unhealthy')
+	@ApiOkResponse({ type: [DishDto] })
+	async listAllUnhealthy() {
+		return this.dishService.listAllUnhealthyDishes()
+	}
+
 	@Get('dishes-by-ids')
 	@ApiOkResponse({ type: [DishDto] })
 	@ApiQuery({
