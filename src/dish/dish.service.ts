@@ -206,6 +206,17 @@ export class DishService {
 		return healthyDishes
 	}
 
+	async listAllUnhealthyDishes(): Promise<DishDto[]> {
+		const dishes = await this.dishRepository.findAllDishesWithNutritionFacts()
+		const unhealthyDishes: DishDto[] = []
+
+		for (const dish of dishes) {
+			const result = await this.isDishHealthy(dish.id)
+			if (!result.healthy) unhealthyDishes.push(result.dish)
+		}
+		return unhealthyDishes
+	}
+
 	async getFilteredDishes(params: {
 		carbohydrates?: number
 		sodium?: number
