@@ -84,15 +84,47 @@ export class DishService {
 		return DishNutritionSummaryDto.fromEntity(dish)
 	}
 
-	async findDishesByDescription(term: string): Promise<DishDto[]> {
+	async findDishesByDescription(
+		term: string,
+		type: 'all' | 'healthy' | 'unhealthy' = 'all',
+	): Promise<DishDto[]> {
 		if (!term || term.trim() === '') {
 			throw new BadRequestException('Termo de busca não pode ser vazio')
 		}
 
-		return this.dishRepository.findDishesByDescription(term)
+		const dishes = await this.dishRepository.findDishesByDescription(term)
+
+		if (dishes.length === 0) {
+			throw new NotFoundException(`Nenhum prato encontrado com o termo '${term}'`)
+		}
+
+		if (type !== 'all') {
+			const healthyChecks = await Promise.all(
+				dishes.map(async (dish) => {
+					const result = await this.isDishHealthy(dish.id)
+					return { dish: result.dish, isHealthy: result.healthy }
+				}),
+			)
+
+			const filtered = healthyChecks.filter(({ isHealthy }) =>
+				type === 'healthy' ? isHealthy : !isHealthy,
+			)
+
+			if (filtered.length === 0) {
+				throw new NotFoundException(`Nenhum prato ${type === 'healthy' ? 'saudável' : 'não saudável'} encontrado com o termo '${term}'`)
+			}
+
+			return filtered.map(({ dish }) => dish)
+		}
+
+		return dishes.map(DishDto.fromEntity)
 	}
 
-	async findDishesByName(name: string): Promise<DishDto[]> {
+
+	async findDishesByName(
+		name: string,
+		type: 'all' | 'healthy' | 'unhealthy' = 'all',
+	): Promise<DishDto[]> {
 		if (!name || name.trim() === '') {
 			throw new BadRequestException('name de busca não pode ser vazio')
 		}
@@ -103,8 +135,28 @@ export class DishService {
 			throw new NotFoundException(`Nenhum prato encontrado com o nome contendo '${name}'`)
 		}
 
+		if (type !== 'all') {
+			const healthyChecks = await Promise.all(
+				dishes.map(async (dish) => {
+					const result = await this.isDishHealthy(dish.id)
+					return { dish: result.dish, isHealthy: result.healthy }
+				}),
+			)
+
+			const filtered = healthyChecks.filter(({ isHealthy }) =>
+				type === 'healthy' ? isHealthy : !isHealthy,
+			)
+
+			if (filtered.length === 0) {
+				throw new NotFoundException(`Nenhum prato ${type === 'healthy' ? 'saudável' : 'não saudável'} encontrado com o nome '${name}'`)
+			}
+
+			return filtered.map(({ dish }) => dish)
+		}
+
 		return dishes.map(DishDto.fromEntity)
 	}
+
 
 	async isDishHealthy(id: number): Promise<{ dish: DishDto; healthy: boolean }> {
 		const dish = await this.dishRepository.findDishWithNutritionFacts(id)
