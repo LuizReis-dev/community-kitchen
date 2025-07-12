@@ -90,17 +90,26 @@ export class DishController {
 	}
 
 	@Get('dishes-by-description/:term')
-	@ApiOkResponse({ type: [DishDto] })
-	@ApiParam({ name: 'term', type: String, example: 'arroz' })
-	async searchDishesByTerm(@Param('term') term: string): Promise<DishDto[]> {
-		return this.dishService.findDishesByDescription(term)
+		@ApiOkResponse({ type: [DishDto] })
+		@ApiParam({ name: 'term', type: String, example: 'arroz' })
+		@ApiQuery({ name: 'type', required: false, enum: ['all', 'healthy', 'unhealthy'], example: 'healthy' })
+		async searchDishesByTerm(
+			@Param('term') term: string,
+			@Query('type') type: 'all' | 'healthy' | 'unhealthy' = 'all',
+		): Promise<DishDto[]> {
+			return this.dishService.findDishesByDescription(term, type)
 	}
+
 
 	@Get('dishes-by-name/:name')
 	@ApiOkResponse({ type: [DishDto] })
 	@ApiParam({ name: 'name', type: String, example: 'feijoada' })
-	async searchDishesByName(@Param('name') name: string): Promise<DishDto[]> {
-		return this.dishService.findDishesByName(name)
+	@ApiQuery({ name: 'type', required: false, enum: ['all', 'healthy', 'unhealthy'] })
+	async searchDishesByName(
+		@Param('name') name: string,
+		@Query('type') type: 'all' | 'healthy' | 'unhealthy' = 'all'
+		): Promise<DishDto[]> {
+		return this.dishService.findDishesByName(name, type)
 	}
 
 	@Get(':id/healthy')

@@ -268,8 +268,8 @@ export class DishRepository {
 		return dishes.map(dish => DishDto.fromEntity(dish))
 	}
 
-	async findDishesByDescription(term: string): Promise<DishDto[]> {
-		const dishes = await Dish.findAll({
+	async findDishesByDescription(term: string): Promise<Dish[]> {
+		return await Dish.findAll({
 			include: [
 				{
 					model: Food,
@@ -283,14 +283,10 @@ export class DishRepository {
 				},
 			},
 		})
-
-		if (dishes.length === 0) {
-			throw new NotFoundException(`Nenhum prato encontrado com o termo '${term}'`)
-		}
-
-		return dishes.map(dish => DishDto.fromEntity(dish))
 	}
 
+
+	
 	async findByName(name: string): Promise<Dish[]> {
 		return await Dish.findAll({
 			include: [
@@ -307,6 +303,8 @@ export class DishRepository {
 			},
 		})
 	}
+
+
 
 	async findDishWithNutritionFacts(id: number): Promise<Dish | null> {
 		return await Dish.findByPk(id, {
