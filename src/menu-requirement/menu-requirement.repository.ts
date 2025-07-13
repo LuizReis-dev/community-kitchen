@@ -84,6 +84,17 @@ export class MenuRequirementRepository {
 		return menuRequirements.map(requirement => MenuRequirementDto.fromEntity(requirement))
 	}
 
+	async findInactiveMenuRequirements(): Promise<MenuRequirement[]> {
+  		const menuRequirements = await MenuRequirement.findAll({
+    		where: {
+      			isActive: false,
+    		},
+    		paranoid: true,
+ 		});
+
+  		return menuRequirements;
+	}
+
 	async deactivate(id: number): Promise<MenuRequirementDto> {
 	const menuRequirement = await MenuRequirement.findByPk(id)
 
@@ -101,5 +112,21 @@ export class MenuRequirementRepository {
 		throw new BadRequestException('Erro ao desativar a especificação do menu!')
 	}
 }
+	async activate(id: number): Promise<MenuRequirementDto> {
+  	const menuRequirement = await MenuRequirement.findByPk(id);
 
+  	if (!menuRequirement) {
+    	throw new NotFoundException('Especificação do menu não encontrada!');
+  	}
+
+  	const transaction = await this.sequelize.transaction();
+  	try {
+    	await menuRequirement.update({ isActive: true }, { transaction });
+    	await transaction.commit();
+    	return MenuRequirementDto.fromEntity(menuRequirement);
+  	} catch (error) {
+    	await transaction.rollback();
+    	throw new BadRequestException('Erro ao ativar a especificação do menu!');
+  	}
+}
 }
