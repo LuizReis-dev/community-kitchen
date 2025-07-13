@@ -22,6 +22,12 @@ export class MenuRequirementController {
 		return await this.menuRequirementService.findActiveMenuRequirements()
 	}
 
+	@Get('get-inactive-menu-requirements')
+	@ApiOkResponse({ type: [MenuRequirementDto] })
+	async findInactiveMenuRequirements() {
+		return await this.menuRequirementService.findInactiveMenuRequirements()
+	}
+
 	@Get()
 	@ApiOkResponse({ type: MenuRequirementDto })
 	findAll() {
@@ -51,5 +57,12 @@ export class MenuRequirementController {
 	@ApiNotFoundResponse({ description: 'Especificação não encontrada.' })
 	async deactivate(@Param('id') id: string): Promise<MenuRequirementDto> {
 		return this.menuRequirementService.deactivate(Number(id))
-}
+	}
+
+	@Patch(':id/activate')
+	@ApiOkResponse({ description: 'Especificação ativada com sucesso.' })
+	@ApiNotFoundResponse({ description: 'Especificação não encontrada.' })
+	async activate(@Param('id') id: string): Promise<MenuRequirementDto> {
+  		return this.menuRequirementService.activate(Number(id));
+	}
 }

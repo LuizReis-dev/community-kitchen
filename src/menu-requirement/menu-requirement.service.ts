@@ -51,8 +51,17 @@ export class MenuRequirementService {
 		return await this.menuRequirementRepository.findActiveMenuRequirements()
 	}
 
+	async findInactiveMenuRequirements(): Promise<MenuRequirementDto[]> {
+  		const menuRequirements = await this.menuRequirementRepository.findInactiveMenuRequirements();
+  		return menuRequirements.map(requirement => MenuRequirementDto.fromEntity(requirement));
+	}
+
 	async deactivate(id: number): Promise<MenuRequirementDto> {
 	return this.menuRequirementRepository.deactivate(id)
-}
+	}
+
+	async activate(id: number): Promise<MenuRequirementDto> {
+  	return this.menuRequirementRepository.activate(id);
+	}
 
 }
