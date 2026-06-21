@@ -18,6 +18,14 @@ Desenvolvido utilizando o framework [NestJS](https://nestjs.com/), o projeto foc
 npm install
 ```
 
+## Variáveis de Ambiente
+
+Copie o arquivo `.env.example` para `.env` e preencha as variáveis necessárias:
+
+```bash
+cp .env.example .env
+```
+
 ## Executar o Projeto
 
 ```bash
