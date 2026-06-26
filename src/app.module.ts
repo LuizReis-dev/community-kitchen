@@ -12,6 +12,7 @@ import { MenuAttendanceModule } from './menu-attendance/menu-attendance.module'
 import { APP_GUARD } from '@nestjs/core'
 import { AuthModule } from './auth/auth.module'
 import { AuthGuard } from './auth/auth.guard'
+import { HealthController } from './health/health.controller'
 
 @Module({
 	imports: [
@@ -25,7 +26,7 @@ import { AuthGuard } from './auth/auth.guard'
 		MenuAttendanceModule,
 		AuthModule,
 	],
-	controllers: [AppController],
+	controllers: [AppController, HealthController],
 	providers: [
 		AppService,
 		{
